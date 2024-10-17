@@ -16,6 +16,9 @@ Concernant le dossier d'analyse, j'ai réalisé le diagramme de cas d'utilisatio
 Mathys Bollengier: J'ai contribué à la réalisation du projet au travers de commts liés à l'ajout des point et a sa classification en adéquation avec le cahier des charges.
 Pour le dossier d'analyse, j'ai réalisé des fiches descriptives ainsi qu'à la réflexion du diagramme de classe.
 
+Fryson Adrien : Dans le cadre de ce projet, j'ai pris en charge plusieurs aspects. Tout d'abord, j'ai conçu les classes principales du modèle, tout en veillant à créer une arborescence adaptée pour Maven et à configurer correctement le fichier pom.xml pour la gestion des dépendances. Par ailleurs, j'ai élaboré une première version de l'interface FXML en utilisant Scene Builder, en plus de gérer le chargement des données provenant d'un fichier CSV. J'ai également intégré la fonctionnalité permettant de charger un nouveau fichier CSV via l'interface JavaFX.
+Concernant le dossier d'analyse, j'ai rédigé les fiches descriptives sur les fonctionnalités "Charger l'ensemble de données" et "Classifier la donnée non classifiée". J'ai également participé à la conception du diagramme de classe.
+
 ## Diagramme de cas d'utilisation
 
 
