@@ -126,7 +126,7 @@ Si la classification ne fonctionne pas, rien ne se passe
 ## Diagramme de classes
 
 *Inclure un diagramme de classes qui permet d'**implémenter toutes les fonctionnalités**.*
-
+![Diagramme de classe](./DiagrammeClasse.png)
 *Le diagramme de classes doit suivre le design pattern MVC, mais vous ne ferez pas figurer les classes de la vue. Il doit être clair quelles classes font partie du contrôleur (par exemple grâce à un nom de classe qui contient 'Controleur'); les classes restantes seront considérées faisant partie du modèle.*
 
 *L'image du diagramme doit être de résolution suffisante permettant de zoomer et lire le texte qui y figure.*
