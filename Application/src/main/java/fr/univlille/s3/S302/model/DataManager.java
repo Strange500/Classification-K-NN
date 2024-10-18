@@ -2,9 +2,7 @@ package fr.univlille.s3.S302.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javafx.stage.FileChooser;
 
@@ -14,6 +12,8 @@ public class DataManager<E extends Data> implements Observable<E> {
     private List<E> dataList;
     private List<Observer> observers;
 
+    private List<E> UserData;
+
     public DataManager(List<E> dataList) {
         this.dataList = dataList;
     }
@@ -22,6 +22,7 @@ public class DataManager<E extends Data> implements Observable<E> {
         this(new ArrayList<>());
         this.observers = new ArrayList<>();
         this.loadData(PATH);
+        this.UserData = new ArrayList<>();
     }
 
     public static void main(String[] args) {
@@ -88,5 +89,24 @@ public class DataManager<E extends Data> implements Observable<E> {
         for (Object ob : tmp) {
             if (ob instanceof Observer) ((Observer<E>) ob).update(this);
         }
+    }
+
+    public void AddUserData(E e){
+        UserData.add(e);
+    }
+
+    public List<E> getUserDataList(){
+        return this.UserData;
+    }
+    public void addData(Map<String,Number> map){
+        ArrayList<String> alist=new ArrayList<>(map.keySet());
+        alist.sort(Comparator.naturalOrder());
+        double Att0=map.get(alist.get(0)).doubleValue();
+        double Att1=map.get(alist.get(0)).doubleValue();
+        double Att2=map.get(alist.get(0)).doubleValue();
+        double Att3=map.get(alist.get(0)).doubleValue();
+        Iris tmpiris=new Iris(Att0,Att1,Att2,Att3,"Unknow");
+        this.UserData.add((E)tmpiris);
+        notifyAllObservers();
     }
 }

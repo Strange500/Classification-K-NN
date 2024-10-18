@@ -59,7 +59,13 @@ public class DataController implements Observer<Data> {
 
         });
 
-
+        addDataBtn.setOnAction(event -> {
+            Map<String,Number> map=data.get(0).getValue().getattributes();
+            for (String s : map.keySet()){
+                map.put(s,0);
+            }
+            addData(map);
+        });
     }
 
     private void buildWidgets() {
@@ -160,6 +166,13 @@ public class DataController implements Observer<Data> {
             data.add(new Pair<>(node, f));
             series.getData().add(node);
         }
+        for (Data f : dataManager.getUserDataList()) {
+            Pair<Number, Number> choosenAttributes = getNodeXY(f);
+            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
+            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
+            data.add(new Pair<>(node, f));
+            series.getData().add(node);
+        }
         chart.getData().add(series);
 
     }
@@ -229,5 +242,9 @@ public class DataController implements Observer<Data> {
         App app = new App();
         app.start(new Stage());
 
+    }
+
+    public void addData(Map<String,Number> map){
+        this.dataManager.addData(map);
     }
 }
