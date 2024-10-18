@@ -1,6 +1,5 @@
 package fr.univlille.s3.S302.model;
 
-import javafx.scene.layout.CornerRadii;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -8,10 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CoordonneTest {
 
-    Coordonnee c ;
+    Coordonnee c;
+
     @BeforeEach
     public void setup() {
-        c  = new Coordonnee(0, 4);
+        c = new Coordonnee(0, 4);
     }
 
     @Test

@@ -22,7 +22,6 @@ import java.util.*;
 
 public class DataController implements Observer<Data> {
 
-
     private final Map<String, String> categorieColor = new HashMap<>();
     @FXML
     ScatterChart<Number, Number> chart;
@@ -39,10 +38,11 @@ public class DataController implements Observer<Data> {
     private Button addDataBtn;
 
     @FXML
+    /**
+     * Initialisation de la fenêtre
+     */
     public void initialize() {
-
         buildWidgets();
-
         categoryBtn.setOnAction(event -> {
             try {
                 chart.getXAxis().setLabel(xCategory.getValue());
@@ -53,10 +53,7 @@ public class DataController implements Observer<Data> {
             } catch (IllegalArgumentException | NoSuchElementException ile) {
                 Popup popup = genErrorPopup(ile.getMessage());
                 popup.show(chart.getScene().getWindow());
-
-
             }
-
         });
 
         addDataBtn.setOnAction(event -> {
@@ -68,10 +65,12 @@ public class DataController implements Observer<Data> {
         });
     }
 
+    /**
+     * Construit les widgets de la fenêtre
+     */
     private void buildWidgets() {
         data = new ArrayList<>();
         categorieColor.put("Unknown", "black");
-
         chart.setTitle("Scatter Chart");
 
         chart.getXAxis().setAutoRanging(true);
@@ -91,14 +90,21 @@ public class DataController implements Observer<Data> {
         choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
 
         constructChart();
-
         setChartStyle();
     }
 
-    public static Popup genErrorPopup(String message) {
+    /**
+     * Génère une popup d'erreur
+     * 
+     * @param message le message d'erreur
+     * 
+     * @return la popup d'erreur
+     */
+    private Popup genErrorPopup(String message) {
         Popup popup = new Popup();
         Label label = new Label("Erreur: \n" + message);
-        label.setStyle(" -fx-background-color: white; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
+        label.setStyle(
+                " -fx-background-color: white; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
         label.setMinHeight(50);
         label.setMinWidth(200);
         popup.getContent().add(label);
@@ -106,11 +112,17 @@ public class DataController implements Observer<Data> {
         return popup;
     }
 
+    /**
+     * Met à jour le graphique
+     */
     private void update() {
         updateChart();
         setChartStyle();
     }
 
+    /**
+     * Met le style du graphique
+     */
     private void setChartStyle() {
         for (final XYChart.Series<Number, Number> s : chart.getData()) {
             for (final XYChart.Data<Number, Number> data : s.getData()) {
@@ -134,11 +146,21 @@ public class DataController implements Observer<Data> {
         }
     }
 
+    /**
+     * Récupère les coordonnées d'un noeud
+     * 
+     * @param f le noeud
+     * 
+     * @return les coordonnées du noeud
+     */
     private Pair<Number, Number> getNodeXY(Data f) {
         Map<String, Number> attributes = f.getattributes();
         return new Pair<>(attributes.get(choosenAttributes.getKey()), attributes.get(choosenAttributes.getValue()));
     }
 
+    /**
+     * Met à jour le graphique
+     */
     private void updateChart() {
         chart.getData().clear();
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
@@ -146,7 +168,8 @@ public class DataController implements Observer<Data> {
         for (Pair<XYChart.Data<Number, Number>, Data> d : tmp) {
             Data f = d.getValue();
             Pair<Number, Number> choosenAttributes = getNodeXY(f);
-            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
+            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
+                    choosenAttributes.getValue());
             series.getData().add(node);
             data.remove(d);
             data.add(new Pair<>(node, f));
@@ -156,13 +179,18 @@ public class DataController implements Observer<Data> {
 
     }
 
+    /**
+     * Construit le graphique
+     */
     private void constructChart() {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         chart.getData().clear();
         for (Data f : dataManager.getDataList()) {
             Pair<Number, Number> choosenAttributes = getNodeXY(f);
-            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
-            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
+            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(),
+                    choosenAttributes.getValue().doubleValue());
+            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
+                    choosenAttributes.getValue());
             data.add(new Pair<>(node, f));
             series.getData().add(node);
         }
@@ -177,6 +205,13 @@ public class DataController implements Observer<Data> {
 
     }
 
+    /**
+     * Récupère le un point sur le graphique
+     * 
+     * @param data le noeud
+     * 
+     * @return le noeud
+     */
     private Data getNode(XYChart.Data<Number, Number> data) {
         for (Pair<XYChart.Data<Number, Number>, Data> d : this.data) {
             if (d.getKey() == data) {
@@ -186,10 +221,18 @@ public class DataController implements Observer<Data> {
         return null;
     }
 
+    /**
+     * Récupère les attributs
+     * 
+     * @return les attributs
+     */
     private Set<String> getAttributes() {
         return this.dataManager.getAttributes();
     }
 
+    /**
+     * Met à jour les catégories
+     */
     private void updateCategories() {
         xCategory.getItems().clear();
         yCategory.getItems().clear();
@@ -197,34 +240,57 @@ public class DataController implements Observer<Data> {
         yCategory.getItems().addAll(getAttributes());
     }
 
+    /**
+     * Met la couleur d'un noeud
+     * 
+     * @param node     le noeud
+     * @param category la catégorie
+     */
     public void setNodeColor(Node node, String category) {
         if (node == null) {
             return;
         }
         if (!categorieColor.containsKey(category)) {
-            String color = "rgb(" + (int) (Math.random() * 256) + "," + (int) (Math.random() * 256) + "," + (int) (Math.random() * 256) + ")";
+            String color = "rgb(" + (int) (Math.random() * 256) + "," + (int) (Math.random() * 256) + ","
+                    + (int) (Math.random() * 256) + ")";
             categorieColor.put(category, color);
         }
 
         node.setStyle("-fx-background-color: " + categorieColor.get(category) + ";");
     }
 
+    /**
+     * Ajoute un noeud
+     * 
+     * @param data les données
+     */
     public void addNode(Data data) {
         // TODO
     }
 
+    /**
+     * Met à jour le graphique
+     */
     @Override
     public void update(Observable<Data> ob) {
         constructChart();
         setChartStyle();
     }
 
+    /**
+     * Met à jour le graphique
+     * 
+     * @param elt les données
+     */
     @Override
     public void update(Observable<Data> ob, Data elt) {
         constructChart();
         setChartStyle();
     }
 
+    /**
+     * Charge un nouveau fichier CSV
+     */
     public void loadNewCsv() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Ouvrir un fichier CSV");
@@ -238,6 +304,11 @@ public class DataController implements Observer<Data> {
         }
     }
 
+    /**
+     * Ouvre une nouvelle fenêtre
+     * 
+     * @throws IOException si la fenêtre ne peut pas être ouverte
+     */
     public void openNewWindow() throws IOException {
         App app = new App();
         app.start(new Stage());

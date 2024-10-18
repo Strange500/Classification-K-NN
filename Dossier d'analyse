@@ -10,9 +10,26 @@
 - *Comment il ou elle a contribué au projet dans son ensemble.*
 - *Comment il ou elle a contribuer plus particulièrement au dossier d'analyse.*
 
+Benjamin Roget: j'ai contribué à la réalisation du projet via les commits liés à la visualisation des points, à la sélection des catégories, et à l'intégration du modèle observer/observable.
+Concernant le dossier d'analyse, j'ai réalisé le diagramme de cas d'utilisation et j'ai participé à la réflexion sur le diagramme de classes.
+
+Mathys Bollengier: J'ai contribué à la réalisation du projet au travers de commts liés à l'ajout des point et a sa classification en adéquation avec le cahier des charges.
+Pour le dossier d'analyse, j'ai réalisé des fiches descriptives ainsi qu'à la réflexion du diagramme de classe.
+
+Fryson Adrien : Dans le cadre de ce projet, j'ai pris en charge plusieurs aspects. Tout d'abord, j'ai conçu les classes principales du modèle, tout en veillant à créer une arborescence adaptée pour Maven et à configurer correctement le fichier pom.xml pour la gestion des dépendances. Par ailleurs, j'ai élaboré une première version de l'interface FXML en utilisant Scene Builder, en plus de gérer le chargement des données provenant d'un fichier CSV. J'ai également intégré la fonctionnalité permettant de charger un nouveau fichier CSV via l'interface JavaFX.
+Concernant le dossier d'analyse, j'ai rédigé les fiches descriptives sur les fonctionnalités "Charger l'ensemble de données" et "Classifier la donnée non classifiée". J'ai également participé à la conception du diagramme de classe.
+
+Vincent Jacquemelle : Dans le cadre de ce projet j'ai imaginé et réalisé [la maquette basse fidélité](https://www.figma.com/design/4VvLlFszeFe0WVyEIFU2Zu/Untitled?node-id=0-1&t=krNABrBBiuYGcEP8-1) sur figma.
+Concernant le dossier d'analyse, j'ai participé à la réflexion sur les différents diagrammes réalisé 
+
+Thomas Smeeckaert : Dans le cadre de ce projet j'ai participé a la conception de l'architecture du programme.
+
 ## Diagramme de cas d'utilisation
 
+
 *Inclure le diagramme de cas d'utilisation, par exemple sous forme de capture d'écran.*
+![Diagramme de cas d'utilisation](./Diagramme_de_cas_d_utilisation.PNG)
+
 
 ### Fiches descriptives
 
@@ -126,7 +143,7 @@ Si la classification ne fonctionne pas, rien ne se passe
 ## Diagramme de classes
 
 *Inclure un diagramme de classes qui permet d'**implémenter toutes les fonctionnalités**.*
-
+![Diagramme de classe](./DiagrammeClasse.png)
 *Le diagramme de classes doit suivre le design pattern MVC, mais vous ne ferez pas figurer les classes de la vue. Il doit être clair quelles classes font partie du contrôleur (par exemple grâce à un nom de classe qui contient 'Controleur'); les classes restantes seront considérées faisant partie du modèle.*
 
 *L'image du diagramme doit être de résolution suffisante permettant de zoomer et lire le texte qui y figure.*
