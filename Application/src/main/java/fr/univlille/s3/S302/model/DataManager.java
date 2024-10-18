@@ -147,10 +147,10 @@ public class DataManager<E extends Data> implements Observable<E> {
         ArrayList<String> alist=new ArrayList<>(map.keySet());
         alist.sort(Comparator.naturalOrder());
         double Att0=map.get(alist.get(0)).doubleValue();
-        double Att1=map.get(alist.get(0)).doubleValue();
-        double Att2=map.get(alist.get(0)).doubleValue();
-        double Att3=map.get(alist.get(0)).doubleValue();
-        Iris tmpiris=new Iris(Att0,Att1,Att2,Att3,"Unknow");
+        double Att1=map.get(alist.get(1)).doubleValue();
+        double Att2=map.get(alist.get(2)).doubleValue();
+        double Att3=map.get(alist.get(3)).doubleValue();
+        Iris tmpiris=new Iris(Att2,Att3,Att0,Att1,"Unknown");
         this.UserData.add((E)tmpiris);
         notifyAllObservers();
     }
