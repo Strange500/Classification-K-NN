@@ -10,6 +10,7 @@ public class DataLoader {
 
     /**
      * Charge un fichier CSV et le transforme en liste d'objets FormatDonneeBrut
+     * 
      * @param fileName le nom du fichier à charger
      * @return la liste d'objets FormatDonneeBrut
      * @throws FileNotFoundException si le fichier n'existe pas
@@ -24,14 +25,13 @@ public class DataLoader {
                 throw new FileNotFoundException("Fichier non trouvé");
             }
         }
-
-
         return csvToList(input);
 
     }
 
     /**
      * Transforme un fichier CSV en liste d'objets FormatDonneeBrut
+     * 
      * @param input le fichier CSV à transformer
      * @return la liste d'objets FormatDonneeBrut
      * @throws FileNotFoundException si le fichier n'existe pas
@@ -39,7 +39,8 @@ public class DataLoader {
     private static List<FormatDonneeBrut> csvToList(InputStream input) throws FileNotFoundException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
 
-            CsvToBean<FormatDonneeBrut> csvToBean = new CsvToBeanBuilder<FormatDonneeBrut>(reader).withSeparator(',').withType(FormatDonneeBrut.class).build();
+            CsvToBean<FormatDonneeBrut> csvToBean = new CsvToBeanBuilder<FormatDonneeBrut>(reader).withSeparator(',')
+                    .withType(FormatDonneeBrut.class).build();
 
             List<FormatDonneeBrut> records = csvToBean.parse();
             return records;
@@ -51,10 +52,11 @@ public class DataLoader {
 
     /**
      * Crée un objet Iris à partir d'un objet FormatDonneeBrut
+     * 
      * @param f l'objet FormatDonneeBrut
      * @return l'objet Iris
      */
     public static Iris createObject(FormatDonneeBrut f) {
-        return new Iris(f.getSepalLength(), f.getSepalWidth(), f.getPetalLength(), f.getPetalWidth(), f.getSpecies());
+        return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
     }
 }

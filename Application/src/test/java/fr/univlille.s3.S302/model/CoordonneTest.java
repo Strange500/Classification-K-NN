@@ -7,10 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CoordonneTest {
 
-    Coordonnee c ;
+    Coordonnee c;
+
     @BeforeEach
     public void setup() {
-        c  = new Coordonnee(0, 4);
+        c = new Coordonnee(0, 4);
     }
 
     @Test

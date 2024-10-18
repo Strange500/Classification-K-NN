@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Iris implements Data {
+
     private final double sepalLength;
     private final double sepalWidth;
     private final double petalLength;
@@ -14,6 +15,15 @@ public class Iris implements Data {
     private String variety;
     private Coordonnee coordonnee;
 
+    /**
+     * Constructeur de la classe Iris
+     * 
+     * @param sepalLength la longueur du sépale
+     * @param sepalWidth  la largeur du sépale
+     * @param petalLength la longueur du pétale
+     * @param petalWidth  la largeur du pétale
+     * @param variety     l'espèce de la fleur
+     */
     public Iris(double sepalLength, double sepalWidth, double petalLength, double petalWidth, String variety) {
         this.sepalLength = sepalLength;
         this.sepalWidth = sepalWidth;
@@ -23,26 +33,44 @@ public class Iris implements Data {
         this.choosenAttributes = new Pair<>("sepalLength", "sepalWidth");
     }
 
+    /**
+     * @return la longueur du sépale
+     */
     public double getSepalLength() {
         return sepalLength;
     }
 
+    /**
+     * @return la largeur du sépale
+     */
     public double getSepalWidth() {
         return sepalWidth;
     }
 
+    /**
+     * @return la longueur du pétale
+     */
     public double getPetalLength() {
         return petalLength;
     }
 
+    /**
+     * @return la largeur du pétale
+     */
     public double getPetalWidth() {
         return petalWidth;
     }
 
+    /**
+     * @return l'espèce de la fleur
+     */
     public String getSpecies() {
         return variety;
     }
 
+    /**
+     * @return une représentation textuelle de l'objet Iris
+     */
     @Override
     public String toString() {
         return "Iris{" +
@@ -54,6 +82,9 @@ public class Iris implements Data {
                 '}';
     }
 
+    /**
+     * @return les attributs de l'objet Iris sous la forme d'une map
+     */
     @Override
     public Map<String, Number> getattributes() {
         Map<String, Number> attributes = new HashMap<>();
@@ -64,14 +95,19 @@ public class Iris implements Data {
         return attributes;
     }
 
+    /**
+     * @return les coordonnées de l'objet Iris
+     */
     @Override
     public String getCategory() {
         return variety;
     }
 
+    /**
+     * @param category la catégorie de l'objet Iris
+     */
     @Override
     public void setCategory(String category) {
         variety = category;
     }
-
 }

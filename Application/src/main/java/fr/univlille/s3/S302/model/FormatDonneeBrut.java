@@ -6,46 +6,40 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FormatDonneeBrut implements Data {
+
     @CsvBindByName(column = "sepal.length")
-    private double sepalLength;
+    protected double sepalLength;
     @CsvBindByName(column = "sepal.width")
-    private double sepalWidth;
+    protected double sepalWidth;
     @CsvBindByName(column = "petal.length")
-    private double petalLength;
+    protected double petalLength;
     @CsvBindByName(column = "petal.width")
-    private double petalWidth;
+    protected double petalWidth;
     @CsvBindByName(column = "variety")
-    private String species;
+    protected String species;
 
+    /**
+     * Cree un objet a partir d'un objet FormatDonneeBrut
+     * 
+     * @param f l'objet FormatDonneeBrut
+     * @return l'objet Data
+     */
     public static Data createObject(FormatDonneeBrut f) {
-        return new Iris(f.getSepalLength(), f.getSepalWidth(), f.getPetalLength(), f.getPetalWidth(), f.getSpecies());
+        return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
     }
 
-    public double getSepalLength() {
-        return sepalLength;
-    }
-
-    public double getSepalWidth() {
-        return sepalWidth;
-    }
-
-    public double getPetalLength() {
-        return petalLength;
-    }
-
-    public double getPetalWidth() {
-        return petalWidth;
-    }
-
-    public String getSpecies() {
-        return species;
-    }
-
+    /**
+     * @return une représentation textuelle de l'objet
+     */
     @Override
     public String toString() {
-        return "Iris{" + "sepalLength=" + sepalLength + ", sepalWidth=" + sepalWidth + ", petalLength=" + petalLength + ", petalWidth=" + petalWidth + ", species='" + species + '\'' + '}';
+        return "Iris{" + "sepalLength=" + sepalLength + ", sepalWidth=" + sepalWidth + ", petalLength=" + petalLength
+                + ", petalWidth=" + petalWidth + ", species='" + species + '\'' + '}';
     }
 
+    /**
+     * @return les attributs de la donnée
+     */
     @Override
     public Map<String, Number> getattributes() {
         Map<String, Number> attributes = new HashMap<>();
@@ -56,15 +50,19 @@ public class FormatDonneeBrut implements Data {
         return attributes;
     }
 
+    /**
+     * @return la catégorie de la donnée
+     */
     @Override
     public String getCategory() {
         return species;
     }
 
+    /**
+     * @param category la nouvelle catégorie de la donnée
+     */
     @Override
     public void setCategory(String category) {
         species = category;
     }
-
-
 }
