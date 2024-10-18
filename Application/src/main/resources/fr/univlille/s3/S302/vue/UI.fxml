@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.gluonhq.charm.glisten.control.TextField?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.chart.ScatterChart?>
 <?import javafx.scene.control.Button?>
@@ -18,38 +16,30 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univlille.s3.S302.vue.DataController">
    <left>
-      <VBox prefHeight="400.0" prefWidth="150.0" BorderPane.alignment="CENTER">
+      <VBox prefHeight="380.0" prefWidth="210.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" prefHeight="60.0" prefWidth="160.0" text="Ajouter un point">
+            <Label alignment="CENTER" prefHeight="60.0" prefWidth="200.0" text="Ajouter un point">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font></Label>
-            <HBox prefHeight="45.0" prefWidth="160.0">
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label alignment="CENTER" prefHeight="18.0" prefWidth="60.0" text="Val X" />
-                  <TextField prefHeight="40.0" prefWidth="120" />
+                  <Button fx:id="addDataBtn" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="160.0" text="Ajouter donnée" />
                </children>
             </HBox>
-            <HBox prefHeight="45.0" prefWidth="163.0">
-               <children>
-                  <Label alignment="CENTER" prefHeight="18.0" prefWidth="60.0" text="Val Y" />
-                  <TextField prefHeight="34.0" prefWidth="120.0" />
-               </children>
-            </HBox>
-            <Button fx:id="addDataBtn" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="160.0" text="Ajouter donnée" />
             <AnchorPane prefHeight="100.0" prefWidth="160.0">
                <children>
-                  <Button fx:id="categoryBtn" layoutX="57.0" layoutY="93.0" mnemonicParsing="false" text="Valider" />
-                  <HBox layoutX="11.0" layoutY="18.0">
+                  <Button fx:id="categoryBtn" alignment="CENTER" layoutX="60.0" layoutY="100.0" mnemonicParsing="false" text="Valider" />
+                  <HBox alignment="CENTER" layoutX="10.0" layoutY="20.0" style="-fx-margin: 20px;">
                      <children>
-                        <Label prefHeight="18.0" prefWidth="44.0" text="X Axis : " />
-                        <ComboBox prefHeight="28.0" prefWidth="110.0" fx:id="xCategory" />
+                        <Label prefHeight="20.0" prefWidth="60.0" text="X Axis : " />
+                        <ComboBox prefHeight="30.0" prefWidth="140.0" fx:id="xCategory" />
                      </children>
                   </HBox>
                   <HBox layoutX="9.0" layoutY="57.0">
                      <children>
-                        <Label prefHeight="18.0" prefWidth="45.0" text="Y Axis : " />
-                        <ComboBox fx:id="yCategory" prefHeight="28.0" prefWidth="110.0" />
+                        <Label prefHeight="20.0" prefWidth="60.0" text="Y Axis : " />
+                        <ComboBox fx:id="yCategory" prefHeight="30.0" prefWidth="140.0" />
                      </children>
                   </HBox>
                </children>

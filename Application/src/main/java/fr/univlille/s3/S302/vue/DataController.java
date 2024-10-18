@@ -104,7 +104,7 @@ public class DataController implements Observer<Data> {
         Popup popup = new Popup();
         Label label = new Label("Erreur: \n" + message);
         label.setStyle(
-                " -fx-background-color: white; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
+                " -fx-background-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
         label.setMinHeight(50);
         label.setMinWidth(200);
         popup.getContent().add(label);
