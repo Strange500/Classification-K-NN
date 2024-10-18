@@ -18,4 +18,6 @@ public interface Data {
      * @param category la nouvelle catégorie de la donnée
      */
     void setCategory(String category);
+
+    Data createObject(Map<String,Number> map);
 }

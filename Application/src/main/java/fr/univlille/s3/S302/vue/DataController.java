@@ -5,12 +5,12 @@ import fr.univlille.s3.S302.model.Observer;
 import fr.univlille.s3.S302.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -56,6 +56,13 @@ public class DataController implements Observer<Data> {
             }
         });
 
+        addDataBtn.setOnAction(event -> {
+            try {
+                genererEcran();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**
@@ -93,7 +100,7 @@ public class DataController implements Observer<Data> {
      * 
      * @return la popup d'erreur
      */
-    private Popup genErrorPopup(String message) {
+    public static Popup genErrorPopup(String message) {
         Popup popup = new Popup();
         Label label = new Label("Erreur: \n" + message);
         label.setStyle(
@@ -184,6 +191,13 @@ public class DataController implements Observer<Data> {
                     choosenAttributes.getValue().doubleValue());
             XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
                     choosenAttributes.getValue());
+            data.add(new Pair<>(node, f));
+            series.getData().add(node);
+        }
+        for (Data f : dataManager.getUserDataList()) {
+            Pair<Number, Number> choosenAttributes = getNodeXY(f);
+            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
+            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
             data.add(new Pair<>(node, f));
             series.getData().add(node);
         }
@@ -299,5 +313,16 @@ public class DataController implements Observer<Data> {
         App app = new App();
         app.start(new Stage());
 
+    }
+
+    public void addData(Map<String,Number> map){
+        this.dataManager.addData(map);
+    }
+
+    public void genererEcran() throws IOException {
+        Stage stage=new Stage();
+        Scene scene=new Scene(App.loadFXML("AddPointWindow"));
+        stage.setScene(scene);
+        stage.show();
     }
 }

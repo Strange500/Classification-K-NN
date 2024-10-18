@@ -28,6 +28,31 @@ public class FormatDonneeBrut implements Data {
         return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
     }
 
+    @Override
+    public Data createObject(Map<String,Number> map) {
+        return null;
+    }
+
+    public double getSepalLength() {
+        return sepalLength;
+    }
+
+    public double getSepalWidth() {
+        return sepalWidth;
+    }
+
+    public double getPetalLength() {
+        return petalLength;
+    }
+
+    public double getPetalWidth() {
+        return petalWidth;
+    }
+
+    public String getSpecies() {
+        return species;
+    }
+
     /**
      * @return une représentation textuelle de l'objet
      */
