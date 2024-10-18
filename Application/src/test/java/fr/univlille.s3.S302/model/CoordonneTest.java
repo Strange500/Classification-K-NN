@@ -1,6 +1,5 @@
 package fr.univlille.s3.S302.model;
 
-import javafx.scene.layout.CornerRadii;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
