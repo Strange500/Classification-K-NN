@@ -100,7 +100,7 @@ public class DataController implements Observer<Data> {
      * 
      * @return la popup d'erreur
      */
-    private Popup genErrorPopup(String message) {
+    public static Popup genErrorPopup(String message) {
         Popup popup = new Popup();
         Label label = new Label("Erreur: \n" + message);
         label.setStyle(

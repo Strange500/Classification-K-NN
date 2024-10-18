@@ -25,7 +25,7 @@ public class FormatDonneeBrut implements Data {
      * @return l'objet Data
      */
     public static Data createObject(FormatDonneeBrut f) {
-        return new Iris(f.getSepalLength(), f.getSepalWidth(), f.getPetalLength(), f.getPetalWidth(), f.getSpecies());
+        return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
     }
 
     @Override
@@ -51,7 +51,6 @@ public class FormatDonneeBrut implements Data {
 
     public String getSpecies() {
         return species;
-        return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
     }
 
     /**
