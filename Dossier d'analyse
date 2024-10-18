@@ -129,8 +129,28 @@ Si la classification ne fonctionne pas, rien ne se passe
 *Inclure des prototypes de l'interface utilisateur pour ces fonctionnalités:*
 
 - *Ajouter une donnée*
+![Ajouter une donnée init](./img/Init.png)
+L'utilisateur clique sur le boutton ajouter Donnée comforme à l'étape 1 de la fiche descriptive.
+![Ajouter une donnée](./img/Add.png)
+L'interface permet la saisie de chaque champs, comforme a l'étape 2 de la fiche descriptive.
+Une fois saisi l'utilisateur clique sur valider pour ajouter le point. Comforme à l'étape 3 de la fiche descriptive.
+![Ajouter une donnée error](./img/IsAdded.png)
+On peut voir le nouveaux point ajouter en haut a droite, la couleur noir signifie qu'il n'a pas était classifié. Comforme à l'étape 4 de la fiche descriptive.
+- 
 - *Classifier la donnée non classifiée*
+![Classifier la donnée non classifiée](./img/InitClassifier.png)\
+Pour classifier une donnée, l'utilisateur clique sur le boutton classifier.\ Comforme à l'étape 1 de la fiche descriptive.
+![](./img/estClassifié.png)\
+On peut voir que sa couleur a changé, cela signifie que le systéme a classé le point. \Comforme à l'étape 2 de la fiche descriptive.
+
+
 - *Modifier les attributs pour l'affichage*
+![](./img/Init.png)\
+L'utilisateur peut selectioner les catégorie avec les liste déroulante à droite de l'écran
+![](./img/CatChanged.png)
+Une fois la selection terminer il peut cliquer sur valider. Ici les colonne selectionner sont : petalLength et SepalWidth
+![](./img/viewchangeValidation.png)
+Le systeme mets a jour la vue selon les paramétre données.
 
 *Chaque prototype est constitué d'une suite d'écrans, ou d'une arborescence d'écrans si plusieurs chemins d'interaction sont possibles.*
 
