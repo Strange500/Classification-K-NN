@@ -21,6 +21,11 @@ public class FormatDonneeBrut implements Data {
         return new Iris(f.getSepalLength(), f.getSepalWidth(), f.getPetalLength(), f.getPetalWidth(), f.getSpecies());
     }
 
+    @Override
+    public Data createObject(Map<String,Number> map) {
+        return null;
+    }
+
     public double getSepalLength() {
         return sepalLength;
     }

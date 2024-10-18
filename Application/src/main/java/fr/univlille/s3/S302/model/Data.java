@@ -10,5 +10,5 @@ public interface Data {
 
     void setCategory(String category);
 
-
+    Data createObject(Map<String,Number> map);
 }

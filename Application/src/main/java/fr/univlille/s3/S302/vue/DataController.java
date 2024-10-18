@@ -5,12 +5,12 @@ import fr.univlille.s3.S302.model.Observer;
 import fr.univlille.s3.S302.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -60,11 +60,11 @@ public class DataController implements Observer<Data> {
         });
 
         addDataBtn.setOnAction(event -> {
-            Map<String,Number> map=data.get(0).getValue().getattributes();
-            for (String s : map.keySet()){
-                map.put(s,0);
+            try {
+                genererEcran();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            addData(map);
         });
     }
 
@@ -95,7 +95,7 @@ public class DataController implements Observer<Data> {
         setChartStyle();
     }
 
-    private Popup genErrorPopup(String message) {
+    public static Popup genErrorPopup(String message) {
         Popup popup = new Popup();
         Label label = new Label("Erreur: \n" + message);
         label.setStyle(" -fx-background-color: white; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
@@ -246,5 +246,12 @@ public class DataController implements Observer<Data> {
 
     public void addData(Map<String,Number> map){
         this.dataManager.addData(map);
+    }
+
+    public void genererEcran() throws IOException {
+        Stage stage=new Stage();
+        Scene scene=new Scene(App.loadFXML("AddPointWindow"));
+        stage.setScene(scene);
+        stage.show();
     }
 }
