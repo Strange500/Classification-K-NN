@@ -1,4 +1,4 @@
-package fr.univlille.s3.S302.vue;
+package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.Data;
 import fr.univlille.s3.S302.model.DataManager;

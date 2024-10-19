@@ -3,6 +3,9 @@ package fr.univlille.s3.S302.model;
 import java.io.IOException;
 import java.util.*;
 
+import fr.univlille.s3.S302.utils.Observable;
+import fr.univlille.s3.S302.utils.Observer;
+
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";

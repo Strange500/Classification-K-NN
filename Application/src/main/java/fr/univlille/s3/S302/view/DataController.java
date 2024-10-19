@@ -1,8 +1,8 @@
-package fr.univlille.s3.S302.vue;
+package fr.univlille.s3.S302.view;
 
-import fr.univlille.s3.S302.model.Observable;
-import fr.univlille.s3.S302.model.Observer;
 import fr.univlille.s3.S302.model.*;
+import fr.univlille.s3.S302.utils.Observable;
+import fr.univlille.s3.S302.utils.Observer;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;

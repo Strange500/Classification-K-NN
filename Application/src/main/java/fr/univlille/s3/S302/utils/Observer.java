@@ -1,4 +1,4 @@
-package fr.univlille.s3.S302.model;
+package fr.univlille.s3.S302.utils;
 
 public interface Observer<E> {
 

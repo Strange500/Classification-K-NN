@@ -1,4 +1,4 @@
-package fr.univlille.s3.S302.vue;
+package fr.univlille.s3.S302.view;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

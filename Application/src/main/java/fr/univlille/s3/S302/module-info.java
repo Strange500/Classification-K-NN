@@ -6,7 +6,7 @@ module fr.univlille.s3.S302 {
     requires  java.sql;
     requires atlantafx.base;
 
-    opens fr.univlille.s3.S302.vue to javafx.fxml;
+    opens fr.univlille.s3.S302.view to javafx.fxml;
     opens fr.univlille.s3.S302.model;
-    exports fr.univlille.s3.S302.vue;
+    exports fr.univlille.s3.S302.view;
 }
