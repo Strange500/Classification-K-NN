@@ -99,7 +99,7 @@ public class DataManager<E extends Data> implements Observable<E> {
             notifyAllObservers();
 
         } catch (FileNotFoundException | NullPointerException e) {
-            e.printStackTrace();
+            System.out.println("Fichier non trouvé");
         }
     }
 
