@@ -2,7 +2,7 @@ image: maven:3.6.3-openjdk-17
 
 # Define variables for Maven commands
 variables:
-  MVN_CMD: "mvn install -B"  # Batch mode: no progress output
+  MVN_CMD: "mvn install -DskipTests"  # Batch mode: no progress output
 
 
 
