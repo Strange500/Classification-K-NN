@@ -250,13 +250,18 @@ public class DataController implements Observer<Data> {
         if (node == null) {
             return;
         }
+        if (categorieColor.isEmpty()) {
+            createColor();
+        }
         if (!categorieColor.containsKey(category)) {
-            String color = "rgb(" + (int) (Math.random() * 256) + "," + (int) (Math.random() * 256) + ","
-                    + (int) (Math.random() * 256) + ")";
-            categorieColor.put(category, color);
+            categorieColor.put(category, dataManager.nextColor());
         }
 
         node.setStyle("-fx-background-color: " + categorieColor.get(category) + ";");
+    }
+
+    private void createColor() {
+        dataManager.createColor();
     }
 
     /**
