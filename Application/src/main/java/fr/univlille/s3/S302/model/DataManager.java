@@ -203,4 +203,38 @@ public class DataManager<E extends Data> implements Observable<E> {
         idxColor = (idxColor + 1) % getNbCategories();
         return color;
     }
+
+    public void categorizeData() {
+        for (Data d : UserData) {
+            System.err.println("Categorizing data " + d);
+            if (d.getCategory().equals("Unknown")) {
+                Data nearestData = getNearestData(d);
+                d.setCategory(nearestData.getCategory());
+            }
+        }
+    }
+
+    public Data getNearestData(Data data) {
+        double minDistance = Double.MAX_VALUE;
+        Data nearestData = null;
+        for (Data d : dataList) {
+            double distance = euclideanDistance(data, d);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestData = d;
+            }
+        }
+        return nearestData;
+    }
+
+    private double euclideanDistance(Data d1, Data d2) {
+        double distance = 0;
+        Map<String, Number> attributes1 = d1.getattributes();
+        Map<String, Number> attributes2 = d2.getattributes();
+        for (String attribute : attributes1.keySet()) {
+            double diff = attributes1.get(attribute).doubleValue() - attributes2.get(attribute).doubleValue();
+            distance += diff * diff;
+        }
+        return Math.sqrt(distance);
+    }
 }
