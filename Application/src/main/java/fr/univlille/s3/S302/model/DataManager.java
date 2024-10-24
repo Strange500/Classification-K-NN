@@ -1,5 +1,6 @@
 package fr.univlille.s3.S302.model;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -21,6 +22,8 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public DataManager(List<E> dataList) {
         this.dataList = dataList;
+        this.observers = new ArrayList<>();
+        this.UserData = new ArrayList<>();
     }
 
     /**
@@ -28,15 +31,17 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public DataManager() {
         this(new ArrayList<>());
-        this.observers = new ArrayList<>();
         this.loadData(PATH);
-        this.UserData = new ArrayList<>();
     }
 
     public static void main(String[] args) {
         DataManager<FormatDonneeBrut> dataManager = new DataManager<>();
         dataManager.loadData(PATH);
         System.out.println(dataManager.getDataList());
+    }
+
+    public List<Observer> getObservers() {
+        return observers;
     }
 
     /**
@@ -93,8 +98,8 @@ public class DataManager<E extends Data> implements Observable<E> {
             }
             notifyAllObservers();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException | NullPointerException e) {
+            System.out.println("Fichier non trouvé");
         }
     }
 

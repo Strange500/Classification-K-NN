@@ -16,6 +16,9 @@ public class DataLoader {
      * @throws FileNotFoundException si le fichier n'existe pas
      */
     public static List<FormatDonneeBrut> charger(String fileName) throws FileNotFoundException {
+        if (fileName == null) {
+            throw new FileNotFoundException("Fichier non trouvé");
+        }
         System.out.println("Chargement du fichier " + fileName);
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
         if (input == null) {
