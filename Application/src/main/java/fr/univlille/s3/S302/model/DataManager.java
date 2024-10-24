@@ -101,15 +101,6 @@ public class DataManager<E extends Data> implements Observable<E> {
     }
 
     /**
-     * Classifie les données
-     * 
-     * @param data la donnée à classer
-     */
-    public void classifyData(E data) {
-        // TODO
-    }
-
-    /**
      * Ajoute un observateur
      */
     @Override
@@ -206,12 +197,12 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void categorizeData() {
         for (Data d : UserData) {
-            System.err.println("Categorizing data " + d);
             if (d.getCategory().equals("Unknown")) {
                 Data nearestData = getNearestData(d);
                 d.setCategory(nearestData.getCategory());
             }
         }
+        notifyAllObservers();
     }
 
     public Data getNearestData(Data data) {
@@ -236,5 +227,9 @@ public class DataManager<E extends Data> implements Observable<E> {
             distance += diff * diff;
         }
         return Math.sqrt(distance);
+    }
+
+    public boolean isUserData(Data d){
+        return UserData.contains(d);
     }
 }

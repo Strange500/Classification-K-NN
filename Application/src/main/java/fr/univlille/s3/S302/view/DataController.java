@@ -45,7 +45,6 @@ public class DataController implements Observer<Data> {
         buildWidgets();
         categoryBtn.setOnAction(event -> {
             try {
-                dataManager.categorizeData();
                 chart.getXAxis().setLabel(xCategory.getValue());
                 chart.getYAxis().setLabel(yCategory.getValue());
                 choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
@@ -143,6 +142,10 @@ public class DataController implements Observer<Data> {
                 });
 
                 setNodeColor(data.getNode(), d.getCategory());
+                if (dataManager.isUserData(d)) {
+                    String st = data.getNode().getStyle();
+                    data.getNode().setStyle(st + "-fx-background-radius: 0;");
+                }
             }
         }
     }
@@ -330,5 +333,9 @@ public class DataController implements Observer<Data> {
         Scene scene=new Scene(App.loadFXML("AddPointWindow"));
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void classify() {
+        dataManager.categorizeData();
     }
 }
