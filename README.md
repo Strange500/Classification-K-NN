@@ -1,1 +1,1 @@
-run mvn clean javafx:run
+Pour lancer l'application : mvn clean javafx:run
