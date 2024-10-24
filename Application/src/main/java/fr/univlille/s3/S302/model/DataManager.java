@@ -14,6 +14,8 @@ public class DataManager<E extends Data> implements Observable<E> {
     private List<E> dataList;
     private List<Observer> observers;
     private List<E> UserData;
+    private Map<String, String> colorMap;
+    private static int idxColor = 0;
 
     /**
      * Constructeur de la classe DataManager
@@ -104,15 +106,6 @@ public class DataManager<E extends Data> implements Observable<E> {
     }
 
     /**
-     * Classifie les données
-     * 
-     * @param data la donnée à classer
-     */
-    public void classifyData(E data) {
-        // TODO
-    }
-
-    /**
      * Ajoute un observateur
      */
     @Override
@@ -161,5 +154,87 @@ public class DataManager<E extends Data> implements Observable<E> {
         Iris tmpiris=new Iris(Att2,Att3,Att0,Att1,"Unknown");
         this.UserData.add((E)tmpiris);
         notifyAllObservers();
+    }
+
+    public void createColor() {
+        colorMap = new HashMap<>();
+        int nbCategories = getNbCategories();
+        if (nbCategories % 3 == 0 && nbCategories > 0) {
+            int step = 255 / (nbCategories / 3);
+            int r = 255;
+            int g = 0;
+            int b = 0;
+            for (int i = 0; i < nbCategories; i++) {
+                colorMap.put("Color" + i, "rgb(" + r + "," + g + "," + b + ")");
+                if (r == 255 && g < 255 && b == 0) {
+                    g += step;
+                } else if (r > 0 && g == 255 && b == 0) {
+                    r -= step;
+                } else if (r == 0 && g == 255 && b < 255) {
+                    b += step;
+                } else if (r == 0 && g > 0 && b == 255) {
+                    g -= step;
+                } else if (r < 255 && g == 0 && b == 255) {
+                    r += step;
+                } else if (r == 255 && g == 0 && b > 0) {
+                    b -= step;
+                }
+            }
+        }
+    }
+
+    private int getNbCategories() {
+        Set<String> categories = new HashSet<>();
+        for (Data d : dataList) {
+            categories.add(d.getCategory());
+        }
+        return categories.size();
+    }
+
+    public String nextColor() {
+        if (colorMap == null) {
+            createColor();
+        }
+        String color = colorMap.get("Color" + idxColor);
+        idxColor = (idxColor + 1) % getNbCategories();
+        return color;
+    }
+
+    public void categorizeData() {
+        for (Data d : UserData) {
+            if (d.getCategory().equals("Unknown")) {
+                Data nearestData = getNearestData(d);
+                d.setCategory(nearestData.getCategory());
+            }
+        }
+        notifyAllObservers();
+    }
+
+    public Data getNearestData(Data data) {
+        double minDistance = Double.MAX_VALUE;
+        Data nearestData = null;
+        for (Data d : dataList) {
+            double distance = euclideanDistance(data, d);
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestData = d;
+            }
+        }
+        return nearestData;
+    }
+
+    private double euclideanDistance(Data d1, Data d2) {
+        double distance = 0;
+        Map<String, Number> attributes1 = d1.getattributes();
+        Map<String, Number> attributes2 = d2.getattributes();
+        for (String attribute : attributes1.keySet()) {
+            double diff = attributes1.get(attribute).doubleValue() - attributes2.get(attribute).doubleValue();
+            distance += diff * diff;
+        }
+        return Math.sqrt(distance);
+    }
+
+    public boolean isUserData(Data d){
+        return UserData.contains(d);
     }
 }

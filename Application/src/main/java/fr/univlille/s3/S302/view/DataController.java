@@ -142,6 +142,10 @@ public class DataController implements Observer<Data> {
                 });
 
                 setNodeColor(data.getNode(), d.getCategory());
+                if (dataManager.isUserData(d)) {
+                    String st = data.getNode().getStyle();
+                    data.getNode().setStyle(st + "-fx-background-radius: 0;");
+                }
             }
         }
     }
@@ -250,13 +254,18 @@ public class DataController implements Observer<Data> {
         if (node == null) {
             return;
         }
+        if (categorieColor.isEmpty()) {
+            createColor();
+        }
         if (!categorieColor.containsKey(category)) {
-            String color = "rgb(" + (int) (Math.random() * 256) + "," + (int) (Math.random() * 256) + ","
-                    + (int) (Math.random() * 256) + ")";
-            categorieColor.put(category, color);
+            categorieColor.put(category, dataManager.nextColor());
         }
 
         node.setStyle("-fx-background-color: " + categorieColor.get(category) + ";");
+    }
+
+    private void createColor() {
+        dataManager.createColor();
     }
 
     /**
@@ -324,5 +333,9 @@ public class DataController implements Observer<Data> {
         Scene scene=new Scene(App.loadFXML("AddPointWindow"));
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void classify() {
+        dataManager.categorizeData();
     }
 }
