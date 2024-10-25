@@ -1,7 +1,6 @@
 package fr.univlille.s3.S302.model;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Observable;
