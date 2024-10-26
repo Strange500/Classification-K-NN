@@ -14,7 +14,7 @@ import java.util.Map;
 public class AddController {
     @FXML
     private VBox AddVbox;
-    Map<String, TextField> map=new HashMap<>();
+    Map<String, TextField> LabelMap =new HashMap<>();
 
     DataManager<Data> mn  = DataManager.instance;
 
@@ -35,15 +35,15 @@ public class AddController {
         Label labels = new Label(label);
         TextField tf = new TextField();
         vbox.getChildren().addAll(labels,tf);
-        map.put(label,tf);
+        LabelMap.put(label,tf);
         return vbox;
     }
     public void AjouterPoint(){
         Map<String,Number> tmp=new HashMap<>();
         try{
-            for (String s : map.keySet()){
-                if (!map.get(s).getText().isEmpty()){
-                    tmp.put(s,Double.parseDouble(map.get(s).getText()));
+            for (String s : LabelMap.keySet()){
+                if (!LabelMap.get(s).getText().isEmpty()){
+                    tmp.put(s,Double.parseDouble(LabelMap.get(s).getText()));
                 }
 
             }

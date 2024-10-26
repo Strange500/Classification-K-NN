@@ -76,6 +76,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void removeData(E data) {
         dataList.remove(data);
+        notifyAllObservers();
     }
 
     /**
@@ -138,6 +139,7 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void AddUserData(E e){
         UserData.add(e);
+        notifyAllObservers();
     }
 
     public List<E> getUserDataList(){
@@ -149,6 +151,8 @@ public class DataManager<E extends Data> implements Observable<E> {
         notifyAllObservers();
     }
 
+    // ne fonctionne que si le nombre de catégories est un multiple de 3
+    // a refaire
     public void createColor() {
         colorMap = new HashMap<>();
         int nbCategories = getNbCategories();
@@ -207,7 +211,6 @@ public class DataManager<E extends Data> implements Observable<E> {
         Data n = new FakeData(guessAttributes);
         Data nearestData = getNearestData(n);
         return nearestData.getCategory();
-
     }
 
     public Data getNearestData(Data data) {

@@ -55,9 +55,7 @@ public class DataController implements Observer<Data> {
         buildWidgets();
         categoryBtn.setOnAction(event -> {
             try {
-                chart.getXAxis().setLabel(xCategory.getValue());
-                chart.getYAxis().setLabel(yCategory.getValue());
-                choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
+                updateAxisCategory();
                 update();
                 boolean heatViewActive = heatView.isActive();
                 heatView = new HeatView(canvas, chart
@@ -98,6 +96,12 @@ public class DataController implements Observer<Data> {
 
     }
 
+    private void updateAxisCategory() {
+        chart.getXAxis().setLabel(xCategory.getValue());
+        chart.getYAxis().setLabel(yCategory.getValue());
+        choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
+    }
+
     /**
      * Construit les widgets de la fenêtre
      */
@@ -117,13 +121,9 @@ public class DataController implements Observer<Data> {
         Iterator<String> it = attributes.iterator();
         xCategory.setValue(it.next());
         yCategory.setValue(it.next());
-        chart.getXAxis().setLabel(xCategory.getValue());
-        chart.getYAxis().setLabel(yCategory.getValue());
-
-        choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
+        updateAxisCategory();
 
         constructChart();
-        setChartStyle();
     }
 
     /**
@@ -149,8 +149,7 @@ public class DataController implements Observer<Data> {
      * Met à jour le graphique
      */
     private void update() {
-        updateChart();
-        setChartStyle();
+        constructChart();
     }
 
     /**
@@ -160,11 +159,7 @@ public class DataController implements Observer<Data> {
         for (final XYChart.Series<Number, Number> s : chart.getData()) {
             for (final XYChart.Data<Number, Number> data : s.getData()) {
                 Data d = getNode(data);
-                Tooltip tooltip = new Tooltip();
-                tooltip.setText(d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
-                tooltip.setShowDuration(javafx.util.Duration.seconds(10));
-                tooltip.setShowDelay(javafx.util.Duration.seconds(0));
-                Tooltip.install(data.getNode(), tooltip);
+                attachInfoTooltip(data, d);
                 data.getNode().setOnMouseEntered(event -> {
                     data.getNode().setScaleX(1.5);
                     data.getNode().setScaleY(1.5);
@@ -176,11 +171,23 @@ public class DataController implements Observer<Data> {
 
                 setNodeColor(data.getNode(), d.getCategory());
                 if (dataManager.isUserData(d)) {
-                    String st = data.getNode().getStyle();
-                    data.getNode().setStyle(st + "-fx-background-radius: 0;");
+                    displaySquare(data);
                 }
             }
         }
+    }
+
+    private static void displaySquare(XYChart.Data<Number, Number> data) {
+        String st = data.getNode().getStyle();
+        data.getNode().setStyle(st + "-fx-background-radius: 0;");
+    }
+
+    private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
+        Tooltip tooltip = new Tooltip();
+        tooltip.setText(d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
+        tooltip.setShowDuration(javafx.util.Duration.seconds(10));
+        tooltip.setShowDelay(javafx.util.Duration.seconds(0));
+        Tooltip.install(data.getNode(), tooltip);
     }
 
     /**
@@ -196,58 +203,34 @@ public class DataController implements Observer<Data> {
     }
 
     /**
-     * Met à jour le graphique
-     */
-    private void updateChart() {
-        chart.getData().clear();
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        List<Pair<XYChart.Data<Number, Number>, Data>> tmp = new ArrayList<>(this.data);
-        for (Pair<XYChart.Data<Number, Number>, Data> d : tmp) {
-            if (d.getValue().getattributes().containsKey(choosenAttributes.getKey())
-                    && d.getValue().getattributes().containsKey(choosenAttributes.getValue())) {
-                Data f = d.getValue();
-                Pair<Number, Number> choosenAttributes = getNodeXY(f);
-                XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                        choosenAttributes.getValue());
-                series.getData().add(node);
-                data.remove(d);
-                data.add(new Pair<>(node, f));
-            }
-
-
-        }
-        chart.getData().add(series);
-
-    }
-
-    /**
      * Construit le graphique
      */
     private void constructChart() {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         chart.getData().clear();
         for (Data f : dataManager.getDataList()) {
-            Pair<Number, Number> choosenAttributes = getNodeXY(f);
-            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(),
-                    choosenAttributes.getValue().doubleValue());
-            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                    choosenAttributes.getValue());
-            data.add(new Pair<>(node, f));
-            series.getData().add(node);
+            addPoint(f, series);
         }
         for (Data f : dataManager.getUserDataList()) {
             if (f.getattributes().containsKey(choosenAttributes.getKey())
                     && f.getattributes().containsKey(choosenAttributes.getValue())) {
-                Pair<Number, Number> choosenAttributes = getNodeXY(f);
-                Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
-                XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
-                data.add(new Pair<>(node, f));
-                series.getData().add(node);
+                addPoint(f, series);
             }
 
         }
         chart.getData().add(series);
+        setChartStyle();
 
+    }
+
+    private void addPoint(Data f, XYChart.Series<Number, Number> series) {
+        Pair<Number, Number> choosenAttributes = getNodeXY(f);
+        Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(),
+                choosenAttributes.getValue().doubleValue());
+        XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
+                choosenAttributes.getValue());
+        data.add(new Pair<>(node, f));
+        series.getData().add(node);
     }
 
     /**
@@ -310,21 +293,11 @@ public class DataController implements Observer<Data> {
     }
 
     /**
-     * Ajoute un noeud
-     * 
-     * @param data les données
-     */
-    public void addNode(Data data) {
-        // TODO
-    }
-
-    /**
      * Met à jour le graphique
      */
     @Override
     public void update(Observable<Data> ob) {
         constructChart();
-        setChartStyle();
         heatView.update();
     }
 
@@ -336,7 +309,6 @@ public class DataController implements Observer<Data> {
     @Override
     public void update(Observable<Data> ob, Data elt) {
         constructChart();
-        setChartStyle();
         heatView.update();
     }
 
@@ -344,16 +316,21 @@ public class DataController implements Observer<Data> {
      * Charge un nouveau fichier CSV
      */
     public void loadNewCsv() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Ouvrir un fichier CSV");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
-        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File file = fileChooser.showOpenDialog(null);
+        File file = getCsv();
         if (file != null) {
             DataManager<Data> dataManager = DataManager.instance;
             dataManager.loadData(file.getAbsolutePath());
             buildWidgets();
         }
+    }
+
+    private static File getCsv() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Ouvrir un fichier CSV");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File file = fileChooser.showOpenDialog(null);
+        return file;
     }
 
     /**
@@ -364,10 +341,6 @@ public class DataController implements Observer<Data> {
     public void openNewWindow() throws IOException {
         App app = new App();
         app.start(new Stage());
-    }
-
-    public void addData(Map<String,Number> map){
-        this.dataManager.addData(map);
     }
 
     public void genererEcran() throws IOException {

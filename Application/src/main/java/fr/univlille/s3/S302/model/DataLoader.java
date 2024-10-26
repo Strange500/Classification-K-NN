@@ -19,7 +19,6 @@ public class DataLoader {
         if (fileName == null) {
             throw new FileNotFoundException("Fichier non trouvé");
         }
-        System.out.println("Chargement du fichier " + fileName);
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
         if (input == null) {
             if (new File(fileName).exists()) {
