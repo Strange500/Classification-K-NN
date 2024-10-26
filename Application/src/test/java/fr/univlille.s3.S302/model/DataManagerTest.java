@@ -135,4 +135,5 @@ public class DataManagerTest {
         dataManager.setDataList(irisArrayList);
         assertEquals(1, dataManager.getDataList().size());
     }
+
 }

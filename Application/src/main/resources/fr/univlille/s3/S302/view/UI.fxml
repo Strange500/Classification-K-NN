@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.canvas.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -44,14 +45,25 @@
       </VBox>
    </left>
    <center>
-      <ScatterChart fx:id="chart" BorderPane.alignment="CENTER">
-        <xAxis>
-          <NumberAxis side="BOTTOM" />
-        </xAxis>
-        <yAxis>
-          <NumberAxis side="LEFT" />
-        </yAxis>
-      </ScatterChart>
+      <GridPane fx:id="grid" BorderPane.alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <Canvas fx:id="canvas" height="208.0" width="237.0" />
+            <ScatterChart fx:id="chart" prefHeight="400.0" prefWidth="477.0">
+              <xAxis>
+                <NumberAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis side="LEFT" />
+              </yAxis>
+            </ScatterChart>
+         </children>
+      </GridPane>
    </center>
    <top>
       <MenuBar BorderPane.alignment="CENTER">
@@ -64,6 +76,7 @@
             <Menu mnemonicParsing="false" text="Affichage">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#openNewWindow" text="Nouvelle fenetre" />
+                  <MenuItem mnemonicParsing="false" onAction="#toggleHeatView" text="Toggle heatView" />
               </items>
             </Menu>
         </menus>

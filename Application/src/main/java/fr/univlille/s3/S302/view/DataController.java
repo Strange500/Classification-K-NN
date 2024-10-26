@@ -3,12 +3,17 @@ package fr.univlille.s3.S302.view;
 import fr.univlille.s3.S302.model.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
@@ -17,6 +22,7 @@ import javafx.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class DataController implements Observer<Data> {
 
@@ -36,6 +42,12 @@ public class DataController implements Observer<Data> {
     private Button addDataBtn;
 
     @FXML
+    Canvas canvas;
+    @FXML
+    GridPane grid;
+    private HeatView heatView;
+
+    @FXML
     /**
      * Initialisation de la fenêtre
      */
@@ -47,7 +59,13 @@ public class DataController implements Observer<Data> {
                 chart.getYAxis().setLabel(yCategory.getValue());
                 choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
                 update();
-
+                boolean heatViewActive = heatView.isActive();
+                heatView = new HeatView(canvas, chart
+                        ,xCategory.getValue(), yCategory.getValue(), categorieColor);
+                if (heatViewActive) {
+                    heatView.toggle();
+                }
+                heatView.update();
             } catch (IllegalArgumentException | NoSuchElementException ile) {
                 Popup popup = genErrorPopup(ile.getMessage());
                 popup.show(chart.getScene().getWindow());
@@ -61,6 +79,23 @@ public class DataController implements Observer<Data> {
                 throw new RuntimeException(e);
             }
         });
+
+
+        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
+        chart.widthProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setWidth(newVal.doubleValue());
+            canvas.setHeight(chart.getHeight());
+            heatView.update();
+        });
+        chart.heightProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setHeight(newVal.doubleValue());
+            canvas.setWidth(chart.getWidth());
+            Platform.runLater(() -> {
+                heatView.update();
+            });
+        });
+
+
     }
 
     /**
@@ -69,11 +104,11 @@ public class DataController implements Observer<Data> {
     private void buildWidgets() {
         data = new ArrayList<>();
         categorieColor.put("Unknown", "black");
-        chart.setTitle("Scatter Chart");
 
         chart.getXAxis().setAutoRanging(true);
         chart.getYAxis().setAutoRanging(true);
         chart.setAnimated(false);
+        chart.legendVisibleProperty().setValue(false);
 
         dataManager.attach(this);
 
@@ -168,13 +203,17 @@ public class DataController implements Observer<Data> {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         List<Pair<XYChart.Data<Number, Number>, Data>> tmp = new ArrayList<>(this.data);
         for (Pair<XYChart.Data<Number, Number>, Data> d : tmp) {
-            Data f = d.getValue();
-            Pair<Number, Number> choosenAttributes = getNodeXY(f);
-            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                    choosenAttributes.getValue());
-            series.getData().add(node);
-            data.remove(d);
-            data.add(new Pair<>(node, f));
+            if (d.getValue().getattributes().containsKey(choosenAttributes.getKey())
+                    && d.getValue().getattributes().containsKey(choosenAttributes.getValue())) {
+                Data f = d.getValue();
+                Pair<Number, Number> choosenAttributes = getNodeXY(f);
+                XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
+                        choosenAttributes.getValue());
+                series.getData().add(node);
+                data.remove(d);
+                data.add(new Pair<>(node, f));
+            }
+
 
         }
         chart.getData().add(series);
@@ -197,11 +236,15 @@ public class DataController implements Observer<Data> {
             series.getData().add(node);
         }
         for (Data f : dataManager.getUserDataList()) {
-            Pair<Number, Number> choosenAttributes = getNodeXY(f);
-            Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
-            XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
-            data.add(new Pair<>(node, f));
-            series.getData().add(node);
+            if (f.getattributes().containsKey(choosenAttributes.getKey())
+                    && f.getattributes().containsKey(choosenAttributes.getValue())) {
+                Pair<Number, Number> choosenAttributes = getNodeXY(f);
+                Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(), choosenAttributes.getValue().doubleValue());
+                XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(), choosenAttributes.getValue());
+                data.add(new Pair<>(node, f));
+                series.getData().add(node);
+            }
+
         }
         chart.getData().add(series);
 
@@ -282,6 +325,7 @@ public class DataController implements Observer<Data> {
     public void update(Observable<Data> ob) {
         constructChart();
         setChartStyle();
+        heatView.update();
     }
 
     /**
@@ -293,6 +337,7 @@ public class DataController implements Observer<Data> {
     public void update(Observable<Data> ob, Data elt) {
         constructChart();
         setChartStyle();
+        heatView.update();
     }
 
     /**
@@ -319,7 +364,6 @@ public class DataController implements Observer<Data> {
     public void openNewWindow() throws IOException {
         App app = new App();
         app.start(new Stage());
-
     }
 
     public void addData(Map<String,Number> map){
@@ -335,5 +379,9 @@ public class DataController implements Observer<Data> {
 
     public void classify() {
         dataManager.categorizeData();
+    }
+
+    public void toggleHeatView() {
+        heatView.toggle();
     }
 }
