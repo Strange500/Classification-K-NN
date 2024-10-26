@@ -42,7 +42,10 @@ public class AddController {
         Map<String,Number> tmp=new HashMap<>();
         try{
             for (String s : map.keySet()){
-                tmp.put(s,Double.parseDouble(map.get(s).getText()));
+                if (!map.get(s).getText().isEmpty()){
+                    tmp.put(s,Double.parseDouble(map.get(s).getText()));
+                }
+
             }
             mn.addData(tmp);
         }catch (NumberFormatException e){
