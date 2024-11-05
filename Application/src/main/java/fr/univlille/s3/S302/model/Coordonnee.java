@@ -1,5 +1,8 @@
 package fr.univlille.s3.S302.model;
 
+/**
+ * Classe représentant une coordonnée dans un plan
+ */
 public class Coordonnee {
 
     private final double x;
