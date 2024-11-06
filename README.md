@@ -34,6 +34,7 @@ Créez une nouvelle configuration de lancement en sélectionnant Maven.
 Utilisez la commande suivante dans les options de lancement : `clean javafx:run`
 
 #### Exécution du fichier JAR :
+Le .jar est disponible ici : https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/jobs/131513/artifacts/download
  si vous disposez du fichier JAR, utilisez la commande suivante dans un terminal en remplaçant /chemin/vers/le/jar par le chemin vers votre fichier JAR :
 ````
 java -jar /chemin/vers/le/jar/VisualisationDonnees-1.0-SNAPSHOT.jar
