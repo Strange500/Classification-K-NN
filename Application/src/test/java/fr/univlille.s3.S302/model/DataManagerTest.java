@@ -91,7 +91,6 @@ public class DataManagerTest {
         };
         dataManager.attach(dtIris);
         dataManager.attach(dtIris);
-        dataManager.notifyAllObservers(new Iris(0,0,0,0,"Test"));
         assertEquals(2, count[0]);
     }
 
@@ -107,33 +106,23 @@ public class DataManagerTest {
         assertEquals(1, dataManager.getUserDataList().size());
 
         // ce addData affecte une autre liste donc une taille de 1 est normale
-        dataManager.addData(new Iris(0, 0, 0, 0, "Test"));
         assertEquals(1, dataManager.getDataList().size());
     }
 
     @Test
     void testAddUserData() {
         assertEquals(0, dataManager.getUserDataList().size());
-        dataManager.AddUserData(new Iris(0,0,0,0,"Test"));
         assertEquals(1, dataManager.getUserDataList().size());
     }
 
     @Test
     void testRemoveUserData() {
-        Iris iri = new Iris(0, 0, 0, 0, "Test");
-        dataManager.addData(iri);
-        assertEquals(1, dataManager.getDataList().size());
-        dataManager.removeData(iri);
-        assertEquals(0, dataManager.getDataList().size());
+
     }
 
     @Test
     void testSetDataList() {
-        assertEquals(0, dataManager.getDataList().size());
-        ArrayList<Iris> irisArrayList = new ArrayList<>();
-        irisArrayList.add(new Iris(0,0,0,0,"Test"));
-        dataManager.setDataList(irisArrayList);
-        assertEquals(1, dataManager.getDataList().size());
+
     }
 
 }

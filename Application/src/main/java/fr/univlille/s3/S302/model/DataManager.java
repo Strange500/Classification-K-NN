@@ -9,7 +9,7 @@ import fr.univlille.s3.S302.utils.Observer;
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";
-    public static DataManager<Data> instance = new DataManager<>();
+    public static DataManager<Data> instance = new DataManager<>("/home/strange/IdeaProjects/H2_SAE3.3/Application/src/main/resources/fr/univlille/s3/S302/model/random.csv");
     private List<E> dataList;
     private List<Observer> observers;
     private List<E> UserData;
@@ -31,12 +31,16 @@ public class DataManager<E extends Data> implements Observable<E> {
      * Constructeur de la classe DataManager
      */
     public DataManager() {
+        this(PATH);
+    }
+
+    public DataManager(String path) {
         this(new ArrayList<>());
-        this.loadData(PATH);
+        this.loadData(path);
     }
 
     public static void main(String[] args) {
-        DataManager<FormatDonneeBrut> dataManager = new DataManager<>();
+        DataManager<Data> dataManager = new DataManager<>();
         dataManager.loadData(PATH);
         System.out.println(dataManager.getDataList());
     }
@@ -94,9 +98,9 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void loadData(String path) {
         try {
             dataList = new ArrayList<>();
-            List<FormatDonneeBrut> tmp = DataLoader.charger(path);
-            for (FormatDonneeBrut f : tmp) {
-                dataList.add((E) FormatDonneeBrut.createObject(f));
+            List<? extends Data> tmp = DataLoader.charger(path);
+            for (Data f : tmp) {
+                dataList.add((E) f);
             }
             notifyAllObservers();
 

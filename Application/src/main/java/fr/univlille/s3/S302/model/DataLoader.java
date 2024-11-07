@@ -2,12 +2,18 @@ package fr.univlille.s3.S302.model;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.reflections.Reflections;
 
 import java.io.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DataLoader {
 
+    private static final Map<String, Class<? extends Data>> headerToClassMap = new HashMap<>();
+    private static final char SEPARATOR = ',';
     /**
      * Charge un fichier CSV et le transforme en liste d'objets FormatDonneeBrut
      * 
@@ -15,21 +21,27 @@ public class DataLoader {
      * @return la liste d'objets FormatDonneeBrut
      * @throws FileNotFoundException si le fichier n'existe pas
      */
-    public static List<FormatDonneeBrut> charger(String fileName) throws FileNotFoundException {
+    public static List<? extends Data> charger(String fileName) throws FileNotFoundException {
         if (fileName == null) {
             throw new FileNotFoundException("Fichier non trouvé");
         }
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
+        Class<? extends Data> clazz = null;
         if (input == null) {
             if (new File(fileName).exists()) {
                 input = new FileInputStream(fileName);
+                clazz = getClassFromHeader(new FileReader(fileName));
             } else {
                 throw new FileNotFoundException("Fichier non trouvé");
             }
+        } else{
+            clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
         }
-        return csvToList(input);
+        return csvToList(input, clazz);
 
     }
+
+
 
     /**
      * Transforme un fichier CSV en liste d'objets FormatDonneeBrut
@@ -38,13 +50,14 @@ public class DataLoader {
      * @return la liste d'objets FormatDonneeBrut
      * @throws FileNotFoundException si le fichier n'existe pas
      */
-    private static List<FormatDonneeBrut> csvToList(InputStream input) throws FileNotFoundException {
+    private static List<? extends Data> csvToList(InputStream input, Class<? extends Data> clazz) throws FileNotFoundException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
-
-            CsvToBean<FormatDonneeBrut> csvToBean = new CsvToBeanBuilder<FormatDonneeBrut>(reader).withSeparator(',')
-                    .withType(FormatDonneeBrut.class).build();
-
-            List<FormatDonneeBrut> records = csvToBean.parse();
+            if (clazz == null) {
+                throw new IllegalStateException("Entête non reconnue");
+            }
+            CsvToBean<Data> csvToBean = new CsvToBeanBuilder<Data>(reader).withSeparator(SEPARATOR)
+                    .withType(clazz).build();
+            List<? extends Data> records = csvToBean.parse();
             return records;
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,13 +65,33 @@ public class DataLoader {
         throw new FileNotFoundException("Fichier non trouvé");
     }
 
-    /**
-     * Crée un objet Iris à partir d'un objet FormatDonneeBrut
-     * 
-     * @param f l'objet FormatDonneeBrut
-     * @return l'objet Iris
-     */
-    public static Iris createObject(FormatDonneeBrut f) {
-        return new Iris(f.sepalLength, f.sepalWidth, f.petalLength, f.petalWidth, f.species);
+    private static Class<? extends  Data> getClassFromHeader(Reader fileReader) {
+        preLoadClasses();
+        try (BufferedReader reader = new BufferedReader(fileReader)) {
+            String header = reader.readLine();
+
+            return headerToClassMap.getOrDefault(header, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
+
+
+
+    public static void registerHeader(Class<? extends Data> clazz, String header) {
+        headerToClassMap.put(header, clazz);
+    }
+
+    private static void preLoadClasses() {
+        try {
+            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);
+            for (Class<? extends Data> clazz : allClasses) {
+                Class.forName(clazz.getName());
+            }
+        } catch (ClassNotFoundException e) {
+            System.err.println("Impossible de charger les classes");
+        }
+    }
+
 }

@@ -1,9 +1,11 @@
 package fr.univlille.s3.S302.model;
 
 import com.opencsv.bean.CsvBindByName;
-import fr.univlille.s3.S302.utils.Countable;
+import fr.univlille.s3.S302.utils.HasOrder;
 
-public class IrisBis implements AbstractData{
+import java.util.Map;
+
+public class IrisBis extends Data {
 
     @CsvBindByName(column = "sepal.length")
     protected double sepalLength;
@@ -15,7 +17,7 @@ public class IrisBis implements AbstractData{
     protected double petalLength;
 
     @CsvBindByName(column = "petal.width")
-    @Countable
+    @HasOrder
     protected String petalWidth;
 
 
@@ -25,16 +27,15 @@ public class IrisBis implements AbstractData{
         iris.sepalWidth = 3.5;
         iris.petalLength = 1.4;
         iris.petalWidth = "0.2";
-        Data d = iris.getData(iris);
-        System.out.println(d.getattributes());
+        Map<String, Number> d = iris.getattributes();
+        System.out.println(d);
         // create second
         IrisBis iris2 = new IrisBis();
         iris2.sepalLength = 4.9;
         iris2.sepalWidth = 3.0;
         iris2.petalLength = 1.4;
         iris2.petalWidth = "0.4";
-        Data d2 = iris2.getData(iris2);
-        System.out.println(d2.getattributes());
-
+        Map<String, Number> d2 = iris2.getattributes();
+        System.out.println(d2);
     }
 }
