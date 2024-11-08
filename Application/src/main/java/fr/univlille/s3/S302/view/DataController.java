@@ -13,8 +13,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -24,7 +22,6 @@ import javafx.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 public class DataController implements Observer<Data> {
 
@@ -55,12 +52,12 @@ public class DataController implements Observer<Data> {
 
     private void addTextFields() {
         addPointVBox.getChildren().clear();
-        Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
+        Map<String, Number> map = dataManager.getDataList().get(0).getattributes();
         for (String s : map.keySet()) {
             VBox tmp = genererLigneAttributs(s);
             addPointVBox.getChildren().add(tmp);
         }
-
+        
     }
 
     public VBox genererLigneAttributs(String label) {
@@ -151,13 +148,6 @@ public class DataController implements Observer<Data> {
         choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
     }
 
-    private void changeCategoryField() {
-        // random choice from attributes
-        int i = 1;
-        // decommenter quand c'est finit
-        //dataManager.changeCategoryField(attributes.get(x));
-    }
-
     /**
      * Construit les widgets de la fenêtre
      */
@@ -245,7 +235,7 @@ public class DataController implements Observer<Data> {
 
     private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
         Tooltip tooltip = new Tooltip();
-        tooltip.setText(d.getCategoryField() + ":" + d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
+        tooltip.setText(d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
         tooltip.setShowDuration(javafx.util.Duration.seconds(10));
         tooltip.setShowDelay(javafx.util.Duration.seconds(0));
         Tooltip.install(data.getNode(), tooltip);
@@ -259,7 +249,7 @@ public class DataController implements Observer<Data> {
      * @return les coordonnées du noeud
      */
     private Pair<Number, Number> getNodeXY(Data f) {
-        Map<String, Number> attributes = f.getAttributes();
+        Map<String, Number> attributes = f.getattributes();
         return new Pair<>(attributes.get(choosenAttributes.getKey()), attributes.get(choosenAttributes.getValue()));
     }
 
@@ -269,15 +259,12 @@ public class DataController implements Observer<Data> {
     private void constructChart() {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         chart.getData().clear();
-        this.data.clear();
-        List<Data> dataList = dataManager.getDataList();
-        for (Data f : dataList) {
+        for (Data f : dataManager.getDataList()) {
             addPoint(f, series);
         }
         for (Data f : dataManager.getUserDataList()) {
-            if (f.getAttributes().containsKey(choosenAttributes.getKey())
-                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
-
+            if (f.getattributes().containsKey(choosenAttributes.getKey())
+                    && f.getattributes().containsKey(choosenAttributes.getValue())) {
                 addPoint(f, series);
             }
 
@@ -289,6 +276,8 @@ public class DataController implements Observer<Data> {
 
     private void addPoint(Data f, XYChart.Series<Number, Number> series) {
         Pair<Number, Number> choosenAttributes = getNodeXY(f);
+        Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(),
+                choosenAttributes.getValue().doubleValue());
         XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
                 choosenAttributes.getValue());
         data.add(new Pair<>(node, f));

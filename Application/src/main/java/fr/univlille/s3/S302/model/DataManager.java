@@ -25,7 +25,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * 
      * @param dataList la liste des données
      */
-    private DataManager(List<E> dataList) {
+    public DataManager(List<E> dataList) {
         this.dataList = dataList;
         this.observers = new ArrayList<>();
         this.UserData = new ArrayList<>();
@@ -35,16 +35,12 @@ public class DataManager<E extends Data> implements Observable<E> {
      * Constructeur de la classe DataManager
      */
     public DataManager() {
-        this(PATH);
-    }
-
-    public DataManager(String path) {
         this(new ArrayList<>());
-        this.loadData(path);
+        this.loadData(PATH);
     }
 
     public static void main(String[] args) {
-        DataManager<Data> dataManager = new DataManager<>();
+        DataManager<FormatDonneeBrut> dataManager = new DataManager<>();
         dataManager.loadData(PATH);
         System.out.println(dataManager.getDataList());
     }
@@ -60,7 +56,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la liste des données
      */
     public List<E> getDataList() {
-        return new ArrayList<>(dataList);
+        return dataList;
     }
 
     /**
@@ -94,7 +90,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return les attributs des données
      */
     public Set<String> getAttributes() {
-        return dataList.get(0).getAttributes().keySet();
+        return dataList.get(0).getattributes().keySet();
     }
 
     /**
@@ -105,36 +101,15 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void loadData(String path) {
         try {
             dataList = new ArrayList<>();
-            List<? extends Data> tmp = DataLoader.charger(path);
-            for (Data f : tmp) {
-                f.makeData();
-                dataList.add((E) f);
+            List<FormatDonneeBrut> tmp = DataLoader.charger(path);
+            for (FormatDonneeBrut f : tmp) {
+                dataList.add((E) FormatDonneeBrut.createObject(f));
             }
             notifyAllObservers();
 
         } catch (FileNotFoundException | NullPointerException e) {
             System.out.println("Fichier non trouvé");
         }
-    }
-
-    public void changecategory(String newCategory){
-        for (Data d : dataList) {
-            d.setCategory(newCategory);
-        }
-        for (Data d : UserData) {
-            d.setCategory(newCategory);
-        }
-        notifyAllObservers();
-    }
-
-    public void changeCategoryField(String newcategoryField){
-        for (Data d : dataList) {
-            d.setCategoryField(newcategoryField);
-        }
-        for (Data d : UserData) {
-            d.setCategoryField(newcategoryField);
-        }
-        notifyAllObservers();
     }
 
     /**
@@ -219,10 +194,6 @@ public class DataManager<E extends Data> implements Observable<E> {
                     b -= step;
                 }
             }
-        }else {
-            for (int i = 0; i < nbCategories; i++) {
-                colorMap.put("Color" + i, "rgb(" + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + ")");
-            }
         }
     }
 
@@ -241,7 +212,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la couleur suivante
      */
     public String nextColor() {
-        if (colorMap == null || colorMap.size() != getNbCategories()) {
+        if (colorMap == null) {
             createColor();
         }
         String color = colorMap.get("Color" + idxColor);

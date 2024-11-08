@@ -10,8 +10,8 @@ public class DistanceEuclidienne implements Distance {
     
     @Override
     public double distance(Data j1, Data j2) {
-        Map<String, Number> attributs1 = j1.getAttributes();
-        Map<String, Number> attributs2 = j2.getAttributes();
+        Map<String, Number> attributs1 = j1.getattributes();
+        Map<String, Number> attributs2 = j2.getattributes();
         for (String key : attributs1.keySet()) {
             if (!attributs2.containsKey(key)) {
                 throw new IllegalArgumentException("Les deux données n'ont pas les mêmes attributs");

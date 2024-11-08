@@ -23,7 +23,7 @@ public class AddController {
         genererEcran();
     }
     public void genererEcran() throws IOException {
-        Map<String,Number> map=mn.getDataList().get(0).getAttributes();
+        Map<String,Number> map=mn.getDataList().get(0).getattributes();
         for (String s : map.keySet()){
             VBox tmp=GenererLigneAttributs(s);
             AddVbox.getChildren().add(tmp);
