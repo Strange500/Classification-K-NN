@@ -5,10 +5,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import org.reflections.Reflections;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DataLoader {
 
@@ -58,6 +55,7 @@ public class DataLoader {
             CsvToBean<Data> csvToBean = new CsvToBeanBuilder<Data>(reader).withSeparator(SEPARATOR)
                     .withType(clazz).build();
             List<? extends Data> records = csvToBean.parse();
+            System.out.println(records);
             return records;
         } catch (IOException e) {
             e.printStackTrace();

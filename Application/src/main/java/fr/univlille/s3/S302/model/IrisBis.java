@@ -27,7 +27,7 @@ public class IrisBis extends Data {
         iris.sepalWidth = 3.5;
         iris.petalLength = 1.4;
         iris.petalWidth = "0.2";
-        Map<String, Number> d = iris.getattributes();
+        Map<String, Number> d = iris.getAttributes();
         System.out.println(d);
         // create second
         IrisBis iris2 = new IrisBis();
@@ -35,7 +35,7 @@ public class IrisBis extends Data {
         iris2.sepalWidth = 3.0;
         iris2.petalLength = 1.4;
         iris2.petalWidth = "0.4";
-        Map<String, Number> d2 = iris2.getattributes();
+        Map<String, Number> d2 = iris2.getAttributes();
         System.out.println(d2);
     }
 }

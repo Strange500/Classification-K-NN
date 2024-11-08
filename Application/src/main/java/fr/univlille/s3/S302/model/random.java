@@ -17,7 +17,7 @@ public class random extends Data {
     protected String name;
 
     public static void main(String[] args) {
-        DataManager<Data> dm = new DataManager<>("random.csv");
+        DataManager<Data> dm = new DataManager<>("iris.csv");
         System.out.println(dm.getDataList());
     }
 

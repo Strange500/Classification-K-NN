@@ -25,6 +25,4 @@ public class Iris extends Data {
     @CsvBindByName(column = "variety")
     protected String species;
 
-
-
 }

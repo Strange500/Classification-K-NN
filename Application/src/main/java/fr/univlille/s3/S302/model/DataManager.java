@@ -9,7 +9,7 @@ import fr.univlille.s3.S302.utils.Observer;
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";
-    public static DataManager<Data> instance = new DataManager<>("/home/strange/IdeaProjects/H2_SAE3.3/Application/src/main/resources/fr/univlille/s3/S302/model/random.csv");
+    public static DataManager<Data> instance = new DataManager<>();
     private List<E> dataList;
     private List<Observer> observers;
     private List<E> UserData;
@@ -21,7 +21,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * 
      * @param dataList la liste des données
      */
-    public DataManager(List<E> dataList) {
+    private DataManager(List<E> dataList) {
         this.dataList = dataList;
         this.observers = new ArrayList<>();
         this.UserData = new ArrayList<>();
@@ -87,7 +87,8 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return les attributs des données
      */
     public Set<String> getAttributes() {
-        return dataList.get(0).getattributes().keySet();
+        System.out.println(dataList.get(0));
+        return dataList.get(0).getAttributes().keySet();
     }
 
     /**
@@ -100,6 +101,7 @@ public class DataManager<E extends Data> implements Observable<E> {
             dataList = new ArrayList<>();
             List<? extends Data> tmp = DataLoader.charger(path);
             for (Data f : tmp) {
+                f.makeData();
                 dataList.add((E) f);
             }
             notifyAllObservers();
@@ -181,6 +183,10 @@ public class DataManager<E extends Data> implements Observable<E> {
                     b -= step;
                 }
             }
+        }else {
+            for (int i = 0; i < nbCategories; i++) {
+                colorMap.put("Color" + i, "rgb(" + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + ")");
+            }
         }
     }
 
@@ -233,8 +239,8 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     private double euclideanDistance(Data d1, Data d2) {
         double distance = 0;
-        Map<String, Number> attributes1 = d1.getattributes();
-        Map<String, Number> attributes2 = d2.getattributes();
+        Map<String, Number> attributes1 = d1.getAttributes();
+        Map<String, Number> attributes2 = d2.getAttributes();
         for (String attribute : attributes1.keySet()) {
             if (!attributes2.containsKey(attribute)) {
                 continue;

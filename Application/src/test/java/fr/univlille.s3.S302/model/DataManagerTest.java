@@ -21,7 +21,7 @@ public class DataManagerTest {
     @BeforeEach
     public void setUp() {
         iris = new ArrayList<>();
-        dataManager = new DataManager(iris);
+        //dataManager = new DataManager(iris);
     }
 
     @Test

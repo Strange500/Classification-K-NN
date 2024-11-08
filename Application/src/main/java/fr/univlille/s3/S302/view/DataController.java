@@ -118,6 +118,7 @@ public class DataController implements Observer<Data> {
 
         updateCategories();
         Set<String> attributes = dataManager.getAttributes();
+        System.out.println(attributes);
         Iterator<String> it = attributes.iterator();
         xCategory.setValue(it.next());
         yCategory.setValue(it.next());
@@ -198,7 +199,7 @@ public class DataController implements Observer<Data> {
      * @return les coordonnées du noeud
      */
     private Pair<Number, Number> getNodeXY(Data f) {
-        Map<String, Number> attributes = f.getattributes();
+        Map<String, Number> attributes = f.getAttributes();
         return new Pair<>(attributes.get(choosenAttributes.getKey()), attributes.get(choosenAttributes.getValue()));
     }
 
@@ -212,8 +213,8 @@ public class DataController implements Observer<Data> {
             addPoint(f, series);
         }
         for (Data f : dataManager.getUserDataList()) {
-            if (f.getattributes().containsKey(choosenAttributes.getKey())
-                    && f.getattributes().containsKey(choosenAttributes.getValue())) {
+            if (f.getAttributes().containsKey(choosenAttributes.getKey())
+                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
                 addPoint(f, series);
             }
 
