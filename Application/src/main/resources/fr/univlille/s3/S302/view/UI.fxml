@@ -69,8 +69,8 @@
          <children>
             <Label alignment="CENTER" text="Choix des axes" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2;" />
             
-            <VBox fx:id="addPointVBox" prefHeight="150.0" style="-fx-padding: 10px;">
-               <children>
+            <VBox prefHeight="150.0" style="-fx-padding: 10px;">
+                <children>
                   <HBox spacing="10" alignment="CENTER_LEFT">
                      <Label text="X:" style="-fx-text-fill: #f8f8f2;"/>
                      <ComboBox fx:id="xCategory" prefHeight="30.0" prefWidth="160.0" />
@@ -83,7 +83,10 @@
                      <Button fx:id="categoryBtn" text="Valider" style="-fx-background-color: #9300ff; -fx-text-fill: white; -fx-font-size: 14px;" layoutX="60.0" layoutY="50.0" />
                   </HBox>
                </children>
-               <Separator style="-fx-padding-top: 20px;" />
+               <Separator/>
+            </VBox>
+            
+            <VBox fx:id="addPointVBox" prefHeight="150.0" style="-fx-padding: 10px;">
                <Label alignment="CENTER" text="Ajouter un bouton" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2; -fx-padding: 10px;" />
             </VBox>
             

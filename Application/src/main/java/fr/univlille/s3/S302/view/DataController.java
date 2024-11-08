@@ -51,11 +51,13 @@ public class DataController implements Observer<Data> {
     private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
 
     private void addTextFields() {
+        addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getattributes();
         for (String s : map.keySet()) {
             VBox tmp = genererLigneAttributs(s);
             addPointVBox.getChildren().add(tmp);
         }
+        
     }
 
     public VBox genererLigneAttributs(String label) {
