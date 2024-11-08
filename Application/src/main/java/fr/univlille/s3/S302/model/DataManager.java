@@ -53,7 +53,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la liste des données
      */
     public List<E> getDataList() {
-        return dataList;
+        return new ArrayList<>(dataList);
     }
 
     /**
@@ -109,6 +109,16 @@ public class DataManager<E extends Data> implements Observable<E> {
         } catch (FileNotFoundException | NullPointerException e) {
             System.out.println("Fichier non trouvé");
         }
+    }
+
+    public void changecategory(String newCategory){
+        for (Data d : dataList) {
+            d.setCategoryField(newCategory);
+        }
+        for (Data d : UserData) {
+            d.setCategoryField(newCategory);
+        }
+        notifyAllObservers();
     }
 
     /**

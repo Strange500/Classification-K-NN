@@ -54,6 +54,7 @@ public class DataController implements Observer<Data> {
     public void initialize() {
         buildWidgets();
         categoryBtn.setOnAction(event -> {
+            changeCategory();
             try {
                 updateAxisCategory();
                 update();
@@ -100,6 +101,18 @@ public class DataController implements Observer<Data> {
         chart.getXAxis().setLabel(xCategory.getValue());
         chart.getYAxis().setLabel(yCategory.getValue());
         choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
+    }
+
+    private void changeCategory() {
+        // random choice from attributes
+        List<String> attributes = new ArrayList<>(dataManager.getAttributes());
+        Random rand = new Random();
+        int x = rand.nextInt(attributes.size());
+        System.out.println("Changing category to " + attributes.get(x));
+        dataManager.changecategory(attributes.get(x));
+
+
+
     }
 
     /**
@@ -185,7 +198,7 @@ public class DataController implements Observer<Data> {
 
     private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
         Tooltip tooltip = new Tooltip();
-        tooltip.setText(d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
+        tooltip.setText(d.getCategoryField() + ":" + d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
         tooltip.setShowDuration(javafx.util.Duration.seconds(10));
         tooltip.setShowDelay(javafx.util.Duration.seconds(0));
         Tooltip.install(data.getNode(), tooltip);
@@ -215,6 +228,7 @@ public class DataController implements Observer<Data> {
         for (Data f : dataManager.getUserDataList()) {
             if (f.getAttributes().containsKey(choosenAttributes.getKey())
                     && f.getAttributes().containsKey(choosenAttributes.getValue())) {
+
                 addPoint(f, series);
             }
 
@@ -226,8 +240,6 @@ public class DataController implements Observer<Data> {
 
     private void addPoint(Data f, XYChart.Series<Number, Number> series) {
         Pair<Number, Number> choosenAttributes = getNodeXY(f);
-        Coordonnee c = new Coordonnee(choosenAttributes.getKey().doubleValue(),
-                choosenAttributes.getValue().doubleValue());
         XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
                 choosenAttributes.getValue());
         data.add(new Pair<>(node, f));

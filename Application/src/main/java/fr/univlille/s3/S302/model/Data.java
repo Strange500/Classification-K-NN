@@ -8,6 +8,7 @@ import java.util.Map;
 
 public abstract class Data {
 
+    String categoryField;
     private String category;
     protected Map<String, Number> attributes;
 
@@ -20,26 +21,22 @@ public abstract class Data {
         Object[] values = new Object[fields.length];
         // store in a map associating the attribute name to its value
         Map<String, Number> map = new HashMap<>();
-        String category = "";
+        String category = fields[0].getName();
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
             try {
                 values[i] = fields[i].get(this);
                 if (!(values[i] instanceof Number)) {
-                    if (!hasOrder(this, fields[i].getName())) {
-                        category = values[i].toString();
-                    }
                     values[i] = getIntValue(fields[i], values[i]);
-
                 }
-
                 map.put(fields[i].getName(), (Number)values[i]);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        this.category = category;
+        this.categoryField = category;
         this.attributes = map;
+        this.category = map.get(category).toString();
     };
 
     private static boolean hasOrder(Data obj, String attribute) {
@@ -87,11 +84,22 @@ public abstract class Data {
     }
 
     public String getCategory() {
-        return category;
+        return this.attributes.get(categoryField).toString();
     }
 
     public void setCategory(String category) {
-        this.category = category;
+        this.attributes.put(categoryField, Integer.parseInt(category));
+    }
+
+    public void setCategoryField(String categoryField) {
+        if (!attributes.containsKey(categoryField)) {
+            System.err.println("The category field does not exist in the attributes");
+        }
+        this.categoryField = categoryField;
+    }
+
+    public String getCategoryField() {
+        return categoryField;
     }
 
     public String toString() {
