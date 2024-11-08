@@ -111,10 +111,10 @@ public class Iris implements Data {
         variety = category;
     }
 
-    public Data createObject(Map<String,Number> map) {
-        if(!map.keySet().equals(this.getattributes().keySet())){
+    public Data createObject(Map<String,Number> attributs) {
+        if(!attributs.keySet().equals(this.getattributes().keySet())){
             throw new IllegalArgumentException();
         }
-        return new Iris(map.get("sepalLength").doubleValue(),map.get("sepalWidth").doubleValue(),map.get("petalLength").doubleValue(),map.get("petalWidth").doubleValue(),"Unknow");
+        return new Iris(attributs.get("sepalLength").doubleValue(),attributs.get("sepalWidth").doubleValue(),attributs.get("petalLength").doubleValue(),attributs.get("petalWidth").doubleValue(),"Unknow");
     }
 }

@@ -29,10 +29,10 @@ public class FormatDonneeBrut implements Data {
     }
 
     @Override
-    public Data createObject(Map<String,Number> map) {
+    public Data createObject(Map<String,Number> attributs) {
         return null;
     }
-
+    
     public double getSepalLength() {
         return sepalLength;
     }

@@ -3,9 +3,13 @@ package fr.univlille.s3.S302.model;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 
+/**
+ * Classe pour la gestion des données
+ */
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";
@@ -41,6 +45,9 @@ public class DataManager<E extends Data> implements Observable<E> {
         System.out.println(dataManager.getDataList());
     }
 
+    /**
+     * @return la liste des observateurs
+     */
     public List<Observer> getObservers() {
         return observers;
     }
@@ -137,14 +144,24 @@ public class DataManager<E extends Data> implements Observable<E> {
         }
     }
 
+    /**
+     * Ajoute une donnée utilisateur
+     */
     public void AddUserData(E e){
         UserData.add(e);
         notifyAllObservers();
     }
 
+    /**
+     * @return la liste des données utilisateur
+     */
     public List<E> getUserDataList(){
         return this.UserData;
     }
+
+    /**
+     * Ajoute une liste de données utilisateur
+     */
     public void addData(Map<String,Number> map){
         Data tmp = new FakeData(map);
         this.UserData.add((E)tmp);
@@ -180,6 +197,9 @@ public class DataManager<E extends Data> implements Observable<E> {
         }
     }
 
+    /**
+     * @return la liste des catégories
+     */
     private int getNbCategories() {
         Set<String> categories = new HashSet<>();
         for (Data d : dataList) {
@@ -188,6 +208,9 @@ public class DataManager<E extends Data> implements Observable<E> {
         return categories.size();
     }
 
+    /**
+     * @return la couleur suivante
+     */
     public String nextColor() {
         if (colorMap == null) {
             createColor();
@@ -197,27 +220,39 @@ public class DataManager<E extends Data> implements Observable<E> {
         return color;
     }
 
-    public void categorizeData() {
+    /**
+     * Catégorise les données
+     */
+    public void categorizeData(Distance distanceSouhaitee) {
         for (Data d : UserData) {
             if (d.getCategory().equals("Unknown")) {
-                Data nearestData = getNearestData(d);
+                Data nearestData = getNearestData(d, distanceSouhaitee);
                 d.setCategory(nearestData.getCategory());
             }
         }
         notifyAllObservers();
     }
 
-    public String guessCategory(Map<String, Number> guessAttributes) {
+    /**
+     * Devine la catégorie d'une donnée à partir de ses attributs
+     * @param guessAttributes
+     * @return la catégorie
+     */
+    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
         Data n = new FakeData(guessAttributes);
-        Data nearestData = getNearestData(n);
+        Data nearestData = getNearestData(n, distanceSouhaitee);
         return nearestData.getCategory();
     }
 
-    public Data getNearestData(Data data) {
+    /**
+     * @param data la donnée
+     * @return la donnée la plus proche
+     */
+    public Data getNearestData(Data data, Distance distanceSouhaitee) {
         double minDistance = Double.MAX_VALUE;
         Data nearestData = null;
         for (Data d : dataList) {
-            double distance = euclideanDistance(data, d);
+            double distance = distanceSouhaitee.distance(data, d);
             if (distance < minDistance) {
                 minDistance = distance;
                 nearestData = d;
@@ -226,21 +261,10 @@ public class DataManager<E extends Data> implements Observable<E> {
         return nearestData;
     }
 
-
-    private double euclideanDistance(Data d1, Data d2) {
-        double distance = 0;
-        Map<String, Number> attributes1 = d1.getattributes();
-        Map<String, Number> attributes2 = d2.getattributes();
-        for (String attribute : attributes1.keySet()) {
-            if (!attributes2.containsKey(attribute)) {
-                continue;
-            }
-            double diff = attributes1.get(attribute).doubleValue() - attributes2.get(attribute).doubleValue();
-            distance += diff * diff;
-        }
-        return Math.sqrt(distance);
-    }
-
+    /**
+     * @param d la donnée
+     * @return vrai si la donnée est une donnée utilisateur
+     */
     public boolean isUserData(Data d){
         return UserData.contains(d);
     }

@@ -6,6 +6,9 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import java.io.*;
 import java.util.List;
 
+/**
+ * Classe permettant de charger un fichier CSV et de le transformer en liste d'objets
+ */
 public class DataLoader {
 
     /**

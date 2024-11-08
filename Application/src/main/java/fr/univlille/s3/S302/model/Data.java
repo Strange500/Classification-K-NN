@@ -2,6 +2,9 @@ package fr.univlille.s3.S302.model;
 
 import java.util.Map;
 
+/**
+ * Interface représentant une donnée
+ */
 public interface Data {
 
     /**
@@ -19,5 +22,9 @@ public interface Data {
      */
     void setCategory(String category);
 
-    Data createObject(Map<String,Number> map);
+    /**
+     * @param attributs les attributs de la donnée
+     * @return une nouvelle donnée
+     */
+    Data createObject(Map<String,Number> attributs);
 }

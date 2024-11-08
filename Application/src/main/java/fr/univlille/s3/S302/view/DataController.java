@@ -1,6 +1,8 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.*;
+import fr.univlille.s3.S302.utils.Distance;
+import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 import javafx.application.Platform;
@@ -11,8 +13,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -22,7 +22,6 @@ import javafx.util.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 public class DataController implements Observer<Data> {
 
@@ -40,12 +39,63 @@ public class DataController implements Observer<Data> {
     private Button categoryBtn;
     @FXML
     private Button addDataBtn;
-
+    @FXML
+    private VBox addPointVBox;
+    Map<String, TextField> labelMap = new HashMap<>();
     @FXML
     Canvas canvas;
     @FXML
     GridPane grid;
     private HeatView heatView;
+
+    private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
+
+    private void addTextFields() {
+        Map<String, Number> map = dataManager.getDataList().get(0).getattributes();
+        for (String s : map.keySet()) {
+            VBox tmp = genererLigneAttributs(s);
+            addPointVBox.getChildren().add(tmp);
+        }
+    }
+
+    public VBox genererLigneAttributs(String label) {
+        VBox vbox = new VBox();
+        Label labels = new Label(cleanLabelName(label));
+        TextField tf = new TextField();
+        vbox.getChildren().addAll(labels, tf);
+        labelMap.put(label, tf);
+        return vbox;
+    }
+
+    public void addUserPoint() {
+        Map<String, Number> tmp = new HashMap<>();
+        try {
+            for (String s : labelMap.keySet()) {
+                if (!labelMap.get(s).getText().isEmpty()) {
+                    tmp.put(s, Double.parseDouble(labelMap.get(s).getText()));
+                }
+            }
+            dataManager.addData(tmp);
+        } catch (NumberFormatException e) {
+            DataController.genErrorPopup("Entrez valeurs valides").show(addPointVBox.getScene().getWindow());
+        }
+    }
+
+    private static String cleanLabelName(String s) {
+        int[] indexMajuscules = new int[s.length()];
+        int j = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isUpperCase(s.charAt(i))) {
+                indexMajuscules[j] = i;
+                j++;
+            }
+        }
+        StringBuilder sb = new StringBuilder(s);
+        for (int i = j - 1; i >= 0; i--) {
+            sb.insert(indexMajuscules[i], " ");
+        }
+        return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
+    }
 
     @FXML
     /**
@@ -53,13 +103,13 @@ public class DataController implements Observer<Data> {
      */
     public void initialize() {
         buildWidgets();
+        constructVBox();
         categoryBtn.setOnAction(event -> {
             try {
                 updateAxisCategory();
                 update();
                 boolean heatViewActive = heatView.isActive();
-                heatView = new HeatView(canvas, chart
-                        ,xCategory.getValue(), yCategory.getValue(), categorieColor);
+                heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
                 if (heatViewActive) {
                     heatView.toggle();
                 }
@@ -71,13 +121,8 @@ public class DataController implements Observer<Data> {
         });
 
         addDataBtn.setOnAction(event -> {
-            try {
-                genererEcran();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            addUserPoint();
         });
-
 
         heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
         chart.widthProperty().addListener((obs, oldVal, newVal) -> {
@@ -92,7 +137,6 @@ public class DataController implements Observer<Data> {
                 heatView.update();
             });
         });
-
 
     }
 
@@ -145,11 +189,16 @@ public class DataController implements Observer<Data> {
         return popup;
     }
 
+    private void constructVBox() {
+        addTextFields();
+    }
+
     /**
      * Met à jour le graphique
      */
     private void update() {
         constructChart();
+        constructVBox();
     }
 
     /**
@@ -344,14 +393,14 @@ public class DataController implements Observer<Data> {
     }
 
     public void genererEcran() throws IOException {
-        Stage stage=new Stage();
-        Scene scene=new Scene(App.loadFXML("AddPointWindow"));
+        Stage stage = new Stage();
+        Scene scene = new Scene(App.loadFXML("AddPointWindow"));
         stage.setScene(scene);
         stage.show();
     }
 
     public void classify() {
-        dataManager.categorizeData();
+        dataManager.categorizeData(DEFAULT_DISTANCE);
     }
 
     public void toggleHeatView() {
