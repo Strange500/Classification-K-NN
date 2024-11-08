@@ -54,7 +54,6 @@ public class DataController implements Observer<Data> {
     public void initialize() {
         buildWidgets();
         categoryBtn.setOnAction(event -> {
-            changeCategory();
             try {
                 updateAxisCategory();
                 update();
@@ -74,6 +73,8 @@ public class DataController implements Observer<Data> {
         addDataBtn.setOnAction(event -> {
             try {
                 genererEcran();
+                changeCategoryField();
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -103,16 +104,13 @@ public class DataController implements Observer<Data> {
         choosenAttributes = new Pair<>(xCategory.getValue(), yCategory.getValue());
     }
 
-    private void changeCategory() {
+    private void changeCategoryField() {
         // random choice from attributes
         List<String> attributes = new ArrayList<>(dataManager.getAttributes());
         Random rand = new Random();
         int x = rand.nextInt(attributes.size());
         System.out.println("Changing category to " + attributes.get(x));
-        dataManager.changecategory(attributes.get(x));
-
-
-
+        dataManager.changeCategoryField(attributes.get(x));
     }
 
     /**
@@ -170,8 +168,8 @@ public class DataController implements Observer<Data> {
      * Met le style du graphique
      */
     private void setChartStyle() {
-        for (final XYChart.Series<Number, Number> s : chart.getData()) {
-            for (final XYChart.Data<Number, Number> data : s.getData()) {
+        for (XYChart.Series<Number, Number> s : chart.getData()) {
+            for (XYChart.Data<Number, Number> data : s.getData()) {
                 Data d = getNode(data);
                 attachInfoTooltip(data, d);
                 data.getNode().setOnMouseEntered(event -> {
@@ -222,7 +220,10 @@ public class DataController implements Observer<Data> {
     private void constructChart() {
         XYChart.Series<Number, Number> series = new XYChart.Series<>();
         chart.getData().clear();
-        for (Data f : dataManager.getDataList()) {
+        this.data.clear();
+        List<Data> dataList = dataManager.getDataList();
+        System.out.println("category in constructChart: " + dataList.get(0).getCategoryField());
+        for (Data f : dataList) {
             addPoint(f, series);
         }
         for (Data f : dataManager.getUserDataList()) {
@@ -239,11 +240,15 @@ public class DataController implements Observer<Data> {
     }
 
     private void addPoint(Data f, XYChart.Series<Number, Number> series) {
-        Pair<Number, Number> choosenAttributes = getNodeXY(f);
+        System.out.println("category in addPoint: " + f.getCategoryField());
+
+        Pair<Number, Number> choosenAttributes = getNodeXY(f); //ok
         XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                choosenAttributes.getValue());
-        data.add(new Pair<>(node, f));
-        series.getData().add(node);
+                choosenAttributes.getValue()); // ok
+
+        data.add(new Pair<>(node, f)); //ok
+
+        series.getData().add(node); //ok
     }
 
     /**

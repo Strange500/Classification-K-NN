@@ -79,7 +79,6 @@ public abstract class Data {
 
 
     public Map<String, Number> getAttributes() {
-        makeData();
         return this.attributes;
     }
 

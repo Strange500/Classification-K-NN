@@ -113,10 +113,20 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void changecategory(String newCategory){
         for (Data d : dataList) {
-            d.setCategoryField(newCategory);
+            d.setCategory(newCategory);
         }
         for (Data d : UserData) {
-            d.setCategoryField(newCategory);
+            d.setCategory(newCategory);
+        }
+        notifyAllObservers();
+    }
+
+    public void changeCategoryField(String newcategoryField){
+        for (Data d : dataList) {
+            d.setCategoryField(newcategoryField);
+        }
+        for (Data d : UserData) {
+            d.setCategoryField(newcategoryField);
         }
         notifyAllObservers();
     }
