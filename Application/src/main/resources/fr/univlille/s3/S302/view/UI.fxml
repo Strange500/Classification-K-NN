@@ -1,60 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.*?>
-<?import javafx.scene.chart.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.ScatterChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univlille.s3.S302.view.DataController">
-   <left>
-      <VBox prefHeight="380.0" prefWidth="210.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="CENTER" prefHeight="60.0" prefWidth="200.0" text="Ajouter un point">
-               <font>
-                  <Font name="System Bold" size="18.0" />
-               </font></Label>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button fx:id="addDataBtn" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="40.0" prefWidth="160.0" text="Ajouter donnée" />
-               </children>
-            </HBox>
-            <AnchorPane prefHeight="100.0" prefWidth="160.0">
-               <children>
-                  <Button fx:id="categoryBtn" alignment="CENTER" layoutX="60.0" layoutY="100.0" mnemonicParsing="false" text="Valider" />
-                  <HBox alignment="CENTER" layoutX="10.0" layoutY="20.0" style="-fx-margin: 20px;">
-                     <children>
-                        <Label prefHeight="20.0" prefWidth="60.0" text="X Axis : " />
-                        <ComboBox prefHeight="30.0" prefWidth="140.0" fx:id="xCategory" />
-                     </children>
-                  </HBox>
-                  <HBox layoutX="9.0" layoutY="57.0">
-                     <children>
-                        <Label prefHeight="20.0" prefWidth="60.0" text="Y Axis : " />
-                        <ComboBox fx:id="yCategory" prefHeight="30.0" prefWidth="140.0" />
-                     </children>
-                  </HBox>
-               </children>
-            </AnchorPane>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Button mnemonicParsing="false" onAction="#classify" text="Classifier les données" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
-   </left>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univlille.s3.S302.view.DataController">
+
+   <top>
+      <MenuBar BorderPane.alignment="CENTER" style="-fx-background-color: #282a36;">
+        <menus>
+          <Menu text="Fichier" style="-fx-text-fill: #f8f8f2;">
+            <items>
+              <MenuItem text="Charger un CSV" onAction="#loadNewCsv" style="-fx-text-fill: #f8f8f2;" />
+            </items>
+          </Menu>
+          <Menu text="Affichage" style="-fx-text-fill: #f8f8f2;">
+            <items>
+              <MenuItem text="Nouvelle fenêtre" onAction="#openNewWindow" style="-fx-text-fill: #f8f8f2;" />
+              <MenuItem text="Toggle heatView" onAction="#toggleHeatView" style="-fx-text-fill: #f8f8f2;" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+
    <center>
-      <GridPane fx:id="grid" BorderPane.alignment="CENTER">
+      <GridPane fx:id="grid" BorderPane.alignment="CENTER" vgap="10" hgap="10" style="-fx-background-color: #282a36;">
          <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
          </columnConstraints>
+         
          <rowConstraints>
-            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints vgrow="ALWAYS" minHeight="10.0" />
          </rowConstraints>
+
          <children>
-            <Canvas fx:id="canvas" height="208.0" width="237.0" />
-            <ScatterChart fx:id="chart" prefHeight="400.0" prefWidth="477.0">
+            <Canvas fx:id="canvas" height="500" width="500" style="-fx-background-color: #44475a;" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            
+            <ScatterChart fx:id="chart" prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: #44475a;" GridPane.columnIndex="0" GridPane.rowIndex="0">
               <xAxis>
                 <NumberAxis side="BOTTOM" />
               </xAxis>
@@ -65,21 +63,40 @@
          </children>
       </GridPane>
    </center>
-   <top>
-      <MenuBar BorderPane.alignment="CENTER">
-        <menus>
-          <Menu mnemonicParsing="false" text="Fichier">
-            <items>
-              <MenuItem mnemonicParsing="false" onAction="#loadNewCsv" text="Charger un CSV" />
-            </items>
-          </Menu>
-            <Menu mnemonicParsing="false" text="Affichage">
-              <items>
-                <MenuItem mnemonicParsing="false" onAction="#openNewWindow" text="Nouvelle fenetre" />
-                  <MenuItem mnemonicParsing="false" onAction="#toggleHeatView" text="Toggle heatView" />
-              </items>
-            </Menu>
-        </menus>
-      </MenuBar>
-   </top>
+
+   <left>
+      <VBox prefHeight="400.0" prefWidth="250.0" BorderPane.alignment="CENTER" spacing="15" style="-fx-background-color: #1e1f29; -fx-padding: 20px;">
+         <children>
+            <Label alignment="CENTER" text="Choix des axes" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2;" />
+            
+            <VBox fx:id="addPointVBox" prefHeight="150.0" style="-fx-padding: 10px;">
+               <children>
+                  <HBox spacing="10" alignment="CENTER_LEFT">
+                     <Label text="X:" style="-fx-text-fill: #f8f8f2;"/>
+                     <ComboBox fx:id="xCategory" prefHeight="30.0" prefWidth="160.0" />
+                  </HBox>
+                  <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding-top: 20px;">
+                     <Label text="Y:" style="-fx-text-fill: #f8f8f2;"/>
+                     <ComboBox fx:id="yCategory" prefHeight="30.0" prefWidth="160.0" />
+                  </HBox>
+                  <HBox alignment="CENTER" style="-fx-padding: 10px">
+                     <Button fx:id="categoryBtn" text="Valider" style="-fx-background-color: #9300ff; -fx-text-fill: white; -fx-font-size: 14px;" layoutX="60.0" layoutY="50.0" />
+                  </HBox>
+               </children>
+               <Separator style="-fx-padding-top: 20px;" />
+               <Label alignment="CENTER" text="Ajouter un bouton" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2; -fx-padding: 10px;" />
+            </VBox>
+            
+            <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
+               <Button fx:id="addDataBtn" text="Ajouter donnée" onAction="#addUserPoint" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #9300ff; -fx-text-fill: white; -fx-font-size: 14px;" />
+            </HBox>
+
+            <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
+               <Button mnemonicParsing="false" onAction="#classify" text="Classifier les données" style="-fx-background-color: #9300ff; -fx-text-fill: white; -fx-font-size: 14px;" prefHeight="40.0" prefWidth="180.0" />
+            </HBox>
+         </children>
+      </VBox>
+   </left>
+
 </BorderPane>
+

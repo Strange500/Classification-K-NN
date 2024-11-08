@@ -38,6 +38,7 @@ public class AddController {
         LabelMap.put(label,tf);
         return vbox;
     }
+    
     public void AjouterPoint(){
         Map<String,Number> tmp=new HashMap<>();
         try{
