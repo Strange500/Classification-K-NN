@@ -1,6 +1,8 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.*;
+import fr.univlille.s3.S302.utils.Distance;
+import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 import javafx.application.Platform;
@@ -46,6 +48,8 @@ public class DataController implements Observer<Data> {
     @FXML
     GridPane grid;
     private HeatView heatView;
+
+    private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
 
     @FXML
     /**
@@ -351,7 +355,7 @@ public class DataController implements Observer<Data> {
     }
 
     public void classify() {
-        dataManager.categorizeData();
+        dataManager.categorizeData(DEFAULT_DISTANCE);
     }
 
     public void toggleHeatView() {

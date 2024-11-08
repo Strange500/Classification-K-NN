@@ -4,7 +4,6 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 
@@ -224,10 +223,10 @@ public class DataManager<E extends Data> implements Observable<E> {
     /**
      * Catégorise les données
      */
-    public void categorizeData() {
+    public void categorizeData(Distance distanceSouhaitee) {
         for (Data d : UserData) {
             if (d.getCategory().equals("Unknown")) {
-                Data nearestData = getNearestData(d, new DistanceEuclidienne());
+                Data nearestData = getNearestData(d, distanceSouhaitee);
                 d.setCategory(nearestData.getCategory());
             }
         }
@@ -239,9 +238,9 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param guessAttributes
      * @return la catégorie
      */
-    public String guessCategory(Map<String, Number> guessAttributes) {
+    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
         Data n = new FakeData(guessAttributes);
-        Data nearestData = getNearestData(n, new DistanceEuclidienne());
+        Data nearestData = getNearestData(n, distanceSouhaitee);
         return nearestData.getCategory();
     }
 
