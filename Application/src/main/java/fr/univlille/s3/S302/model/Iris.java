@@ -1,120 +1,28 @@
 package fr.univlille.s3.S302.model;
 
+import com.opencsv.bean.CsvBindByName;
+import fr.univlille.s3.S302.utils.HasNoOrder;
 import javafx.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Iris implements Data {
+public class Iris extends Data {
 
-    private final double sepalLength;
-    private final double sepalWidth;
-    private final double petalLength;
-    private final double petalWidth;
-    public Pair<String, String> choosenAttributes;
-    private String variety;
-    private Coordonnee coordonnee;
-
-    /**
-     * Constructeur de la classe Iris
-     * 
-     * @param sepalLength la longueur du sépale
-     * @param sepalWidth  la largeur du sépale
-     * @param petalLength la longueur du pétale
-     * @param petalWidth  la largeur du pétale
-     * @param variety     l'espèce de la fleur
-     */
-    public Iris(double sepalLength, double sepalWidth, double petalLength, double petalWidth, String variety) {
-        this.sepalLength = sepalLength;
-        this.sepalWidth = sepalWidth;
-        this.petalLength = petalLength;
-        this.petalWidth = petalWidth;
-        this.variety = variety;
-        this.choosenAttributes = new Pair<>("sepalLength", "sepalWidth");
+    static {
+        DataLoader.registerHeader(Iris.class, "\"sepal.length\",\"sepal.width\",\"petal.length\",\"petal.width\",\"variety\"");
     }
 
-    /**
-     * @return la longueur du sépale
-     */
-    public double getSepalLength() {
-        return sepalLength;
-    }
+    @CsvBindByName(column = "sepal.length")
+    protected double sepalLength;
+    @CsvBindByName(column = "sepal.width")
+    protected double sepalWidth;
+    @CsvBindByName(column = "petal.length")
+    protected double petalLength;
+    @CsvBindByName(column = "petal.width")
+    protected double petalWidth;
 
-    /**
-     * @return la largeur du sépale
-     */
-    public double getSepalWidth() {
-        return sepalWidth;
-    }
+    @CsvBindByName(column = "variety")
+    protected String species;
 
-    /**
-     * @return la longueur du pétale
-     */
-    public double getPetalLength() {
-        return petalLength;
-    }
-
-    /**
-     * @return la largeur du pétale
-     */
-    public double getPetalWidth() {
-        return petalWidth;
-    }
-
-    /**
-     * @return l'espèce de la fleur
-     */
-    public String getSpecies() {
-        return variety;
-    }
-
-    /**
-     * @return une représentation textuelle de l'objet Iris
-     */
-    @Override
-    public String toString() {
-        return "Iris{" +
-                "sepalLength=" + sepalLength +
-                ", sepalWidth=" + sepalWidth +
-                ", petalLength=" + petalLength +
-                ", petalWidth=" + petalWidth +
-                ", species='" + variety + '\'' +
-                '}';
-    }
-
-    /**
-     * @return les attributs de l'objet Iris sous la forme d'une map
-     */
-    @Override
-    public Map<String, Number> getattributes() {
-        Map<String, Number> attributes = new HashMap<>();
-        attributes.put("sepalLength", sepalLength);
-        attributes.put("sepalWidth", sepalWidth);
-        attributes.put("petalLength", petalLength);
-        attributes.put("petalWidth", petalWidth);
-        return attributes;
-    }
-
-    /**
-     * @return les coordonnées de l'objet Iris
-     */
-    @Override
-    public String getCategory() {
-        return variety;
-    }
-
-    /**
-     * @param category la catégorie de l'objet Iris
-     */
-    @Override
-    public void setCategory(String category) {
-        variety = category;
-    }
-
-    public Data createObject(Map<String,Number> attributs) {
-        if(!attributs.keySet().equals(this.getattributes().keySet())){
-            throw new IllegalArgumentException();
-        }
-        return new Iris(attributs.get("sepalLength").doubleValue(),attributs.get("sepalWidth").doubleValue(),attributs.get("petalLength").doubleValue(),attributs.get("petalWidth").doubleValue(),"Unknow");
-    }
 }
