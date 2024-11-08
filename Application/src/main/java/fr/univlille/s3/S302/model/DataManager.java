@@ -219,7 +219,7 @@ public class DataManager<E extends Data> implements Observable<E> {
     }
 
     public String nextColor() {
-        if (colorMap == null) {
+        if (colorMap == null || colorMap.size() != getNbCategories()) {
             createColor();
         }
         String color = colorMap.get("Color" + idxColor);
