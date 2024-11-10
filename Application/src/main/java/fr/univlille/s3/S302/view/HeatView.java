@@ -20,6 +20,11 @@ import java.util.Map;
 
 
 public class HeatView {
+
+    // (!=0) 1 is better higher is worse
+    public static int quality = 7;
+
+
     private final Canvas canvas;
     private final ScatterChart<Number, Number> scatterChart;
     private final String xAttribute;
@@ -34,7 +39,7 @@ public class HeatView {
         this.yAttribute = yAttribute;
         Map<String, List<Double>> tmp = new HashMap<>();
         for (Map.Entry<String, String> entry : colorMap.entrySet()) {
-            tmp.put(entry.getKey(), getCategorieRgb(entry.getKey(), entry.getValue()));
+            tmp.put(entry.getKey(), getCategorieRgb(entry.getValue()));
         }
         this.colorMap = tmp;
 
@@ -57,15 +62,13 @@ public class HeatView {
 
     }
     void update() {
-        Platform.runLater(() -> {
             if (active) {
                 clear();
                 draw();
             }
-        });
     }
 
-    private static List<Double> getCategorieRgb(String categorie, String color) {
+    private static List<Double> getCategorieRgb(String color) {
         // color is a string in the form "rgb(x, y, z)"
         if (!color.startsWith("rgb(") || !color.endsWith(")")) {
             return List.of(0.0, 0.0, 0.0);
@@ -90,14 +93,14 @@ public class HeatView {
         double xOffSet = boundsChartArea.getMinX();
         double yOffset = boundsChartArea.getMinY();
         double maxX = getMaxX();
-        double stepX = (maxX / boundsChartArea.getWidth()) *5;
-        double stepY = (getMaxY() / boundsChartArea.getHeight()) * 5;
+        double stepX = (maxX / boundsChartArea.getWidth()) * quality;
+        double stepY = (getMaxY() / boundsChartArea.getHeight()) * quality;
         Map<String, Number> data =new HashMap<>();
         for (double y = 0; y < getMaxY(); y += stepY) {
             for (double x = 0; x < maxX; x += stepX) {
                 data.put(xAttribute, x);
                 data.put(yAttribute, y);
-                String cat = DataManager.instance.guessCategory(data, new DistanceEuclidienne());
+                String cat = DataManager.getInstance().guessCategory(data, new DistanceEuclidienne());
                 List<Double> tmp = colorMap.get(cat);
                 canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
                 canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,

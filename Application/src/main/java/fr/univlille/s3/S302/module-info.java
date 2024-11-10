@@ -5,6 +5,8 @@ module fr.univlille.s3.S302 {
     requires  com.opencsv;
     requires  java.sql;
     requires atlantafx.base;
+    requires org.reflections;
+    requires com.google.common;
 
     opens fr.univlille.s3.S302.view to javafx.fxml;
     opens fr.univlille.s3.S302.model;
