@@ -1,49 +1,53 @@
 package fr.univlille.s3.S302.model;
 
+import fr.univlille.s3.S302.utils.HasNoOrder;
+
+import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
-/**
- * Classe permettant de créer des données fictives
- */
-public class FakeData implements Data{
+public class FakeData extends Data{
 
-    private final Map<String, Number> attributes;
-    private String category = "Unknown";
-    public FakeData(Map<String, Number> attr) {
-        attributes = attr;
 
+    public FakeData(Map<String, Number> attr, String categorieField) {
+        this.attributes = new HashMap<>(attr);
+        this.categoryField = categorieField;
+        this.attributes.remove(categorieField);
     }
 
-    /**
-     * @return les attributs de la donnée
-     */
-    @Override
-    public Map<String, Number> getattributes() {
-        return attributes;
-    }
-
-    /**
-     * @return la catégorie de la donnée
-     */
     @Override
     public String getCategory() {
-        return category;
+        if (attributes.containsKey(categoryField) && attributes.get(categoryField) != null) {
+            return attributes.get(categoryField).toString();
+        }
+        return "Unknown";
     }
 
-    /**
-     * @param category la nouvelle catégorie de la donnée
-     */
+
     @Override
-    public void setCategory(String category) {
-        this.category = category;
+    boolean attributeIsClass(String attribute, Class<?> clazz) {
+
+        for (String key : attributes.keySet()) {
+            if (key.equals(attribute) && dataTypes.containsKey(key)) {
+                return isEqualOrSubclass(dataTypes.get(key), clazz);
+            }
+        }
+        throw new NoSuchElementException("Attribute not found");
     }
 
-    /**
-     * @param attributs les attributs de la donnée
-     * @return une nouvelle donnée
-     */
     @Override
-    public Data createObject(Map<String, Number> attributs) {
-        return null;
+    public boolean hasOrder(String attribute) {
+        for (String key : attributes.keySet()) {
+            if (key.equals(attribute) && dataTypes.containsKey(key)) {
+                return !dataTypes.get(key).isAnnotationPresent(HasNoOrder.class);
+            }
+        }
+        throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
     }
+
+    @Override
+    public String toString() {
+        return this.attributes.toString();
+    }
+
 }

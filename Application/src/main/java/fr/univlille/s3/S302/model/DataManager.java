@@ -13,19 +13,29 @@ import fr.univlille.s3.S302.utils.Observer;
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";
-    public static DataManager<Data> instance = new DataManager<>();
+    private static DataManager<Data> instance ;
     private List<E> dataList;
     private List<Observer> observers;
     private List<E> UserData;
     private Map<String, String> colorMap;
     private static int idxColor = 0;
 
+    public static DataManager<Data> getInstance() {
+        if (instance == null) {
+            instance = new DataManager<>();
+        }
+        return instance;
+    }
+
+
+
     /**
      * Constructeur de la classe DataManager
      * 
      * @param dataList la liste des données
      */
-    public DataManager(List<E> dataList) {
+    private DataManager(List<E> dataList) {
+        instance = (DataManager<Data>) this;
         this.dataList = dataList;
         this.observers = new ArrayList<>();
         this.UserData = new ArrayList<>();
@@ -35,14 +45,21 @@ public class DataManager<E extends Data> implements Observable<E> {
      * Constructeur de la classe DataManager
      */
     public DataManager() {
+        this(PATH);
+    }
+
+    public DataManager(String path) {
         this(new ArrayList<>());
-        this.loadData(PATH);
+        this.loadData(path);
     }
 
     public static void main(String[] args) {
-        DataManager<FormatDonneeBrut> dataManager = new DataManager<>();
+        DataManager<Data> dataManager = new DataManager<>();
         dataManager.loadData(PATH);
-        System.out.println(dataManager.getDataList());
+    }
+
+    public double valueOf(String attribute, String value) {
+        return Data.valueOf(attribute, value);
     }
 
     /**
@@ -56,7 +73,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la liste des données
      */
     public List<E> getDataList() {
-        return dataList;
+        return new ArrayList<>(dataList);
     }
 
     /**
@@ -90,7 +107,10 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return les attributs des données
      */
     public Set<String> getAttributes() {
-        return dataList.get(0).getattributes().keySet();
+        if (dataList.isEmpty()) {
+            return new HashSet<>();
+        }
+        return dataList.get(0).getAttributes().keySet();
     }
 
     /**
@@ -101,15 +121,32 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void loadData(String path) {
         try {
             dataList = new ArrayList<>();
-            List<FormatDonneeBrut> tmp = DataLoader.charger(path);
-            for (FormatDonneeBrut f : tmp) {
-                dataList.add((E) FormatDonneeBrut.createObject(f));
+            List<? extends Data> tmp = DataLoader.charger(path);
+            for (Data f : tmp) {
+                f.makeData();
+                dataList.add((E) f);
             }
+            //System.out.println(this.dataList);
+            Data.updateDataTypes(dataList.get(0));
             notifyAllObservers();
 
-        } catch (FileNotFoundException | NullPointerException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Fichier non trouvé");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+
+
+    public void changeCategoryField(String newcategoryField){
+        for (Data d : dataList) {
+            d.setCategoryField(newcategoryField);
+        }
+        for (Data d : UserData) {
+            d.setCategoryField(newcategoryField);
+        }
+        notifyAllObservers();
     }
 
     /**
@@ -163,7 +200,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * Ajoute une liste de données utilisateur
      */
     public void addData(Map<String,Number> map){
-        Data tmp = new FakeData(map);
+        Data tmp = new FakeData(map, dataList.get(0).getCategoryField());
         this.UserData.add((E)tmp);
         notifyAllObservers();
     }
@@ -173,28 +210,10 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void createColor() {
         colorMap = new HashMap<>();
         int nbCategories = getNbCategories();
-        if (nbCategories % 3 == 0 && nbCategories > 0) {
-            int step = 255 / (nbCategories / 3);
-            int r = 255;
-            int g = 0;
-            int b = 0;
-            for (int i = 0; i < nbCategories; i++) {
-                colorMap.put("Color" + i, "rgb(" + r + "," + g + "," + b + ")");
-                if (r == 255 && g < 255 && b == 0) {
-                    g += step;
-                } else if (r > 0 && g == 255 && b == 0) {
-                    r -= step;
-                } else if (r == 0 && g == 255 && b < 255) {
-                    b += step;
-                } else if (r == 0 && g > 0 && b == 255) {
-                    g -= step;
-                } else if (r < 255 && g == 0 && b == 255) {
-                    r += step;
-                } else if (r == 255 && g == 0 && b > 0) {
-                    b -= step;
-                }
-            }
+        for (int i = 0; i < nbCategories; i++) {
+            colorMap.put("Color" + i, "rgb(" + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + ")");
         }
+
     }
 
     /**
@@ -212,7 +231,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la couleur suivante
      */
     public String nextColor() {
-        if (colorMap == null) {
+        if (colorMap == null || colorMap.size() != getNbCategories()) {
             createColor();
         }
         String color = colorMap.get("Color" + idxColor);
@@ -227,10 +246,23 @@ public class DataManager<E extends Data> implements Observable<E> {
         for (Data d : UserData) {
             if (d.getCategory().equals("Unknown")) {
                 Data nearestData = getNearestData(d, distanceSouhaitee);
-                d.setCategory(nearestData.getCategory());
+                d.setCategory(nearestData);
             }
         }
         notifyAllObservers();
+    }
+
+    public Set<String> getAvailableValues(String attribute){
+        Set<String> values = new HashSet<>();
+        try{
+            for (Data d : dataList) {
+                values.add(d.getAttributes().get(attribute).toString());
+            }
+        } catch (NullPointerException e) {
+            System.err.println("soit Un element n'a pas d'attribut " + attribute + " soit datalist contient au moins un elements null");
+            return new HashSet<>();
+        }
+        return values;
     }
 
     /**
@@ -239,7 +271,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @return la catégorie
      */
     public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
-        Data n = new FakeData(guessAttributes);
+        Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
         Data nearestData = getNearestData(n, distanceSouhaitee);
         return nearestData.getCategory();
     }
@@ -252,7 +284,7 @@ public class DataManager<E extends Data> implements Observable<E> {
         double minDistance = Double.MAX_VALUE;
         Data nearestData = null;
         for (Data d : dataList) {
-            double distance = distanceSouhaitee.distance(data, d);
+            double distance = Data.distance(data, d, distanceSouhaitee);
             if (distance < minDistance) {
                 minDistance = distance;
                 nearestData = d;
