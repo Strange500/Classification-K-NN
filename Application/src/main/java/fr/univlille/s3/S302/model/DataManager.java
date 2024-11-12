@@ -207,6 +207,7 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     // ne fonctionne que si le nombre de catégories est un multiple de 3
     // a refaire
+    // mettre ce qui concerne les couleur dans la vue
     public void createColor() {
         colorMap = new HashMap<>();
         int nbCategories = getNbCategories();

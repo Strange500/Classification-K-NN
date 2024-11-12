@@ -29,8 +29,11 @@ public abstract class Data {
 
 
     /**
-     * Cette fonctionpermet d'ajuster les valeur des attributs n'ayant pas d'ordre entre eux
-     * Les deux données doivent avoir les mêmes attributs
+     * Cette fonction de prétraitement permet de comparer les attributs de deux données
+     * elle traite notamment les attributs qui n'ont pas d'ordre
+     * @param d1
+     * @param d2
+     * @return
      */
     private static Pair<Data, Data> computeAttributes(Data d1, Data d2) {
         FakeData fakeData1 = new FakeData(d1.getAttributes(), d1.categoryField);
@@ -54,6 +57,12 @@ public abstract class Data {
         return new Pair<>(fakeData1, fakeData2);
     }
 
+    /**
+     * Cette fonction permet de récupérer la valeur numérique d'un attribut a partir de sa valeur originale
+     * @param attribute
+     * @param value
+     * @return
+     */
     public static double valueOf(String attribute, String value) {
         if (attributesMap.containsKey(attribute) && attributesMap.get(attribute).contains(value)) {
             return attributesMap.get(attribute).indexOf(value);
@@ -62,6 +71,12 @@ public abstract class Data {
         }
     }
 
+    /**
+     * Cette fonction permet de vérifier si un attribut est une instance d'une classe
+     * @param attribute
+     * @param clazz
+     * @return
+     */
     boolean attributeIsClass(String attribute, Class<?> clazz) {
         if (dataTypes.getOrDefault(attribute, null) == null) {
             throw new NoSuchElementException("Attribute not found");
@@ -69,10 +84,23 @@ public abstract class Data {
         return isEqualOrSubclass(dataTypes.get(attribute), clazz);
     }
 
+    /**
+     * Cette fonction permet de vérifier si une classe est égale ou une sous-classe d'une autre
+     * @param class1
+     * @param class2
+     * @return
+     */
     protected static boolean isEqualOrSubclass(Class<?> class1, Class<?> class2) {
         return class2.isAssignableFrom(class1);
     }
 
+
+    /**
+     * Cette fonction permet de récupérer la valeur originale d'un attribut
+     * @param attribute
+     * @param value
+     * @return
+     */
     public String getValue(String attribute, Number value) {
         if (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size()) {
             return null;
@@ -83,6 +111,13 @@ public abstract class Data {
         return attributesNumericalValueToAttributesOriginalMap.get(attribute).get(value.intValue()).toString();
     }
 
+    /**
+     *
+     * cette fonction permet de mettre à jour les index des attributs après l'insertion d'une nouvelle valeur
+     * Ce traitement est néccessaire car les Data ne mettent pas a jour automatiquement les index de leur attributs
+     * @param attribute
+     * @param insertedIndex
+     */
     public static void updateAttributesIndexes(String attribute, int insertedIndex) {
         List<? extends Data> ls = DataManager.getInstance().getDataList();
         for (Data d : ls) {
@@ -95,7 +130,10 @@ public abstract class Data {
         }
     }
 
-
+    /**
+     * Cette fonction permet compléter les données de la Data a partir des attributs de la classe en héritant
+     * elle mets aussi a jour la map attributesNumericalValueToAttributesOriginalMap
+     */
     public void makeData() {
         // pour le momment l'odre est suppose être celui d'entree
         Field[] fields = this.getClass().getDeclaredFields();
@@ -126,6 +164,11 @@ public abstract class Data {
         this.category = map.get(category).toString();
     };
 
+    /**
+     * Cette fonction vérifie la présence de l'annotation HasNoOrder sur un attribut
+     * @param attribute l'attribut à vérifier
+     * @return true si l'attribut a un ordre, false sinon
+     */
     public boolean hasOrder(String attribute) {
         if (fieldsMap.getOrDefault(attribute, null) == null) {
             throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
@@ -133,6 +176,13 @@ public abstract class Data {
         return !fieldsMap.get(attribute).isAnnotationPresent(HasNoOrder.class);
     }
 
+    /**
+     * Cette fonction permet de récupérer la valeur numérique d'un attribut
+     * Elle mets aussi à jour la liste des valeurs possibles de l'attribut
+     * @param field
+     * @param value
+     * @return
+     */
     private static Number getIntValue(Field field, Object value) {
         if (attributesMap.getOrDefault(field.getName(), null) == null) {
             List<Object> map = new ArrayList<>();
@@ -162,6 +212,10 @@ public abstract class Data {
         }
     }
 
+    /**
+     * Cette fonction permet de mettre à jour la map dataTypes qui associe à chaque attribut sa classe
+     * @param obj
+     */
     static void updateDataTypes(Data obj) {
         dataTypes.clear();
         Field[] fields = obj.getClass().getDeclaredFields();
@@ -180,10 +234,10 @@ public abstract class Data {
      * @return la catégorie de la donnée
      */
     public String getCategory() {
-
         if (attributeIsClass(categoryField, Number.class)) {
             return category;
         }
+        // on retourne la valeur originale de la catégorie
         return getValue(categoryField, Integer.parseInt(category));
     }
     /**

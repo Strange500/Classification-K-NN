@@ -40,3 +40,46 @@ Utilisez la commande suivante dans un terminal en remplaçant /chemin/ par le ch
 ````
 java -jar /chemin/artifacts/Application/target/VisualisationDonnees-1.0-SNAPSHOT.jar
 ````
+
+
+# Fonctionnement
+
+## Data
+
+La classe `Data` est une classe abstraite qui permet à toute classe en héritant d'être traitée par le modèle. Le cœur de cette classe réside dans la fonction `makeData`, qui parcourt les attributs de la classe implémentant `Data`. Cette fonction attribue une valeur numérique à chaque attribut en utilisant la fonction `getIntValue`. Grâce à cela, chaque attribut de la classe peut être représenté sous forme numérique.
+
+La fonction `getIntValue` complète la map `attributMap`, où chaque attribut est associé à une liste de valeurs (les valeurs originales). Les indices de cette liste jouent le rôle de valeurs numériques pour représenter la valeur originale de l'attribut.
+
+
+### Autres Maps
+
+La classe contient également plusieurs autres maps dont le principal objectif est de réduire le nombre de calculs nécessaires pour déterminer les distances entre les points :
+
+- **attributesNumericalValueToAttributesOriginalMap** : Permet de retrouver l'attribut original à partir de la valeur numérique.
+- **dataTypesMap** : Permet de retrouver le type de donnée de l'attribut.
+- **fieldsMap** : Permet de retrouver l'objet de classe `Field` associé au nom de l'attribut.
+
+Avec tout cela, l'application intègre tous les attributs implémentant l'interface `Comparable`. Pour les attributs n'ayant pas d'ordre spécifique, un traitement supplémentaire est effectué pour les transformer en valeurs numériques.
+
+### Gestion des Attributs Sans Ordre Spécifique
+
+Lors de la création d'une classe implémentant `Data`, il est nécessaire de définir les attributs qui sont sans ordre spécifique. Pour ce faire, il suffit d'ajouter l'annotation `@HasNoOrder`. Ces attributs sont d'abord traités comme les autres, et la fonction leur attribue une valeur numérique différente.
+
+Lors du calcul de la distance entre deux points, un traitement supplémentaire est appliqué pour transformer ces attributs en valeurs numériques. La valeur numérique sera ajustée en fonction de l'égalité des attributs : si les attributs sont égaux, la valeur numérique sera 0 ; sinon, l'un des attributs sera noté 1 et l'autre 0. Ainsi, la distance ne dépendra que de leur égalité.
+
+
+## DataManager
+
+design pattern : Singleton
+
+La classe DataManager permet de gérer les données. 
+cette classe a comme attribut, principalement, une liste de Data `dataList` provenant d'une source de données (ici un csv).
+Et une autre liste de Data qui sont elles des données ajouté au model ultérieurement `UserData`.
+
+Cette classe est munie de tout un set de fonctions permettant de manipuler les données, les ajouter, les supprimer, les classifier, les charger, etc.
+
+Pour permmettre a toutes les classe de partager le meme DataManager, on a utilisé le design pattern Singleton.
+
+La classe delegue le chargment et la créationdes objets Data a la classe DataLoader.
+
+// TODO DataLoader
