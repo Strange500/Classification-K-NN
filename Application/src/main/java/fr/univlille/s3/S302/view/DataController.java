@@ -8,12 +8,14 @@ import fr.univlille.s3.S302.utils.Observer;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -24,6 +26,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javafx.embed.swing.SwingFXUtils;
 
 public class DataController implements Observer<Data> {
 
@@ -41,6 +46,8 @@ public class DataController implements Observer<Data> {
     private Button categoryBtn;
     @FXML
     private Button addDataBtn;
+    @FXML
+    private Button saveChart;
     @FXML
     private VBox addPointVBox;
     Map<String, TextField> labelMap = new HashMap<>();
@@ -98,6 +105,18 @@ public class DataController implements Observer<Data> {
             sb.insert(indexMajuscules[i], " ");
         }
         return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
+    }
+
+    public void saveChartAsImage() {
+        WritableImage image = chart.snapshot(new SnapshotParameters(), null);
+
+        File file = new File("./scatterchart_capture.png");
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            System.out.println("Image sauvegardée; chemin : " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Une erreur est survenue lors de la sauvegarde de l'image");
+        }
     }
 
     @FXML
