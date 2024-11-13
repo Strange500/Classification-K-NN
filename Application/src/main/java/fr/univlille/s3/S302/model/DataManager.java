@@ -216,6 +216,10 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     }
 
+    public Map<String, String> getColorMap() {
+        return this.colorMap;
+    }
+
     /**
      * @return la liste des catégories
      */
