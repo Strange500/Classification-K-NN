@@ -107,12 +107,31 @@ public class DataController implements Observer<Data> {
         return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
     }
 
+    /**
+     * Sauvegarde le graphique en image là où l'utilisateur le souhaite
+     */
     public void saveChartAsImage() {
+        String path = getPathToSaveChart();
+
+        if (path == null) {
+            return;
+        }
+
         WritableImage image = chart.snapshot(new SnapshotParameters(), null);
 
-        File file = new File("./scatterchart_capture.png");
+        File file = new File(path);
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            /**Popup popup = new Popup();
+            Label label = new Label("Image sauvegardée; chemin : " + file.getAbsolutePath());
+            label.setStyle(
+                    " -fx-background-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
+            label.setMinHeight(50);
+            label.setMinWidth(200);
+            popup.getContent().add(label);
+            popup.setAutoHide(true);
+            popup.show(chart.getScene().getWindow());
+            */
             System.out.println("Image sauvegardée; chemin : " + file.getAbsolutePath());
         } catch (IOException e) {
             System.err.println("Une erreur est survenue lors de la sauvegarde de l'image");
@@ -425,6 +444,20 @@ public class DataController implements Observer<Data> {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File file = fileChooser.showOpenDialog(null);
         return file;
+    }
+
+    /**
+     * @return le chemin où le graphique doit être sauvegardée
+     */
+    private static String getPathToSaveChart() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sauvegarder le graphique");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        if (fileChooser.showSaveDialog(null) == null) {
+            return null;
+        }
+        return fileChooser.showSaveDialog(null).getAbsolutePath();
     }
 
     /**
