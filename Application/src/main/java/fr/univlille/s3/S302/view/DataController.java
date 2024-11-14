@@ -5,6 +5,7 @@ import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -91,16 +92,16 @@ public class DataController implements Observer<Data> {
         }
     }
 
-    private static String cleanLabelName(String s) {
-        int[] indexMajuscules = new int[s.length()];
+    private static String cleanLabelName(String label) {
+        int[] indexMajuscules = new int[label.length()];
         int j = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isUpperCase(s.charAt(i))) {
+        for (int i = 0; i < label.length(); i++) {
+            if (Character.isUpperCase(label.charAt(i))) {
                 indexMajuscules[j] = i;
                 j++;
             }
         }
-        StringBuilder sb = new StringBuilder(s);
+        StringBuilder sb = new StringBuilder(label);
         for (int i = j - 1; i >= 0; i--) {
             sb.insert(indexMajuscules[i], " ");
         }
@@ -108,7 +109,7 @@ public class DataController implements Observer<Data> {
     }
 
     /**
-     * Sauvegarde le graphique en image là où l'utilisateur le souhaite
+     * Sauvegarde le graphique en image à l'endroit où l'utilisateur le souhaite
      */
     public void saveChartAsImage() {
         String path = getPathToSaveChart();
@@ -118,23 +119,12 @@ public class DataController implements Observer<Data> {
         }
 
         WritableImage image = chart.snapshot(new SnapshotParameters(), null);
-
         File file = new File(path);
         try {
             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
-            /**Popup popup = new Popup();
-            Label label = new Label("Image sauvegardée; chemin : " + file.getAbsolutePath());
-            label.setStyle(
-                    " -fx-background-color: black; -fx-border-radius: 10; -fx-padding: 10; -fx-border-color: red; -fx-border-width: 2;");
-            label.setMinHeight(50);
-            label.setMinWidth(200);
-            popup.getContent().add(label);
-            popup.setAutoHide(true);
-            popup.show(chart.getScene().getWindow());
-            */
-            System.out.println("Image sauvegardée; chemin : " + file.getAbsolutePath());
+            System.out.println("Image saved; path: " + file.getAbsolutePath());
         } catch (IOException e) {
-            System.err.println("Une erreur est survenue lors de la sauvegarde de l'image");
+            System.err.println("An error occurred while saving the image");
         }
     }
 
@@ -454,10 +444,8 @@ public class DataController implements Observer<Data> {
         fileChooser.setTitle("Sauvegarder le graphique");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        if (fileChooser.showSaveDialog(null) == null) {
-            return null;
-        }
-        return fileChooser.showSaveDialog(null).getAbsolutePath();
+        File file = fileChooser.showSaveDialog(null);
+        return (file != null) ? file.getAbsolutePath() : null;
     }
 
     /**
