@@ -5,10 +5,10 @@ import com.opencsv.bean.CsvDate;
 
 import java.util.Date;
 
-public class random extends Data {
+public class Random extends Data {
 
     static {
-        DataLoader.registerHeader(random.class, "\"date\",\"name\"");
+        DataLoader.registerHeader(Random.class, "\"date\",\"name\"");
     }
     @CsvDate(value = "dd-MM-yyyy")
     @CsvBindByName(column = "date")

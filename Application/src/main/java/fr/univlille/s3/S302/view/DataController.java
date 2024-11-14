@@ -5,15 +5,18 @@ import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -24,6 +27,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javafx.embed.swing.SwingFXUtils;
 
 public class DataController implements Observer<Data> {
 
@@ -41,6 +47,8 @@ public class DataController implements Observer<Data> {
     private Button categoryBtn;
     @FXML
     private Button addDataBtn;
+    @FXML
+    private Button saveChart;
     @FXML
     private VBox addPointVBox;
     Map<String, TextField> labelMap = new HashMap<>();
@@ -84,20 +92,40 @@ public class DataController implements Observer<Data> {
         }
     }
 
-    private static String cleanLabelName(String s) {
-        int[] indexMajuscules = new int[s.length()];
+    private static String cleanLabelName(String label) {
+        int[] indexMajuscules = new int[label.length()];
         int j = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isUpperCase(s.charAt(i))) {
+        for (int i = 0; i < label.length(); i++) {
+            if (Character.isUpperCase(label.charAt(i))) {
                 indexMajuscules[j] = i;
                 j++;
             }
         }
-        StringBuilder sb = new StringBuilder(s);
+        StringBuilder sb = new StringBuilder(label);
         for (int i = j - 1; i >= 0; i--) {
             sb.insert(indexMajuscules[i], " ");
         }
         return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
+    }
+
+    /**
+     * Sauvegarde le graphique en image à l'endroit où l'utilisateur le souhaite
+     */
+    public void saveChartAsImage() {
+        String path = getPathToSaveChart();
+
+        if (path == null) {
+            return;
+        }
+
+        WritableImage image = chart.snapshot(new SnapshotParameters(), null);
+        File file = new File(path);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            System.out.println("Image saved; path: " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("An error occurred while saving the image");
+        }
     }
 
     @FXML
@@ -406,6 +434,18 @@ public class DataController implements Observer<Data> {
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
         File file = fileChooser.showOpenDialog(null);
         return file;
+    }
+
+    /**
+     * @return le chemin où le graphique doit être sauvegardée
+     */
+    private static String getPathToSaveChart() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sauvegarder le graphique");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File file = fileChooser.showSaveDialog(null);
+        return (file != null) ? file.getAbsolutePath() : null;
     }
 
     /**
