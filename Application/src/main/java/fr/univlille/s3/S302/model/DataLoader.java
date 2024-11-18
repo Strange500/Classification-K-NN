@@ -14,6 +14,7 @@ public class DataLoader {
 
     private static final Map<String, Class<? extends Data>> headerToClassMap = new HashMap<>();
     private static final char SEPARATOR = ',';
+
     /**
      * Charge un fichier CSV et le transforme en liste d'objets FormatDonneeBrut
      * 
@@ -38,10 +39,7 @@ public class DataLoader {
             clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
         }
         return csvToList(input, clazz);
-
     }
-
-
 
     /**
      * Transforme un fichier CSV en liste d'objets FormatDonneeBrut
@@ -65,6 +63,12 @@ public class DataLoader {
         throw new FileNotFoundException("Fichier non trouvé");
     }
 
+    /**
+     * Récupère la classe correspondant à l'entête du fichier CSV
+     *
+     * @param fileReader le fichier CSV
+     * @return la classe correspondant à l'entête
+     */
     private static Class<? extends  Data> getClassFromHeader(Reader fileReader) {
         preLoadClasses();
         try (BufferedReader reader = new BufferedReader(fileReader)) {
@@ -77,12 +81,19 @@ public class DataLoader {
         return null;
     }
 
-
-
+    /**
+     * Enregistre une correspondance entre un entête et une classe
+     *
+     * @param clazz la classe
+     * @param header l'entête
+     */
     public static void registerHeader(Class<? extends Data> clazz, String header) {
         headerToClassMap.put(header, clazz);
     }
 
+    /**
+     * Charge toutes les classes héritant de Data
+     */
     private static void preLoadClasses() {
         try {
             Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);

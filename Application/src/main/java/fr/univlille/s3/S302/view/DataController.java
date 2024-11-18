@@ -33,7 +33,6 @@ import javafx.embed.swing.SwingFXUtils;
 
 public class DataController implements Observer<Data> {
 
-    private final Map<String, String> categorieColor = new HashMap<>();
     @FXML
     ScatterChart<Number, Number> chart;
     @FXML
@@ -58,8 +57,46 @@ public class DataController implements Observer<Data> {
     GridPane grid;
     private HeatView heatView;
 
+    private Chart chartController;
+
     private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
 
+    @FXML
+    /**
+     * Initialisation de la fenêtre
+     */
+    public void initialize() {
+        chartController = new Chart(this.chart);
+        buildWidgets();
+        constructVBox();
+        categoryBtn.setOnAction(event -> {
+            try {
+                updateAxisCategory();
+                update();
+                this.heatView = recreateHeatView();
+                this.heatView.update();
+            } catch (IllegalArgumentException | NoSuchElementException ile) {
+                Popup popup = genErrorPopup(ile.getMessage());
+                popup.show(chart.getScene().getWindow());
+            }
+        });
+
+        addDataBtn.setOnAction(event -> {
+            addUserPoint();
+        });
+
+        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor);
+        chart.widthProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setWidth(newVal.doubleValue());
+            canvas.setHeight(chart.getHeight());
+            heatView.update();
+        });
+        chart.heightProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setHeight(newVal.doubleValue());
+            canvas.setWidth(chart.getWidth());
+            heatView.update();
+        });
+    }
     private void addTextFields() {
         addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
@@ -128,46 +165,10 @@ public class DataController implements Observer<Data> {
         }
     }
 
-    @FXML
-    /**
-     * Initialisation de la fenêtre
-     */
-    public void initialize() {
-        buildWidgets();
-        constructVBox();
-        categoryBtn.setOnAction(event -> {
-            try {
-                updateAxisCategory();
-                update();
-                this.heatView = recreateHeatView();
-                this.heatView.update();
-            } catch (IllegalArgumentException | NoSuchElementException ile) {
-                Popup popup = genErrorPopup(ile.getMessage());
-                popup.show(chart.getScene().getWindow());
-            }
-        });
-
-        addDataBtn.setOnAction(event -> {
-            addUserPoint();
-        });
-
-        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
-        chart.widthProperty().addListener((obs, oldVal, newVal) -> {
-            canvas.setWidth(newVal.doubleValue());
-            canvas.setHeight(chart.getHeight());
-            heatView.update();
-        });
-        chart.heightProperty().addListener((obs, oldVal, newVal) -> {
-            canvas.setHeight(newVal.doubleValue());
-            canvas.setWidth(chart.getWidth());
-            heatView.update();
-        });
-
-    }
 
     private HeatView recreateHeatView() {
         boolean heatViewActive = heatView.isActive();
-        HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
+        HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor);
         if (heatViewActive) {
             tmp.toggle();
         }
@@ -192,16 +193,7 @@ public class DataController implements Observer<Data> {
      */
     private void buildWidgets() {
         data = new ArrayList<>();
-        categorieColor.clear();
-        categorieColor.put("Unknown", "black");
-
-        chart.getXAxis().setAutoRanging(true);
-        chart.getYAxis().setAutoRanging(true);
-        chart.setAnimated(false);
-        chart.legendVisibleProperty().setValue(false);
-
         dataManager.attach(this);
-
         rebuild();
     }
 
@@ -220,9 +212,9 @@ public class DataController implements Observer<Data> {
             yCategory.setValue(it.next());
         }
         updateAxisCategory();
-        constructChart();
+        chartController.recreateChart(dataManager.getDataList(), dataManager.getUserDataList(), choosenAttributes);
 
-        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
+        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor);
         if (heatViewActive) {
             this.heatView.toggle();
         }
@@ -259,101 +251,6 @@ public class DataController implements Observer<Data> {
         constructVBox();
     }
 
-    /**
-     * Met le style du graphique
-     */
-    private void setChartStyle() {
-        for (final XYChart.Series<Number, Number> s : chart.getData()) {
-            for (final XYChart.Data<Number, Number> data : s.getData()) {
-                Data d = getNode(data);
-                attachInfoTooltip(data, d);
-                data.getNode().setOnMouseEntered(event -> {
-                    data.getNode().setScaleX(1.5);
-                    data.getNode().setScaleY(1.5);
-                });
-                data.getNode().setOnMouseExited(event -> {
-                    data.getNode().setScaleX(1);
-                    data.getNode().setScaleY(1);
-                });
-
-                setNodeColor(data.getNode(), d.getCategory());
-                if (dataManager.isUserData(d)) {
-                    displaySquare(data);
-                }
-            }
-        }
-    }
-
-    private static void displaySquare(XYChart.Data<Number, Number> data) {
-        String st = data.getNode().getStyle();
-        data.getNode().setStyle(st + "-fx-background-radius: 0;");
-    }
-
-    private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
-        Tooltip tooltip = new Tooltip();
-        tooltip.setText(d.getCategoryField() + ":" + d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
-        tooltip.setShowDuration(javafx.util.Duration.seconds(10));
-        tooltip.setShowDelay(javafx.util.Duration.seconds(0));
-        Tooltip.install(data.getNode(), tooltip);
-    }
-
-    /**
-     * Récupère les coordonnées d'un noeud
-     * 
-     * @param f le noeud
-     * 
-     * @return les coordonnées du noeud
-     */
-    private Pair<Number, Number> getNodeXY(Data f) {
-        Map<String, Number> attributes = f.getAttributes();
-        return new Pair<>(attributes.get(choosenAttributes.getKey()), attributes.get(choosenAttributes.getValue()));
-    }
-
-    /**
-     * Construit le graphique
-     */
-    private void constructChart() {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        chart.getData().clear();
-        this.data.clear();
-        List<Data> dataList = dataManager.getDataList();
-        for (Data f : dataList) {
-            addPoint(f, series);
-        }
-        for (Data f : dataManager.getUserDataList()) {
-            if (f.getAttributes().containsKey(choosenAttributes.getKey())
-                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
-                addPoint(f, series);
-            }
-
-        }
-        chart.getData().add(series);
-        setChartStyle();
-    }
-
-    private void addPoint(Data f, XYChart.Series<Number, Number> series) {
-        Pair<Number, Number> choosenAttributes = getNodeXY(f);
-        XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                choosenAttributes.getValue());
-        data.add(new Pair<>(node, f));
-        series.getData().add(node);
-    }
-
-    /**
-     * Récupère le un point sur le graphique
-     * 
-     * @param data le noeud
-     * 
-     * @return le noeud
-     */
-    private Data getNode(XYChart.Data<Number, Number> data) {
-        for (Pair<XYChart.Data<Number, Number>, Data> d : this.data) {
-            if (d.getKey() == data) {
-                return d.getValue();
-            }
-        }
-        return null;
-    }
 
     /**
      * Récupère les attributs
@@ -372,30 +269,6 @@ public class DataController implements Observer<Data> {
         yCategory.getItems().clear();
         xCategory.getItems().addAll(getAttributes());
         yCategory.getItems().addAll(getAttributes());
-    }
-
-    /**
-     * Met la couleur d'un noeud
-     * 
-     * @param node     le noeud
-     * @param category la catégorie
-     */
-    public void setNodeColor(Node node, String category) {
-        if (node == null) {
-            return;
-        }
-        if (categorieColor.isEmpty()) {
-            createColor();
-        }
-        if (!categorieColor.containsKey(category)) {
-            categorieColor.put(category, dataManager.nextColor());
-        }
-
-        node.setStyle("-fx-background-color: " + categorieColor.get(category) + ";");
-    }
-
-    private void createColor() {
-        dataManager.createColor();
     }
 
     /**
@@ -456,13 +329,6 @@ public class DataController implements Observer<Data> {
     public void openNewWindow() throws IOException {
         App app = new App();
         app.start(new Stage());
-    }
-
-    public void genererEcran() throws IOException {
-        Stage stage = new Stage();
-        Scene scene = new Scene(App.loadFXML("AddPointWindow"));
-        stage.setScene(scene);
-        stage.show();
     }
 
     public void classify() {

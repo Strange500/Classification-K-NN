@@ -6,9 +6,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+/**
+ * Classe qui permet de créer des données à partir d'une Map d'attributs et d'un champ de catégorie.
+ */
 public class FakeData extends Data{
 
-
+    /**
+     * Constructeur de la classe FakeData
+     * @param attr Map d'attributs
+     * @param categorieField Champ de catégorie
+     */
     public FakeData(Map<String, Number> attr, String categorieField) {
         this.attributes = new HashMap<>(attr);
         this.categoryField = categorieField;
@@ -22,7 +29,6 @@ public class FakeData extends Data{
         }
         return "Unknown";
     }
-
 
     @Override
     boolean attributeIsClass(String attribute, Class<?> clazz) {
@@ -49,5 +55,4 @@ public class FakeData extends Data{
     public String toString() {
         return this.attributes.toString();
     }
-
 }

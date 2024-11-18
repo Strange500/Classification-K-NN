@@ -22,11 +22,16 @@ public abstract class Data {
     protected static final Map<String, Class<?>> dataTypes = new HashMap<>();
     protected static final Map<String, Field> fieldsMap = new HashMap<>();
 
+    /**
+     * @param d1
+     * @param d2
+     * @param distance la distance à utiliser
+     * @return la distance entre deux données
+     */
     public static double distance(Data d1, Data d2, Distance distance) {
         Pair<Data, Data> pair = computeAttributes(d1, d2);
         return distance.distance(pair.getKey(), pair.getValue());
     }
-
 
     /**
      * Cette fonctionpermet d'ajuster les valeur des attributs n'ayant pas d'ordre entre eux
@@ -54,6 +59,11 @@ public abstract class Data {
         return new Pair<>(fakeData1, fakeData2);
     }
 
+    /**
+     * @param attribute
+     * @param value
+     * @return la valeur numérique de l'attribut
+     */
     public static double valueOf(String attribute, String value) {
         if (attributesMap.containsKey(attribute) && attributesMap.get(attribute).contains(value)) {
             return attributesMap.get(attribute).indexOf(value);
@@ -62,6 +72,11 @@ public abstract class Data {
         }
     }
 
+    /**
+     * @param attribute
+     * @param clazz
+     * @return si l'attribut est de la classe clazz
+     */
     boolean attributeIsClass(String attribute, Class<?> clazz) {
         if (dataTypes.getOrDefault(attribute, null) == null) {
             throw new NoSuchElementException("Attribute not found");
@@ -69,10 +84,20 @@ public abstract class Data {
         return isEqualOrSubclass(dataTypes.get(attribute), clazz);
     }
 
+    /**
+     * @param class1
+     * @param class2
+     * @return si class1 est égal ou une sous-classe de class2
+     */
     protected static boolean isEqualOrSubclass(Class<?> class1, Class<?> class2) {
         return class2.isAssignableFrom(class1);
     }
 
+    /**
+     * @param attribute
+     * @param value
+     * @return la valeur de l'attribut
+     */
     public String getValue(String attribute, Number value) {
         if (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size()) {
             return null;
@@ -83,6 +108,11 @@ public abstract class Data {
         return attributesNumericalValueToAttributesOriginalMap.get(attribute).get(value.intValue()).toString();
     }
 
+    /**
+     * @param attribute
+     * @param insertedIndex
+     * Met à jour les index des attributs
+     */
     public static void updateAttributesIndexes(String attribute, int insertedIndex) {
         List<? extends Data> ls = DataManager.getInstance().getDataList();
         for (Data d : ls) {
@@ -95,7 +125,9 @@ public abstract class Data {
         }
     }
 
-
+    /**
+     * Crée les données
+     */
     public void makeData() {
         // pour le momment l'odre est suppose être celui d'entree
         Field[] fields = this.getClass().getDeclaredFields();
@@ -126,6 +158,10 @@ public abstract class Data {
         this.category = map.get(category).toString();
     };
 
+    /**
+     * @param attribute
+     * @return si l'attribut a un ordre
+     */
     public boolean hasOrder(String attribute) {
         if (fieldsMap.getOrDefault(attribute, null) == null) {
             throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
@@ -133,6 +169,11 @@ public abstract class Data {
         return !fieldsMap.get(attribute).isAnnotationPresent(HasNoOrder.class);
     }
 
+    /**
+     * @param field
+     * @param value
+     * @return la valeur numérique de l'attribut
+     */
     private static Number getIntValue(Field field, Object value) {
         if (attributesMap.getOrDefault(field.getName(), null) == null) {
             List<Object> map = new ArrayList<>();
@@ -162,6 +203,10 @@ public abstract class Data {
         }
     }
 
+    /**
+     * @param obj
+     * Met à jour les types des données
+     */
     static void updateDataTypes(Data obj) {
         dataTypes.clear();
         Field[] fields = obj.getClass().getDeclaredFields();
@@ -176,6 +221,7 @@ public abstract class Data {
     public Map<String, Number> getAttributes() {
         return this.attributes;
     }
+
     /**
      * @return la catégorie de la donnée
      */
@@ -186,6 +232,7 @@ public abstract class Data {
         }
         return getValue(categoryField, Integer.parseInt(category));
     }
+
     /**
      * @param category la nouvelle catégorie de la donnée
      */
@@ -194,6 +241,9 @@ public abstract class Data {
         this.attributes.put(categoryField, data.getAttributes().get(categoryField));
     }
 
+    /**
+     * @param categoryField la nouvelle catégorie de la donnée
+     */
     public void setCategoryField(String categoryField) {
         if (!attributes.containsKey(categoryField)) {
             System.err.println("The category field does not exist in the attributes");
@@ -201,10 +251,14 @@ public abstract class Data {
         this.categoryField = categoryField;
     }
 
+    /**
+     * @return le nom de la catégorie
+     */
     public String getCategoryField() {
         return categoryField;
     }
 
+    @Override
     public String toString() {
         makeData();
         Map<String, Number> attributes = this.getAttributes();
