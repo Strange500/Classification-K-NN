@@ -8,18 +8,25 @@ import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 
 /**
- * Classe pour la gestion des données
+ * Classe permettant de gérer les données et de les manipuler.
+ * Elle permet de charger des données, de les ajouter, de les supprimer, de les catégoriser, de les afficher, de les sauvegarder, etc.
+ * Elle permet également de gérer les données utilisateurs.
+ * Elle est un singleton.
+ * @param <E> le type de données à gérer
  */
 public class DataManager<E extends Data> implements Observable<E> {
 
     public static final String PATH = "iris.csv";
-    private static DataManager<Data> instance ;
+    private static DataManager<Data> instance;
     private List<E> dataList;
-    private List<Observer> observers;
-    private List<E> UserData;
-    private Map<String, String> colorMap;
-    private static int idxColor = 0;
+    private List<E> userData;
+    private DataObserverManager<E> observerManager;
+    private DataColorManager colorManager;
 
+    /**
+     * Retourne l'instance de DataManager.
+     * @return l'instance de DataManager
+     */
     public static DataManager<Data> getInstance() {
         if (instance == null) {
             instance = new DataManager<>();
@@ -27,96 +34,37 @@ public class DataManager<E extends Data> implements Observable<E> {
         return instance;
     }
 
-
-
     /**
-     * Constructeur de la classe DataManager
-     * 
-     * @param dataList la liste des données
+     * Constructeur de DataManager.
+     * @param dataList la liste de données à gérer
      */
     private DataManager(List<E> dataList) {
         instance = (DataManager<Data>) this;
         this.dataList = dataList;
-        this.observers = new ArrayList<>();
-        this.UserData = new ArrayList<>();
+        this.userData = new ArrayList<>();
+        this.observerManager = new DataObserverManager<>();
+        this.colorManager = new DataColorManager();
     }
 
     /**
-     * Constructeur de la classe DataManager
+     * Constructeur de DataManager avec un fichier à charger par défaut.
      */
-    public DataManager() {
+    private DataManager() {
         this(PATH);
     }
 
-    public DataManager(String path) {
+    /**
+     * Constructeur de DataManager.
+     * @param path le chemin du fichier à charger
+     */
+    private DataManager(String path) {
         this(new ArrayList<>());
         this.loadData(path);
     }
 
-    public static void main(String[] args) {
-        DataManager<Data> dataManager = new DataManager<>();
-        dataManager.loadData(PATH);
-    }
-
-    public double valueOf(String attribute, String value) {
-        return Data.valueOf(attribute, value);
-    }
-
     /**
-     * @return la liste des observateurs
-     */
-    public List<Observer> getObservers() {
-        return observers;
-    }
-
-    /**
-     * @return la liste des données
-     */
-    public List<E> getDataList() {
-        return new ArrayList<>(dataList);
-    }
-
-    /**
-     * @param dataList la nouvelle liste des données
-     */
-    public void setDataList(List<E> dataList) {
-        this.dataList = dataList;
-    }
-
-    /**
-     * Ajoute une donnée à la liste des données
-     * 
-     * @param data la donnée à ajouter
-     */
-    public void addData(E data) {
-        dataList.add(data);
-        notifyAllObservers();
-    }
-
-    /**
-     * Supprime une donnée de la liste des données
-     * 
-     * @param data la donnée à supprimer
-     */
-    public void removeData(E data) {
-        dataList.remove(data);
-        notifyAllObservers();
-    }
-
-    /**
-     * @return les attributs des données
-     */
-    public Set<String> getAttributes() {
-        if (dataList.isEmpty()) {
-            return new HashSet<>();
-        }
-        return dataList.get(0).getAttributes().keySet();
-    }
-
-    /**
-     * Charge les données à partir d'un fichier
-     * 
-     * @param path le chemin du fichier
+     * Charge les données du fichier spécifié.
+     * @param path
      */
     public void loadData(String path) {
         try {
@@ -126,9 +74,8 @@ public class DataManager<E extends Data> implements Observable<E> {
                 f.makeData();
                 dataList.add((E) f);
             }
-            //System.out.println(this.dataList);
             Data.updateDataTypes(dataList.get(0));
-            notifyAllObservers();
+            observerManager.notifyAllObservers();
 
         } catch (FileNotFoundException e) {
             System.out.println("Fichier non trouvé");
@@ -137,142 +84,76 @@ public class DataManager<E extends Data> implements Observable<E> {
         }
     }
 
+    /**
+     * Ajoute une donnée à la liste de données.
+     * @param data
+     */
+    public void addData(E data) {
+        dataList.add(data);
+        observerManager.notifyAllObservers();
+    }
 
+    /**
+     * Supprime une donnée de la liste de données.
+     * @param data
+     */
+    public void removeData(E data) {
+        dataList.remove(data);
+        observerManager.notifyAllObservers();
+    }
 
-    public void changeCategoryField(String newcategoryField){
+    /**
+     * Change le champ de catégorie des données.
+     * @param newCategoryField
+     */
+    public void changeCategoryField(String newCategoryField) {
         for (Data d : dataList) {
-            d.setCategoryField(newcategoryField);
+            d.setCategoryField(newCategoryField);
         }
-        for (Data d : UserData) {
-            d.setCategoryField(newcategoryField);
+        for (Data d : userData) {
+            d.setCategoryField(newCategoryField);
         }
-        notifyAllObservers();
+        observerManager.notifyAllObservers();
     }
 
     /**
-     * Ajoute un observateur
+     * Ajoute une donnée que l'utilisateur a rentrée.
+     * @param e
      */
-    @Override
-    public void attach(Observer<E> ob) {
-        this.observers.add(ob);
+    public void addUserData(E e) {
+        userData.add(e);
+        observerManager.notifyAllObservers();
     }
 
     /**
-     * Notifie tous les observateurs et update l'observateur avec l'élément
+     * Ajoute des données contenues dans une map.
+     * @param map
      */
-    @Override
-    public void notifyAllObservers(E elt) {
-        ArrayList tmp = new ArrayList<>(this.observers);
-        for (Object ob : tmp) {
-            if (ob instanceof Observer)
-                ((Observer<E>) ob).update(this, elt);
-        }
-    }
-
-    /**
-     * Notifie tous les observateurs et update l'observateur
-     */
-    @Override
-    public void notifyAllObservers() {
-        ArrayList tmp = new ArrayList<>(this.observers);
-        for (Object ob : tmp) {
-            if (ob instanceof Observer)
-                ((Observer<E>) ob).update(this);
-        }
-    }
-
-    /**
-     * Ajoute une donnée utilisateur
-     */
-    public void AddUserData(E e){
-        UserData.add(e);
-        notifyAllObservers();
-    }
-
-    /**
-     * @return la liste des données utilisateur
-     */
-    public List<E> getUserDataList(){
-        return this.UserData;
-    }
-
-    /**
-     * Ajoute une liste de données utilisateur
-     */
-    public void addData(Map<String,Number> map){
+    public void addData(Map<String, Number> map) {
         Data tmp = new FakeData(map, dataList.get(0).getCategoryField());
-        this.UserData.add((E)tmp);
-        notifyAllObservers();
-    }
-
-    // ne fonctionne que si le nombre de catégories est un multiple de 3
-    // a refaire
-    public void createColor() {
-        colorMap = new HashMap<>();
-        int nbCategories = getNbCategories();
-        for (int i = 0; i < nbCategories; i++) {
-            colorMap.put("Color" + i, "rgb(" + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + ")");
-        }
-
-    }
-
-    public Map<String, String> getColorMap() {
-        return this.colorMap;
+        userData.add((E) tmp);
+        observerManager.notifyAllObservers();
     }
 
     /**
-     * @return la liste des catégories
-     */
-    private int getNbCategories() {
-        Set<String> categories = new HashSet<>();
-        for (Data d : dataList) {
-            categories.add(d.getCategory());
-        }
-        return categories.size();
-    }
-
-    /**
-     * @return la couleur suivante
-     */
-    public String nextColor() {
-        if (colorMap == null || colorMap.size() != getNbCategories()) {
-            createColor();
-        }
-        String color = colorMap.get("Color" + idxColor);
-        idxColor = (idxColor + 1) % getNbCategories();
-        return color;
-    }
-
-    /**
-     * Catégorise les données
+     * Categorise les données utilisateurs selon la distance souhaitée.
+     * @param distanceSouhaitee
      */
     public void categorizeData(Distance distanceSouhaitee) {
-        for (Data d : UserData) {
+        for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
                 Data nearestData = getNearestData(d, distanceSouhaitee);
                 d.setCategory(nearestData);
             }
         }
-        notifyAllObservers();
-    }
-
-    public Set<String> getAvailableValues(String attribute){
-        Set<String> values = new HashSet<>();
-        try{
-            for (Data d : dataList) {
-                values.add(d.getAttributes().get(attribute).toString());
-            }
-        } catch (NullPointerException e) {
-            System.err.println("soit Un element n'a pas d'attribut " + attribute + " soit datalist contient au moins un elements null");
-            return new HashSet<>();
-        }
-        return values;
+        observerManager.notifyAllObservers();
     }
 
     /**
-     * Devine la catégorie d'une donnée à partir de ses attributs
+     * Devine la catégorie d'une donnée selon les attributs donnés et la distance souhaitée.
      * @param guessAttributes
-     * @return la catégorie
+     * @param distanceSouhaitee
+     * @return
      */
     public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
@@ -281,8 +162,10 @@ public class DataManager<E extends Data> implements Observable<E> {
     }
 
     /**
-     * @param data la donnée
-     * @return la donnée la plus proche
+     * Renvoie la donnée la plus proche de la donnée donnée en paramètre.
+     * @param data
+     * @param distanceSouhaitee
+     * @return
      */
     public Data getNearestData(Data data, Distance distanceSouhaitee) {
         double minDistance = Double.MAX_VALUE;
@@ -298,10 +181,89 @@ public class DataManager<E extends Data> implements Observable<E> {
     }
 
     /**
-     * @param d la donnée
-     * @return vrai si la donnée est une donnée utilisateur
+     * @param d
+     * @return un boolean indiquant si la donnée donnée en paramètre est une donnée ajoutée par l'utilisateur
      */
-    public boolean isUserData(Data d){
-        return UserData.contains(d);
+    public boolean isUserData(Data d) {
+        return userData.contains(d);
+    }
+
+    /**
+     * @return un Set avec les attributs des données
+     */
+    public Set<String> getAttributes() {
+        if (dataList.isEmpty()) {
+            return new HashSet<>();
+        }
+        return dataList.get(0).getAttributes().keySet();
+    }
+
+    /**
+     * @param attribute
+     * @return un Set avec les valeurs possibles pour l'attribut donné en paramètre
+     */
+    public Set<String> getAvailableValues(String attribute) {
+        Set<String> values = new HashSet<>();
+        try {
+            for (Data d : dataList) {
+                values.add(d.getAttributes().get(attribute).toString());
+            }
+        } catch (NullPointerException e) {
+            System.err.println("Un élément n'a pas d'attribut " + attribute + " ou dataList contient au moins un élément null");
+            return new HashSet<>();
+        }
+        return values;
+    }
+
+    /**
+     * @return le nombre de catégories différentes dans les données
+     */
+    private int getNbCategories() {
+        Set<String> categories = new HashSet<>();
+        for (Data d : dataList) {
+            categories.add(d.getCategory());
+        }
+        return categories.size();
+    }
+
+    @Override
+    public void attach(Observer<E> ob) {
+        observerManager.attach(ob);
+    }
+
+    @Override
+    public void notifyAllObservers(E elt) {
+        observerManager.notifyAllObservers(elt);
+    }
+
+    @Override
+    public void notifyAllObservers() {
+        observerManager.notifyAllObservers();
+    }
+
+    /**
+     * @return la liste de données
+     */
+    public List<E> getDataList() {
+        return dataList;
+    }
+
+    /**
+     * @return la liste de données utilisateurs
+     */
+    public List<E> getUserDataList() {
+        return userData;
+    }
+
+    public static double valueOf(String attribute, String value) {
+        return Data.valueOf(attribute, value);
+    }
+
+    public String nextColor() {
+        return colorManager.nextColor(getNbCategories());
+    }
+
+    public void createColor() {
+        colorManager.createColor(getNbCategories());
     }
 }
