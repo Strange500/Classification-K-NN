@@ -139,11 +139,15 @@ public class DataManager<E extends Data> implements Observable<E> {
      * Categorise les données utilisateurs selon la distance souhaitée.
      * @param distanceSouhaitee
      */
-    public void categorizeData(Distance distanceSouhaitee) {
+    public void categorizeData(Distance distanceSouhaitee, int nb) {
         for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
-                Data nearestData = getNearestData(d, distanceSouhaitee);
-                d.setCategory(nearestData);
+                List<Data> nearestData = getNearestData(d, distanceSouhaitee, nb);
+                Map<String, Integer> categories = new HashMap<>();
+                for (Data data : nearestData) {
+                    categories.put(data.getCategory(), categories.getOrDefault(data.getCategory(), 0) + 1);
+                }
+                d.setCategory(Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey());
             }
         }
         observerManager.notifyAllObservers();
@@ -155,27 +159,39 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param distanceSouhaitee
      * @return
      */
-    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
+    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee, int nb) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
-        Data nearestData = getNearestData(n, distanceSouhaitee);
-        return nearestData.getCategory();
+        List<Data> nearestData = getNearestData(n, distanceSouhaitee, nb);
+        Map<String, Integer> categories = new HashMap<>();
+        for (Data d : nearestData) {
+            categories.put(d.getCategory(), categories.getOrDefault(d.getCategory(), 0) + 1);
+        }
+        return Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 
     /**
-     * Renvoie la donnée la plus proche de la donnée donnée en paramètre.
-     * @param data
-     * @param distanceSouhaitee
-     * @return
+     * Cherche les données les n plus proche de la donnée donnée en paramètre.
+     * @param data la donnée
+     * @param distanceSouhaitee la distance souhaitée
+     * @param nb le nombre de données à renvoyer
+     * @return une liste de données
      */
-    public Data getNearestData(Data data, Distance distanceSouhaitee) {
-        double minDistance = Double.MAX_VALUE;
-        Data nearestData = null;
-        for (Data d : dataList) {
-            double distance = Data.distance(data, d, distanceSouhaitee);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestData = d;
+    public List<Data> getNearestData(Data data, Distance distanceSouhaitee, int nb) {
+        List<Data> nearestData = new ArrayList<>();
+        List<Data> tmp = new ArrayList<>(dataList);
+
+        for (int i = 0; i < nb; i++) {
+            Data nearest = tmp.get(0);
+            double minDistance = distanceSouhaitee.distance(data, nearest);
+            for (Data d : tmp) {
+                double distance = distanceSouhaitee.distance(data, d);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = d;
+                }
             }
+            nearestData.add(nearest);
+            tmp.remove(nearest);
         }
         return nearestData;
     }

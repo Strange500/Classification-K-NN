@@ -240,6 +240,14 @@ public abstract class Data {
         this.category = data.getCategory();
         this.attributes.put(categoryField, data.getAttributes().get(categoryField));
     }
+    
+    /**
+     * @param category la nouvelle catégorie de la donnée
+     */
+    public void setCategory(String category) {
+        this.category = category;
+        this.attributes.put(categoryField, getIntValue(fieldsMap.get(categoryField), category));
+    }
 
     /**
      * @param categoryField la nouvelle catégorie de la donnée

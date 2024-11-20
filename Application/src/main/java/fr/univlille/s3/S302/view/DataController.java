@@ -347,7 +347,7 @@ public class DataController implements Observer<Data> {
     }
 
     public void classify() {
-        dataManager.categorizeData(getChosenDistance());
+        dataManager.categorizeData(getChosenDistance(), 3);
     }
 
     public void toggleHeatView() {
