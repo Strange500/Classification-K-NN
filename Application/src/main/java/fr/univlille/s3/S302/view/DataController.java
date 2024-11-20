@@ -66,6 +66,7 @@ public class DataController extends Observer {
     private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
 
     @FXML
+    ComboBox<String> cateCombo;
     /**
      * Initialisation de la fenêtre
      */
@@ -73,6 +74,8 @@ public class DataController extends Observer {
         chartController = new Chart(this.chart);
         distanceComboBox.setValue("Euclidienne");
         distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan"));
+        cateCombo.getItems().addAll(dataManager.getAttributes());
+        cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -81,13 +84,6 @@ public class DataController extends Observer {
                 update();
                 this.heatView = recreateHeatView();
                 this.heatView.update();
-
-                //temp
-                try{
-                    changeLabelName();
-                }catch (IOException e){
-                    genErrorPopup("Erreur lors du chargement ");
-                }
             } catch (IllegalArgumentException | NoSuchElementException ile) {
                 Popup popup = genErrorPopup(ile.getMessage());
                 popup.show(chart.getScene().getWindow());
@@ -110,11 +106,18 @@ public class DataController extends Observer {
             heatView.update();
         });
 
+        cateCombo.setOnAction(event -> {
+            changeCategoryField();
+        });
+
     }
     private void addTextFields() {
         addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
         for (String s : map.keySet()) {
+            if (s.equals(cateCombo.getValue())) {
+                continue;
+            }
             VBox tmp = genererLigneAttributs(s);
             addPointVBox.getChildren().add(tmp);
         }
@@ -196,10 +199,7 @@ public class DataController extends Observer {
     }
 
     private void changeCategoryField() {
-        // random choice from attributes
-        int i = 1;
-        // decommenter quand c'est finit
-        //dataManager.changeCategoryField(attributes.get(x));
+        dataManager.changeCategoryField(cateCombo.getValue());
     }
 
     /**
@@ -366,9 +366,16 @@ public class DataController extends Observer {
         heatView.toggle();
     }
 
-    private void changeLabelName() throws FileNotFoundException {
-        Pair<Integer,Double> paire= dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath());
-        pRobustesse.setText(String.valueOf(paire.getValue()) + " %");
-        nbVoisin.setText(String.valueOf(paire.getKey()) + " Voisins");
+    public void updateRobustesseLabels()  {
+
+        Pair<Integer,Double> paire= null;
+        try {
+            paire = dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath());
+        } catch (FileNotFoundException e) {
+            genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
+            throw new RuntimeException(e);
+        }
+        pRobustesse.setText(paire.getValue() + " %");
+        nbVoisin.setText(paire.getKey() + " Voisins");
     }
 }

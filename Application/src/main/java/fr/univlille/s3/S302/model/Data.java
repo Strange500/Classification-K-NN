@@ -226,11 +226,10 @@ public abstract class Data {
      * @return la catégorie de la donnée
      */
     public String getCategory() {
-
         if (attributeIsClass(categoryField, Number.class)) {
-            return category;
+            return attributes.get(categoryField).toString();
         }
-        return getValue(categoryField, Integer.parseInt(category));
+        return getValue(categoryField, attributes.get(categoryField));
     }
 
     /**
@@ -257,6 +256,7 @@ public abstract class Data {
             System.err.println("The category field does not exist in the attributes");
         }
         this.categoryField = categoryField;
+        this.category = getCategory();
     }
 
     /**
