@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
+import fr.univlille.s3.S302.utils.ModelUtils;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.util.Pair;
 
 /**
  * Classe permettant de gérer les données et de les manipuler.
@@ -281,5 +283,12 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void createColor() {
         colorManager.createColor(getNbCategories());
+    }
+    public Pair<Integer,Double> getBestN(Distance d, String path) throws FileNotFoundException {
+        List<E> listetest= (List<E>) DataLoader.charger(path);
+        for (Data da : listetest) {
+            da.makeData();
+        }
+        return ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
     }
 }

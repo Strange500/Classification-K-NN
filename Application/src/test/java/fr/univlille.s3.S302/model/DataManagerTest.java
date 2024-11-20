@@ -202,9 +202,9 @@ public class DataManagerTest {
         maps.put("Test", 0.9);
         FakeData fd3 = new FakeData(maps, "Test");
         dtM.addData(fd1);
-        assertEquals(fd1, dtM.getNearestData(fd2, new DistanceEuclidienne()));
+        assertEquals(fd1, dtM.getNearestData(fd2, new DistanceEuclidienne(),1));
         dtM.addData(fd2);
-        assertEquals(fd1, dtM.getNearestData(fd2, new DistanceEuclidienne()));
+        assertEquals(fd1, dtM.getNearestData(fd2, new DistanceEuclidienne(),1));
     }
 
     @Test
