@@ -73,9 +73,10 @@ public class DataController extends Observer {
     public void initialize() {
         chartController = new Chart(this.chart);
         distanceComboBox.setValue("Euclidienne");
-        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan"));
+        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
         cateCombo.getItems().addAll(dataManager.getAttributes());
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
+        
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -353,6 +354,10 @@ public class DataController extends Observer {
                 return new DistanceEuclidienne();
             case "Manhattan":
                 return new DistanceManhattan();
+            case "Euclidienne normalisée":
+                return new DistanceEuclidienneNormalisee();
+            case "Manhattan normalisée":
+                return new DistanceManhattanNormalisee();
             default:
                 return new DistanceEuclidienne();
         }
