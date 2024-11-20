@@ -182,9 +182,9 @@ public class DataManager<E extends Data> implements Observable<E> {
 
         for (int i = 0; i < nb; i++) {
             Data nearest = tmp.get(0);
-            double minDistance = distanceSouhaitee.distance(data, nearest);
+            double minDistance = Data.distance(data, nearest, distanceSouhaitee);
             for (Data d : tmp) {
-                double distance = distanceSouhaitee.distance(data, d);
+                double distance = Data.distance(data, d, distanceSouhaitee);
                 if (distance < minDistance) {
                     minDistance = distance;
                     nearest = d;
