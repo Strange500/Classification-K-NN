@@ -4,8 +4,10 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
+import fr.univlille.s3.S302.utils.ModelUtils;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.util.Pair;
 
 /**
  * Classe permettant de gérer les données et de les manipuler.
@@ -142,8 +144,8 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void categorizeData(Distance distanceSouhaitee) {
         for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
-                Data nearestData = getNearestData(d, distanceSouhaitee);
-                d.setCategory(nearestData);
+                List<Data> nearestData = getNearestData(d, distanceSouhaitee,1);
+                d.setCategory(nearestData.get(0));
             }
         }
         observerManager.notifyAllObservers();
@@ -157,8 +159,8 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
-        Data nearestData = getNearestData(n, distanceSouhaitee);
-        return nearestData.getCategory();
+        List<Data> nearestData = getNearestData(n, distanceSouhaitee,1);
+        return nearestData.get(0).getCategory();
     }
 
     /**
@@ -167,14 +169,14 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param distanceSouhaitee
      * @return
      */
-    public Data getNearestData(Data data, Distance distanceSouhaitee) {
+    public List<Data> getNearestData(Data data, Distance distanceSouhaitee,int nbVoisin) {
         double minDistance = Double.MAX_VALUE;
-        Data nearestData = null;
+        List<Data> nearestData = new ArrayList<>();
         for (Data d : dataList) {
             double distance = Data.distance(data, d, distanceSouhaitee);
             if (distance < minDistance) {
                 minDistance = distance;
-                nearestData = d;
+                nearestData.add(d);
             }
         }
         return nearestData;
@@ -265,5 +267,12 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void createColor() {
         colorManager.createColor(getNbCategories());
+    }
+    public Pair<Integer,Double> getBestN(Distance d, String path) throws FileNotFoundException {
+        List<E> listetest= (List<E>) DataLoader.charger(path);
+        for (Data da : listetest) {
+            da.makeData();
+        }
+        return ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
     }
 }

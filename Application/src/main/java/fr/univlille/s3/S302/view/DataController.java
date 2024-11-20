@@ -1,8 +1,7 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.*;
-import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
+import fr.univlille.s3.S302.utils.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 import javafx.application.Platform;
@@ -24,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -55,6 +55,10 @@ public class DataController implements Observer<Data> {
     Canvas canvas;
     @FXML
     GridPane grid;
+    @FXML
+    Label pRobustesse;
+    @FXML
+    Label nbVoisin;
     private HeatView heatView;
 
     private Chart chartController;
@@ -75,6 +79,13 @@ public class DataController implements Observer<Data> {
                 update();
                 this.heatView = recreateHeatView();
                 this.heatView.update();
+
+                //temp
+                try{
+                    changeLabelName();
+                }catch (IOException e){
+                    genErrorPopup("Erreur lors du chargement ");
+                }
             } catch (IllegalArgumentException | NoSuchElementException ile) {
                 Popup popup = genErrorPopup(ile.getMessage());
                 popup.show(chart.getScene().getWindow());
@@ -96,6 +107,7 @@ public class DataController implements Observer<Data> {
             canvas.setWidth(chart.getWidth());
             heatView.update();
         });
+
     }
     private void addTextFields() {
         addPointVBox.getChildren().clear();
@@ -218,6 +230,8 @@ public class DataController implements Observer<Data> {
         if (heatViewActive) {
             this.heatView.toggle();
         }
+
+
     }
 
     /**
@@ -337,5 +351,11 @@ public class DataController implements Observer<Data> {
 
     public void toggleHeatView() {
         heatView.toggle();
+    }
+
+    private void changeLabelName() throws FileNotFoundException {
+        Pair<Integer,Double> paire= dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath());
+        pRobustesse.setText(String.valueOf(paire.getValue()) + " %");
+        nbVoisin.setText(String.valueOf(paire.getKey()) + " Voisins");
     }
 }
