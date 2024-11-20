@@ -156,7 +156,7 @@ public abstract class Data {
         this.categoryField = category;
         this.attributes = map;
         this.category = map.get(category).toString();
-    };
+    }
 
     /**
      * @param attribute

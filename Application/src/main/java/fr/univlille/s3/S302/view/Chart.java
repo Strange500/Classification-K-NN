@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class Chart {
 
-    private ScatterChart<Number, Number> chart;
+    private final ScatterChart<Number, Number> chart;
 
     public final Map<String, String> categorieColor = new HashMap<>();
 

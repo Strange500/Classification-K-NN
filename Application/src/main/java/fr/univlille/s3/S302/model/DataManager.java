@@ -19,9 +19,9 @@ public class DataManager<E extends Data> implements Observable<E> {
     public static final String PATH = "iris.csv";
     private static DataManager<Data> instance;
     private List<E> dataList;
-    private List<E> userData;
-    private DataObserverManager<E> observerManager;
-    private DataColorManager colorManager;
+    private final List<E> userData;
+    private final DataObserverManager<E> observerManager;
+    private final DataColorManager colorManager;
 
     /**
      * Retourne l'instance de DataManager.

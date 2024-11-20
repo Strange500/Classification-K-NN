@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class DataColorManager {
 
-    private Map<String, String> colorMap;
+    private final Map<String, String> colorMap;
     private static int idxColor = 0;
 
     /**

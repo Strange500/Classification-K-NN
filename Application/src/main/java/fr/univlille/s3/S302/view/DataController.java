@@ -1,11 +1,11 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.*;
-import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
+import fr.univlille.s3.S302.utils.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -47,6 +47,8 @@ public class DataController implements Observer<Data> {
     @FXML
     private Button addDataBtn;
     @FXML
+    private ComboBox<String> distanceComboBox;
+    @FXML
     private Button saveChart;
     @FXML
     private VBox addPointVBox;
@@ -67,6 +69,8 @@ public class DataController implements Observer<Data> {
      */
     public void initialize() {
         chartController = new Chart(this.chart);
+        distanceComboBox.setValue("Euclidienne");
+        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan"));
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -120,7 +124,7 @@ public class DataController implements Observer<Data> {
         try {
             for (String s : labelMap.keySet()) {
                 if (!labelMap.get(s).getText().isEmpty()) {
-                    tmp.put(s, dataManager.valueOf(s, labelMap.get(s).getText()));
+                    tmp.put(s, DataManager.valueOf(s, labelMap.get(s).getText()));
                 }
             }
             dataManager.addData(tmp);
@@ -142,7 +146,7 @@ public class DataController implements Observer<Data> {
         for (int i = j - 1; i >= 0; i--) {
             sb.insert(indexMajuscules[i], " ");
         }
-        return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
+        return sb.substring(0, 1).toUpperCase() + sb.substring(1);
     }
 
     /**
@@ -331,8 +335,19 @@ public class DataController implements Observer<Data> {
         app.start(new Stage());
     }
 
+    private Distance getChosenDistance() {
+        switch (distanceComboBox.getValue()) {
+            case "Euclidienne":
+                return new DistanceEuclidienne();
+            case "Manhattan":
+                return new DistanceManhattan();
+            default:
+                return new DistanceEuclidienne();
+        }
+    }
+
     public void classify() {
-        dataManager.categorizeData(DEFAULT_DISTANCE);
+        dataManager.categorizeData(getChosenDistance());
     }
 
     public void toggleHeatView() {

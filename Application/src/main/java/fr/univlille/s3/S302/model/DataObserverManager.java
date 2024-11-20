@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class DataObserverManager<E extends Data> {
 
-    private List<Observer<E>> observers;
+    private final List<Observer<E>> observers;
 
     /**
      * Constructeur de la classe DataObserverManager.
