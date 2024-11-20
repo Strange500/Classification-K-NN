@@ -150,7 +150,7 @@ public abstract class Data {
                 map.put(fields[i].getName(), (Number)values[i]);
                 fieldsMap.put(fields[i].getName(), fields[i]);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                System.err.println("Erreur lors de la récupération de la valeur de l'attribut : " + fields[i].getName());
             }
         }
         this.categoryField = category;
@@ -277,6 +277,19 @@ public abstract class Data {
         }
         sb.append("category: ").append(category).append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Data data = (Data) o;
+        return Objects.equals(categoryField, data.categoryField) && Objects.equals(category, data.category) && Objects.equals(attributes, data.attributes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(categoryField, category, attributes);
     }
 }
 

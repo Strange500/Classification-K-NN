@@ -2,7 +2,6 @@ package fr.univlille.s3.S302.utils;
 
 import fr.univlille.s3.S302.model.Data;
 import fr.univlille.s3.S302.model.DataManager;
-import javafx.css.Size;
 import javafx.util.Pair;
 
 import java.util.HashMap;
@@ -26,7 +25,7 @@ public class ModelUtils {
             for (Data d : listeData){
                 String cate=d.getCategory();
 
-                String catDetermine=getMostRepresentedCategorie(dm.getNearestData(d,distance,i));
+                String catDetermine=getMostRepresentedCategorie(dm.getNearestDatas(d,distance,i));
                 if (cate.equals(catDetermine)){
                     cpt++;
                 }

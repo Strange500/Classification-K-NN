@@ -4,11 +4,8 @@ import fr.univlille.s3.S302.model.*;
 import fr.univlille.s3.S302.utils.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
@@ -32,7 +29,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
 
-public class DataController implements Observer<Data> {
+public class DataController extends Observer {
 
     @FXML
     ScatterChart<Number, Number> chart;
@@ -140,7 +137,7 @@ public class DataController implements Observer<Data> {
                     tmp.put(s, DataManager.valueOf(s, labelMap.get(s).getText()));
                 }
             }
-            dataManager.addData(tmp);
+            dataManager.addUserData(tmp);
         } catch (NumberFormatException e) {
             DataController.genErrorPopup("Entrez valeurs valides").show(addPointVBox.getScene().getWindow());
         }
@@ -294,7 +291,7 @@ public class DataController implements Observer<Data> {
      * Met à jour le graphique
      */
     @Override
-    public void update(Observable<Data> ob) {
+    public void update(Observable ob) {
         update();
     }
 
@@ -304,7 +301,7 @@ public class DataController implements Observer<Data> {
      * @param elt les données
      */
     @Override
-    public void update(Observable<Data> ob, Data elt) {
+    public void update(Observable ob, Object elt) {
         update();
     }
 

@@ -5,8 +5,6 @@ import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.ModelUtils;
-import fr.univlille.s3.S302.utils.Observable;
-import fr.univlille.s3.S302.utils.Observer;
 import javafx.util.Pair;
 
 /**
@@ -16,13 +14,12 @@ import javafx.util.Pair;
  * Elle est un singleton.
  * @param <E> le type de données à gérer
  */
-public class DataManager<E extends Data> implements Observable<E> {
+public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Observable {
 
     public static final String PATH = "iris.csv";
     private static DataManager<Data> instance;
     private List<E> dataList;
     private final List<E> userData;
-    private final DataObserverManager<E> observerManager;
     private final DataColorManager colorManager;
 
     /**
@@ -41,10 +38,10 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param dataList la liste de données à gérer
      */
     private DataManager(List<E> dataList) {
+        super();
         instance = (DataManager<Data>) this;
         this.dataList = dataList;
         this.userData = new ArrayList<>();
-        this.observerManager = new DataObserverManager<>();
         this.colorManager = new DataColorManager();
     }
 
@@ -64,6 +61,12 @@ public class DataManager<E extends Data> implements Observable<E> {
         this.loadData(path);
     }
 
+    public void reset() {
+        this.dataList.clear();
+        this.userData.clear();
+        notifyAllObservers();
+    }
+
     /**
      * Charge les données du fichier spécifié.
      * @param path
@@ -77,12 +80,10 @@ public class DataManager<E extends Data> implements Observable<E> {
                 dataList.add((E) f);
             }
             Data.updateDataTypes(dataList.get(0));
-            observerManager.notifyAllObservers();
+            notifyAllObservers();
 
         } catch (FileNotFoundException e) {
-            System.out.println("Fichier non trouvé");
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -92,7 +93,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void addData(E data) {
         dataList.add(data);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -101,7 +102,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void removeData(E data) {
         dataList.remove(data);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -115,7 +116,7 @@ public class DataManager<E extends Data> implements Observable<E> {
         for (Data d : userData) {
             d.setCategoryField(newCategoryField);
         }
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -124,17 +125,17 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void addUserData(E e) {
         userData.add(e);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
      * Ajoute des données contenues dans une map.
      * @param map
      */
-    public void addData(Map<String, Number> map) {
+    public void addUserData(Map<String, Number> map) {
         Data tmp = new FakeData(map, dataList.get(0).getCategoryField());
         userData.add((E) tmp);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -144,7 +145,7 @@ public class DataManager<E extends Data> implements Observable<E> {
     public void categorizeData(Distance distanceSouhaitee, int nb) {
         for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
-                List<Data> nearestData = getNearestData(d, distanceSouhaitee, nb);
+                List<Data> nearestData = getNearestDatas(d, distanceSouhaitee, nb);
                 Map<String, Integer> categories = new HashMap<>();
                 for (Data data : nearestData) {
                     categories.put(data.getCategory(), categories.getOrDefault(data.getCategory(), 0) + 1);
@@ -152,7 +153,7 @@ public class DataManager<E extends Data> implements Observable<E> {
                 d.setCategory(Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey());
             }
         }
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -163,7 +164,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee, int nb) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
-        List<Data> nearestData = getNearestData(n, distanceSouhaitee, nb);
+        List<Data> nearestData = getNearestDatas(n, distanceSouhaitee, nb);
         Map<String, Integer> categories = new HashMap<>();
         for (Data d : nearestData) {
             categories.put(d.getCategory(), categories.getOrDefault(d.getCategory(), 0) + 1);
@@ -178,7 +179,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param nb le nombre de données à renvoyer
      * @return une liste de données
      */
-    public List<Data> getNearestData(Data data, Distance distanceSouhaitee, int nb) {
+    public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nb) {
         List<Data> nearestData = new ArrayList<>();
         List<Data> tmp = new ArrayList<>(dataList);
 
@@ -244,20 +245,6 @@ public class DataManager<E extends Data> implements Observable<E> {
         return categories.size();
     }
 
-    @Override
-    public void attach(Observer<E> ob) {
-        observerManager.attach(ob);
-    }
-
-    @Override
-    public void notifyAllObservers(E elt) {
-        observerManager.notifyAllObservers(elt);
-    }
-
-    @Override
-    public void notifyAllObservers() {
-        observerManager.notifyAllObservers();
-    }
 
     /**
      * @return la liste de données
