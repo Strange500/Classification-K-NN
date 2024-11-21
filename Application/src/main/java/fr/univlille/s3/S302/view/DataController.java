@@ -76,7 +76,7 @@ public class DataController extends Observer {
         distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
         cateCombo.getItems().addAll(dataManager.getAttributes());
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
-        nbVoisin.setText(dataManager.getBestN() + " Voisins");
+        nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -385,12 +385,12 @@ public class DataController extends Observer {
 
         double percent = 0;
         try {
-            percent = dataManager.getBestN(defaultDistance,getCsv().getPath(), cateCombo.getValue());
+            percent = dataManager.getBestNbVoisin(defaultDistance,getCsv().getPath(), cateCombo.getValue());
         } catch (FileNotFoundException e) {
             genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
             throw new RuntimeException(e);
         }
         pRobustesse.setText((percent *100) + " %");
-        nbVoisin.setText(dataManager.getBestN() + " Voisins");
+        nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
     }
 }

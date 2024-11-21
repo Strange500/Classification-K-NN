@@ -65,11 +65,15 @@ public abstract class Data {
      * @return la valeur numérique de l'attribut
      */
     public static double valueOf(String attribute, String value) {
-        if (attributesMap.containsKey(attribute) && attributesMap.get(attribute).contains(value)) {
-            return attributesMap.get(attribute).indexOf(value);
-        } else {
+        if (attributesMap.getOrDefault(attribute, null) == null) {
             return Double.parseDouble(value);
         }
+        for (int i = 0; i < attributesMap.get(attribute).size(); i++) {
+            if (attributesMap.get(attribute).get(i).toString().equals(value)) {
+                return i;
+            }
+        }
+        return Double.parseDouble(value);
     }
 
     /**
