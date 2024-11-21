@@ -100,7 +100,7 @@ public class HeatView {
             for (double x = 0; x < maxX; x += stepX) {
                 data.put(xAttribute, x);
                 data.put(yAttribute, y);
-                String cat = DataManager.getInstance().guessCategory(data, new DistanceEuclidienne());
+                String cat = DataManager.getInstance().guessCategory(data, new DistanceEuclidienne(), 3);
                 List<Double> tmp = colorMap.get(cat);
                 canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
                 canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,

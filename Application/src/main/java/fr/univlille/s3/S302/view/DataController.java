@@ -4,11 +4,8 @@ import fr.univlille.s3.S302.model.*;
 import fr.univlille.s3.S302.utils.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
@@ -24,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
@@ -31,7 +29,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
 
-public class DataController implements Observer<Data> {
+public class DataController extends Observer {
 
     @FXML
     ScatterChart<Number, Number> chart;
@@ -57,6 +55,10 @@ public class DataController implements Observer<Data> {
     Canvas canvas;
     @FXML
     GridPane grid;
+    @FXML
+    Label pRobustesse;
+    @FXML
+    Label nbVoisin;
     private HeatView heatView;
 
     private Chart chartController;
@@ -64,6 +66,7 @@ public class DataController implements Observer<Data> {
     private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
 
     @FXML
+    ComboBox<String> cateCombo;
     /**
      * Initialisation de la fenêtre
      */
@@ -71,6 +74,9 @@ public class DataController implements Observer<Data> {
         chartController = new Chart(this.chart);
         distanceComboBox.setValue("Euclidienne");
         distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
+        cateCombo.getItems().addAll(dataManager.getAttributes());
+        cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
+        
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -100,11 +106,19 @@ public class DataController implements Observer<Data> {
             canvas.setWidth(chart.getWidth());
             heatView.update();
         });
+
+        cateCombo.setOnAction(event -> {
+            changeCategoryField();
+        });
+
     }
     private void addTextFields() {
         addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
         for (String s : map.keySet()) {
+            if (s.equals(cateCombo.getValue())) {
+                continue;
+            }
             VBox tmp = genererLigneAttributs(s);
             addPointVBox.getChildren().add(tmp);
         }
@@ -127,7 +141,7 @@ public class DataController implements Observer<Data> {
                     tmp.put(s, DataManager.valueOf(s, labelMap.get(s).getText()));
                 }
             }
-            dataManager.addData(tmp);
+            dataManager.addUserData(tmp);
         } catch (NumberFormatException e) {
             DataController.genErrorPopup("Entrez valeurs valides").show(addPointVBox.getScene().getWindow());
         }
@@ -186,10 +200,7 @@ public class DataController implements Observer<Data> {
     }
 
     private void changeCategoryField() {
-        // random choice from attributes
-        int i = 1;
-        // decommenter quand c'est finit
-        //dataManager.changeCategoryField(attributes.get(x));
+        dataManager.changeCategoryField(cateCombo.getValue());
     }
 
     /**
@@ -222,6 +233,8 @@ public class DataController implements Observer<Data> {
         if (heatViewActive) {
             this.heatView.toggle();
         }
+
+
     }
 
     /**
@@ -279,7 +292,7 @@ public class DataController implements Observer<Data> {
      * Met à jour le graphique
      */
     @Override
-    public void update(Observable<Data> ob) {
+    public void update(Observable ob) {
         update();
     }
 
@@ -289,7 +302,7 @@ public class DataController implements Observer<Data> {
      * @param elt les données
      */
     @Override
-    public void update(Observable<Data> ob, Data elt) {
+    public void update(Observable ob, Object elt) {
         update();
     }
 
@@ -351,10 +364,23 @@ public class DataController implements Observer<Data> {
     }
 
     public void classify() {
-        dataManager.categorizeData(getChosenDistance());
+        dataManager.categorizeData(getChosenDistance(), 3);
     }
 
     public void toggleHeatView() {
         heatView.toggle();
+    }
+
+    public void updateRobustesseLabels()  {
+
+        Pair<Integer,Double> paire= null;
+        try {
+            paire = dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath(), cateCombo.getValue());
+        } catch (FileNotFoundException e) {
+            genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
+            throw new RuntimeException(e);
+        }
+        pRobustesse.setText((paire.getValue() *100) + " %");
+        nbVoisin.setText(paire.getKey() + " Voisins");
     }
 }

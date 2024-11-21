@@ -25,7 +25,7 @@ public class FakeData extends Data{
     @Override
     public String getCategory() {
         if (attributes.containsKey(categoryField) && attributes.get(categoryField) != null) {
-            return attributes.get(categoryField).toString();
+            return super.getCategory();
         }
         return "Unknown";
     }

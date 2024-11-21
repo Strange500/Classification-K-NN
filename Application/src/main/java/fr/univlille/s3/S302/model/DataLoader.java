@@ -24,7 +24,7 @@ public class DataLoader {
      */
     public static List<? extends Data> charger(String fileName) throws FileNotFoundException {
         if (fileName == null) {
-            throw new FileNotFoundException("Fichier non trouvé");
+            throw new FileNotFoundException("check is null : Fichier non trouvé: " + fileName);
         }
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
         Class<? extends Data> clazz = null;
@@ -33,7 +33,7 @@ public class DataLoader {
                 input = new FileInputStream(fileName);
                 clazz = getClassFromHeader(new FileReader(fileName));
             } else {
-                throw new FileNotFoundException("Fichier non trouvé");
+                throw new FileNotFoundException("check filename exist : Fichier non trouvé: " + fileName);
             }
         } else{
             clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
@@ -58,9 +58,9 @@ public class DataLoader {
             List<? extends Data> records = csvToBean.parse();
             return records;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
-        throw new FileNotFoundException("Fichier non trouvé");
+        throw new FileNotFoundException("Fichier non trouvé" );
     }
 
     /**
@@ -76,7 +76,7 @@ public class DataLoader {
 
             return headerToClassMap.getOrDefault(header, null);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
         return null;
     }
@@ -94,11 +94,13 @@ public class DataLoader {
     /**
      * Charge toutes les classes héritant de Data
      */
-    private static void preLoadClasses() {
+    static void preLoadClasses() {
         try {
             Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);
+            System.out.println("Liste des classe a charger : " + allClasses);
             for (Class<? extends Data> clazz : allClasses) {
                 Class.forName(clazz.getName());
+                System.out.println("Chargement de la classe " + clazz.getName());
             }
         } catch (ClassNotFoundException e) {
             System.err.println("Impossible de charger les classes");

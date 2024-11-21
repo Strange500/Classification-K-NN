@@ -144,13 +144,15 @@ public abstract class Data {
                     attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>(){{
                         add(0, "Unknown");
                     }});
-                    attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+                    if (!attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).contains(values[i].toString())) {
+                        attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+                    }
                     values[i] = tmp;
                 }
                 map.put(fields[i].getName(), (Number)values[i]);
                 fieldsMap.put(fields[i].getName(), fields[i]);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                System.err.println("Erreur lors de la récupération de la valeur de l'attribut : " + fields[i].getName());
             }
         }
         this.categoryField = category;
@@ -226,19 +228,19 @@ public abstract class Data {
      * @return la catégorie de la donnée
      */
     public String getCategory() {
-
         if (attributeIsClass(categoryField, Number.class)) {
-            return category;
+            return attributes.get(categoryField).toString();
         }
-        return getValue(categoryField, Integer.parseInt(category));
+        return getValue(categoryField, attributes.get(categoryField));
     }
 
+    
     /**
      * @param category la nouvelle catégorie de la donnée
      */
-    public void setCategory(Data data) {
-        this.category = data.getCategory();
-        this.attributes.put(categoryField, data.getAttributes().get(categoryField));
+    public void setCategory(String category) {
+        this.category = category;
+        this.attributes.put(categoryField, getIntValue(fieldsMap.get(categoryField), category));
     }
 
     /**
@@ -249,6 +251,7 @@ public abstract class Data {
             System.err.println("The category field does not exist in the attributes");
         }
         this.categoryField = categoryField;
+        this.category = getCategory();
     }
 
     /**
@@ -269,6 +272,19 @@ public abstract class Data {
         }
         sb.append("category: ").append(category).append("}");
         return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Data data = (Data) o;
+        return Objects.equals(categoryField, data.categoryField) && Objects.equals(category, data.category) && Objects.equals(attributes, data.attributes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(categoryField, category, attributes);
     }
 }
 
