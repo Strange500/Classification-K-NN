@@ -144,7 +144,9 @@ public abstract class Data {
                     attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>(){{
                         add(0, "Unknown");
                     }});
-                    attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+                    if (!attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).contains(values[i].toString())) {
+                        attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+                    }
                     values[i] = tmp;
                 }
                 map.put(fields[i].getName(), (Number)values[i]);
@@ -232,13 +234,6 @@ public abstract class Data {
         return getValue(categoryField, attributes.get(categoryField));
     }
 
-    /**
-     * @param category la nouvelle catégorie de la donnée
-     */
-    public void setCategory(Data data) {
-        this.category = data.getCategory();
-        this.attributes.put(categoryField, data.getAttributes().get(categoryField));
-    }
     
     /**
      * @param category la nouvelle catégorie de la donnée
