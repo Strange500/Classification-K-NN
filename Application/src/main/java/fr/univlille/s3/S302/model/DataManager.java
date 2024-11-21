@@ -271,10 +271,13 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     public void createColor() {
         colorManager.createColor(getNbCategories());
     }
-    public Pair<Integer,Double> getBestN(Distance d, String path) throws FileNotFoundException {
+    public Pair<Integer,Double> getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
         List<E> listetest= (List<E>) DataLoader.charger(path);
         for (Data da : listetest) {
             da.makeData();
+        }
+        for (Data da : listetest) {
+            da.setCategoryField(targetField);
         }
         return ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
     }

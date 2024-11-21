@@ -375,12 +375,12 @@ public class DataController extends Observer {
 
         Pair<Integer,Double> paire= null;
         try {
-            paire = dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath());
+            paire = dataManager.getBestN(DEFAULT_DISTANCE,getCsv().getPath(), cateCombo.getValue());
         } catch (FileNotFoundException e) {
             genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
             throw new RuntimeException(e);
         }
-        pRobustesse.setText(paire.getValue() + " %");
+        pRobustesse.setText((paire.getValue() *100) + " %");
         nbVoisin.setText(paire.getKey() + " Voisins");
     }
 }
