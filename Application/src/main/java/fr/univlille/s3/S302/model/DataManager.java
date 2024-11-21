@@ -1,6 +1,7 @@
 package fr.univlille.s3.S302.model;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
@@ -77,14 +78,16 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
             dataList = new ArrayList<>();
             List<? extends Data> tmp = DataLoader.charger(path);
             for (Data f : tmp) {
-                f.makeData();
+                f.initializeAttributes();
                 dataList.add((E) f);
             }
             Data.updateDataTypes(dataList.get(0));
             notifyAllObservers();
 
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Fichier introuvable : " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors du chargement des données", e);
         }
     }
 
@@ -273,16 +276,20 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         colorManager.createColor(getNbCategories());
     }
     public double getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
-        List<E> listetest= (List<E>) DataLoader.charger(path);
-        for (Data da : listetest) {
-            da.makeData();
+        try {
+            List<E> listetest= (List<E>) DataLoader.charger(path);
+            for (Data da : listetest) {
+                da.initializeAttributes();
+            }
+            for (Data da : listetest) {
+                da.setCategoryField(targetField);
+            }
+            Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
+            this.bestN = p.getKey();
+            return p.getValue();
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors du chargement des données", e);
         }
-        for (Data da : listetest) {
-            da.setCategoryField(targetField);
-        }
-        Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
-        this.bestN = p.getKey();
-        return p.getValue();
     }
 
     public int getBestN() {
