@@ -1,6 +1,7 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.DataManager;
+import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -31,8 +32,9 @@ public class HeatView {
     private final String yAttribute;
     private final Map<String, List<Double>> colorMap;
     private boolean active = false;
+    private Distance distance ;
 
-    public HeatView(Canvas cv, ScatterChart<Number, Number> scatterChart, String xAttribute, String yAttribute, Map<String, String> colorMap) {
+    public HeatView(Canvas cv, ScatterChart<Number, Number> scatterChart, String xAttribute, String yAttribute, Map<String, String> colorMap, Distance distance) {
         canvas = cv;
         this.scatterChart = scatterChart;
         this.xAttribute = xAttribute;
@@ -42,6 +44,7 @@ public class HeatView {
             tmp.put(entry.getKey(), getCategorieRgb(entry.getValue()));
         }
         this.colorMap = tmp;
+        this.distance = distance;
 
     }
 
@@ -100,7 +103,7 @@ public class HeatView {
             for (double x = 0; x < maxX; x += stepX) {
                 data.put(xAttribute, x);
                 data.put(yAttribute, y);
-                String cat = DataManager.getInstance().guessCategory(data, new DistanceEuclidienne(), 3);
+                String cat = DataManager.getInstance().guessCategory(data, distance);
                 List<Double> tmp = colorMap.get(cat);
                 canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
                 canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,

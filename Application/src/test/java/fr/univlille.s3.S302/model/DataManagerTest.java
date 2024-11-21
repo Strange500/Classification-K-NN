@@ -159,7 +159,7 @@ public class DataManagerTest {
             put("sepalWidth", 1.0);
             put("species", 1.0);
         }}, "petalLength");
-        assertEquals("5.0", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne(), 1));
+        assertEquals("5.0", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
     }
 
     @Test

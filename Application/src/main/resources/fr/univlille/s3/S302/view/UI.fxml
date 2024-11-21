@@ -72,10 +72,14 @@
                </children>
                <Separator />
             </VBox>
-            
-            <VBox fx:id="addPointVBox" prefHeight="150.0" style="-fx-padding: 10px;">
-               <Label alignment="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2; -fx-padding: 10px;" text="Ajouter un point" />
-            </VBox>
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="500.0" prefWidth="210.0">
+               <content>
+
+                  <VBox fx:id="addPointVBox" alignment="CENTER" maxHeight="-Infinity" style="-fx-padding: 10px;">
+                     <Label alignment="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2; -fx-padding: 10px;" text="Ajouter un point" />
+                  </VBox>
+               </content>
+            </ScrollPane>
             
             <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
                <Button fx:id="addDataBtn" onAction="#addUserPoint" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #bd93f9; -fx-text-fill: #f8f8f2; -fx-font-size: 14px;" text="Ajouter donnée" />

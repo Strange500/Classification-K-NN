@@ -21,6 +21,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     private List<E> dataList;
     private final List<E> userData;
     private final DataColorManager colorManager;
+    private int bestN = 3;
 
     /**
      * Retourne l'instance de DataManager.
@@ -142,10 +143,10 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
      * Categorise les données utilisateurs selon la distance souhaitée.
      * @param distanceSouhaitee
      */
-    public void categorizeData(Distance distanceSouhaitee, int nb) {
+    public void categorizeData(Distance distanceSouhaitee) {
         for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
-                List<Data> nearestData = getNearestDatas(d, distanceSouhaitee, nb);
+                List<Data> nearestData = getNearestDatas(d, distanceSouhaitee, bestN);
                 Map<String, Integer> categories = new HashMap<>();
                 for (Data data : nearestData) {
                     categories.put(data.getCategory(), categories.getOrDefault(data.getCategory(), 0) + 1);
@@ -162,9 +163,9 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
      * @param distanceSouhaitee
      * @return
      */
-    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee, int nb) {
+    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
-        List<Data> nearestData = getNearestDatas(n, distanceSouhaitee, nb);
+        List<Data> nearestData = getNearestDatas(n, distanceSouhaitee, bestN);
         Map<String, Integer> categories = new HashMap<>();
         for (Data d : nearestData) {
             categories.put(d.getCategory(), categories.getOrDefault(d.getCategory(), 0) + 1);
@@ -176,14 +177,14 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
      * Cherche les données les n plus proche de la donnée donnée en paramètre.
      * @param data la donnée
      * @param distanceSouhaitee la distance souhaitée
-     * @param nb le nombre de données à renvoyer
+     * @param nbVoisin le nombre de voisins a considerer
      * @return une liste de données
      */
-    public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nb) {
+    public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nbVoisin) {
         List<Data> nearestData = new ArrayList<>();
         List<Data> tmp = new ArrayList<>(dataList);
 
-        for (int i = 0; i < nb; i++) {
+        for (int i = 0; i < nbVoisin; i++) {
             Data nearest = tmp.get(0);
             double minDistance = Data.distance(data, nearest, distanceSouhaitee);
             for (Data d : tmp) {
@@ -271,7 +272,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     public void createColor() {
         colorManager.createColor(getNbCategories());
     }
-    public Pair<Integer,Double> getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
+    public double getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
         List<E> listetest= (List<E>) DataLoader.charger(path);
         for (Data da : listetest) {
             da.makeData();
@@ -279,6 +280,12 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         for (Data da : listetest) {
             da.setCategoryField(targetField);
         }
-        return ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
+        Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
+        this.bestN = p.getKey();
+        return p.getValue();
+    }
+
+    public int getBestN() {
+        return bestN;
     }
 }
