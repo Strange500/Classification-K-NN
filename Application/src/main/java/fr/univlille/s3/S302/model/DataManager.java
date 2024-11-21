@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.Observable;
-import fr.univlille.s3.S302.utils.Observer;
+import fr.univlille.s3.S302.utils.ModelUtils;
+import javafx.util.Pair;
 
 /**
  * Classe permettant de gérer les données et de les manipuler.
@@ -14,13 +14,12 @@ import fr.univlille.s3.S302.utils.Observer;
  * Elle est un singleton.
  * @param <E> le type de données à gérer
  */
-public class DataManager<E extends Data> implements Observable<E> {
+public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Observable {
 
     public static final String PATH = "iris.csv";
     private static DataManager<Data> instance;
     private List<E> dataList;
     private final List<E> userData;
-    private final DataObserverManager<E> observerManager;
     private final DataColorManager colorManager;
 
     /**
@@ -39,10 +38,10 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param dataList la liste de données à gérer
      */
     private DataManager(List<E> dataList) {
+        super();
         instance = (DataManager<Data>) this;
         this.dataList = dataList;
         this.userData = new ArrayList<>();
-        this.observerManager = new DataObserverManager<>();
         this.colorManager = new DataColorManager();
     }
 
@@ -62,6 +61,12 @@ public class DataManager<E extends Data> implements Observable<E> {
         this.loadData(path);
     }
 
+    public void reset() {
+        this.dataList.clear();
+        this.userData.clear();
+        notifyAllObservers();
+    }
+
     /**
      * Charge les données du fichier spécifié.
      * @param path
@@ -75,12 +80,10 @@ public class DataManager<E extends Data> implements Observable<E> {
                 dataList.add((E) f);
             }
             Data.updateDataTypes(dataList.get(0));
-            observerManager.notifyAllObservers();
+            notifyAllObservers();
 
         } catch (FileNotFoundException e) {
-            System.out.println("Fichier non trouvé");
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
@@ -90,7 +93,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void addData(E data) {
         dataList.add(data);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -99,7 +102,7 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void removeData(E data) {
         dataList.remove(data);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -113,7 +116,7 @@ public class DataManager<E extends Data> implements Observable<E> {
         for (Data d : userData) {
             d.setCategoryField(newCategoryField);
         }
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -122,31 +125,35 @@ public class DataManager<E extends Data> implements Observable<E> {
      */
     public void addUserData(E e) {
         userData.add(e);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
      * Ajoute des données contenues dans une map.
      * @param map
      */
-    public void addData(Map<String, Number> map) {
+    public void addUserData(Map<String, Number> map) {
         Data tmp = new FakeData(map, dataList.get(0).getCategoryField());
         userData.add((E) tmp);
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
      * Categorise les données utilisateurs selon la distance souhaitée.
      * @param distanceSouhaitee
      */
-    public void categorizeData(Distance distanceSouhaitee) {
+    public void categorizeData(Distance distanceSouhaitee, int nb) {
         for (Data d : userData) {
             if (d.getCategory().equals("Unknown")) {
-                Data nearestData = getNearestData(d, distanceSouhaitee);
-                d.setCategory(nearestData);
+                List<Data> nearestData = getNearestDatas(d, distanceSouhaitee, nb);
+                Map<String, Integer> categories = new HashMap<>();
+                for (Data data : nearestData) {
+                    categories.put(data.getCategory(), categories.getOrDefault(data.getCategory(), 0) + 1);
+                }
+                d.setCategory(Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey());
             }
         }
-        observerManager.notifyAllObservers();
+        notifyAllObservers();
     }
 
     /**
@@ -155,27 +162,39 @@ public class DataManager<E extends Data> implements Observable<E> {
      * @param distanceSouhaitee
      * @return
      */
-    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee) {
+    public String guessCategory(Map<String, Number> guessAttributes, Distance distanceSouhaitee, int nb) {
         Data n = new FakeData(guessAttributes, dataList.get(0).getCategoryField());
-        Data nearestData = getNearestData(n, distanceSouhaitee);
-        return nearestData.getCategory();
+        List<Data> nearestData = getNearestDatas(n, distanceSouhaitee, nb);
+        Map<String, Integer> categories = new HashMap<>();
+        for (Data d : nearestData) {
+            categories.put(d.getCategory(), categories.getOrDefault(d.getCategory(), 0) + 1);
+        }
+        return Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 
     /**
-     * Renvoie la donnée la plus proche de la donnée donnée en paramètre.
-     * @param data
-     * @param distanceSouhaitee
-     * @return
+     * Cherche les données les n plus proche de la donnée donnée en paramètre.
+     * @param data la donnée
+     * @param distanceSouhaitee la distance souhaitée
+     * @param nb le nombre de données à renvoyer
+     * @return une liste de données
      */
-    public Data getNearestData(Data data, Distance distanceSouhaitee) {
-        double minDistance = Double.MAX_VALUE;
-        Data nearestData = null;
-        for (Data d : dataList) {
-            double distance = Data.distance(data, d, distanceSouhaitee);
-            if (distance < minDistance) {
-                minDistance = distance;
-                nearestData = d;
+    public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nb) {
+        List<Data> nearestData = new ArrayList<>();
+        List<Data> tmp = new ArrayList<>(dataList);
+
+        for (int i = 0; i < nb; i++) {
+            Data nearest = tmp.get(0);
+            double minDistance = Data.distance(data, nearest, distanceSouhaitee);
+            for (Data d : tmp) {
+                double distance = Data.distance(data, d, distanceSouhaitee);
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    nearest = d;
+                }
             }
+            nearestData.add(nearest);
+            tmp.remove(nearest);
         }
         return nearestData;
     }
@@ -226,20 +245,6 @@ public class DataManager<E extends Data> implements Observable<E> {
         return categories.size();
     }
 
-    @Override
-    public void attach(Observer<E> ob) {
-        observerManager.attach(ob);
-    }
-
-    @Override
-    public void notifyAllObservers(E elt) {
-        observerManager.notifyAllObservers(elt);
-    }
-
-    @Override
-    public void notifyAllObservers() {
-        observerManager.notifyAllObservers();
-    }
 
     /**
      * @return la liste de données
@@ -265,5 +270,15 @@ public class DataManager<E extends Data> implements Observable<E> {
 
     public void createColor() {
         colorManager.createColor(getNbCategories());
+    }
+    public Pair<Integer,Double> getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
+        List<E> listetest= (List<E>) DataLoader.charger(path);
+        for (Data da : listetest) {
+            da.makeData();
+        }
+        for (Data da : listetest) {
+            da.setCategoryField(targetField);
+        }
+        return ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
     }
 }
