@@ -273,7 +273,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     }
 
     public void createColor() {
-        colorManager.createColor(getNbCategories());
+        colorManager.nextColor(getNbCategories());
     }
     public double getBestN(Distance d, String path, String targetField) throws FileNotFoundException {
         try {
