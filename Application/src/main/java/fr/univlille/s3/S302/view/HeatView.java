@@ -72,6 +72,9 @@ public class HeatView {
     }
 
     private static List<Double> getCategorieRgb(String color) {
+        if (color == null) {
+            return List.of(0.0, 0.0, 0.0);
+        }
         // color is a string in the form "rgb(x, y, z)"
         if (!color.startsWith("rgb(") || !color.endsWith(")")) {
             return List.of(0.0, 0.0, 0.0);
