@@ -2,10 +2,6 @@ package fr.univlille.s3.S302.model;
 
 import com.opencsv.bean.CsvBindByName;
 import fr.univlille.s3.S302.utils.HasNoOrder;
-import javafx.util.Pair;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Iris extends Data {
 

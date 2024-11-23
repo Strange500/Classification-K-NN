@@ -23,8 +23,6 @@ public abstract class Data {
     protected static final Map<String, Field> fieldsMap = new HashMap<>();
 
     /**
-     * @param d1
-     * @param d2
      * @param distance la distance à utiliser
      * @return la distance entre deux données
      */
@@ -34,8 +32,8 @@ public abstract class Data {
     }
 
     /**
-     * Cette fonctionpermet d'ajuster les valeur des attributs n'ayant pas d'ordre entre eux
-     * Les deux données doivent avoir les mêmes attributs
+     * Cette fonction permet d'ajuster les valeurs des attributs n'ayant pas d'ordre entre eux
+     * Les deux données doivent avoir les mêmes attributs.
      */
     private static Pair<Data, Data> computeAttributes(Data d1, Data d2) {
         FakeData fakeData1 = new FakeData(d1.getAttributes(), d1.categoryField);
@@ -44,7 +42,7 @@ public abstract class Data {
         fakeData2.attributes.remove(d2.categoryField);
         fakeData1.attributes.remove(d1.categoryField);
 
-        // on retire les atttributs qui ne sont pas dans les deux données
+        // on retire les attributs qui ne sont pas dans les deux données
 
         fakeData1.attributes = Maps.filterKeys(fakeData1.attributes, fakeData2.attributes::containsKey);
         fakeData2.attributes = Maps.filterKeys(fakeData2.attributes, fakeData1.attributes::containsKey);
@@ -60,8 +58,6 @@ public abstract class Data {
     }
 
     /**
-     * @param attribute
-     * @param value
      * @return la valeur numérique de l'attribut
      */
     public static double valueOf(String attribute, String value) {
@@ -77,8 +73,6 @@ public abstract class Data {
     }
 
     /**
-     * @param attribute
-     * @param clazz
      * @return si l'attribut est de la classe clazz
      */
     boolean attributeIsClass(String attribute, Class<?> clazz) {
@@ -89,8 +83,6 @@ public abstract class Data {
     }
 
     /**
-     * @param class1
-     * @param class2
      * @return si class1 est égal ou une sous-classe de class2
      */
     protected static boolean isEqualOrSubclass(Class<?> class1, Class<?> class2) {
@@ -98,8 +90,6 @@ public abstract class Data {
     }
 
     /**
-     * @param attribute
-     * @param value
      * @return la valeur de l'attribut
      */
     public String getValue(String attribute, Number value) {
@@ -113,7 +103,6 @@ public abstract class Data {
     }
 
     /**
-     * @param attribute
      * @param insertedIndex
      * Met à jour les index des attributs
      */
@@ -165,7 +154,6 @@ public abstract class Data {
     }
 
     /**
-     * @param attribute
      * @return si l'attribut a un ordre
      */
     public boolean hasOrder(String attribute) {
@@ -176,8 +164,6 @@ public abstract class Data {
     }
 
     /**
-     * @param field
-     * @param value
      * @return la valeur numérique de l'attribut
      */
     private static Number getIntValue(Field field, Object value) {

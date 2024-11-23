@@ -42,7 +42,7 @@ public class DataColorManager {
         while (nbColor <= nbCategories || nbColor % 3 != 0) {
             nbColor++;
         }
-        int step = 0, r = 0, g = 0, b = 0;
+        int step, r = 0, g = 0, b = 0;
         for (int i = 0; i < nbColor; i++) {
             switch (i % 3) {
                 case 0:

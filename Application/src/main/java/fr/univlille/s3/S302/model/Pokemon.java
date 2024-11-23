@@ -2,7 +2,6 @@ package fr.univlille.s3.S302.model;
 
 import com.opencsv.bean.CsvBindByName;
 import fr.univlille.s3.S302.utils.HasNoOrder;
-import javafx.geometry.Bounds;
 
 public class Pokemon extends Data {
 

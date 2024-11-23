@@ -19,8 +19,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -32,7 +30,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
@@ -375,8 +372,7 @@ public class DataController extends Observer {
         fileChooser.setTitle("Ouvrir un fichier CSV");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        File file = fileChooser.showOpenDialog(null);
-        return file;
+        return  fileChooser.showOpenDialog(null);
     }
 
     /**
@@ -406,8 +402,6 @@ public class DataController extends Observer {
      */
     private Distance getChosenDistance() {
         switch (distanceComboBox.getValue()) {
-            case "Euclidienne":
-                return new DistanceEuclidienne();
             case "Manhattan":
                 return new DistanceManhattan();
             case "Euclidienne normalisée":
@@ -438,7 +432,7 @@ public class DataController extends Observer {
      */
     public void updateRobustesseLabels()  {
 
-        double percent = 0;
+        double percent;
         try {
             percent = dataManager.getBestNbVoisin(defaultDistance,getCsv().getPath(), cateCombo.getValue());
         } catch (FileNotFoundException e) {

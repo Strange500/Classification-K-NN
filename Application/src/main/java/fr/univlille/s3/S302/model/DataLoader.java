@@ -24,10 +24,10 @@ public class DataLoader {
      */
     public static List<? extends Data> charger(String fileName) throws FileNotFoundException {
         if (fileName == null) {
-            throw new FileNotFoundException("check is null : Fichier non trouvé: " + fileName);
+            throw new FileNotFoundException("check is null : Fichier non trouvé");
         }
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
-        Class<? extends Data> clazz = null;
+        Class<? extends Data> clazz;
         if (input == null) {
             if (new File(fileName).exists()) {
                 input = new FileInputStream(fileName);
@@ -36,7 +36,7 @@ public class DataLoader {
                 throw new FileNotFoundException("check filename exist : Fichier non trouvé: " + fileName);
             }
         } else{
-            clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
+            clazz = getClassFromHeader(new InputStreamReader(Objects.requireNonNull(DataLoader.class.getResourceAsStream(fileName))));
         }
         return csvToList(input, clazz);
     }

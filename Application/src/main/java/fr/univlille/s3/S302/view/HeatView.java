@@ -2,19 +2,13 @@ package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.DataManager;
 import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

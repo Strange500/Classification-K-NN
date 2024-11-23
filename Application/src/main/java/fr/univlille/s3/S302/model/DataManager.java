@@ -95,7 +95,6 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Ajoute une donnée à la liste de données.
-     * @param data
      */
     public void addData(E data) {
         dataList.add(data);
@@ -104,7 +103,6 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Supprime une donnée de la liste de données.
-     * @param data
      */
     public void removeData(E data) {
         dataList.remove(data);
