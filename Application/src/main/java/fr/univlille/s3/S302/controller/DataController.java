@@ -1,9 +1,17 @@
-package fr.univlille.s3.S302.view;
+package fr.univlille.s3.S302.controller;
 
-import fr.univlille.s3.S302.model.*;
-import fr.univlille.s3.S302.utils.*;
+import fr.univlille.s3.S302.model.Data;
+import fr.univlille.s3.S302.model.DataManager;
+import fr.univlille.s3.S302.utils.Distance;
+import fr.univlille.s3.S302.utils.DistanceEuclidienne;
+import fr.univlille.s3.S302.utils.DistanceEuclidienneNormalisee;
+import fr.univlille.s3.S302.utils.DistanceManhattan;
+import fr.univlille.s3.S302.utils.DistanceManhattanNormalisee;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import fr.univlille.s3.S302.view.App;
+import fr.univlille.s3.S302.view.Chart;
+import fr.univlille.s3.S302.view.HeatView;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;

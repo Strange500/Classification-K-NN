@@ -64,7 +64,7 @@ public class HeatView {
         canvas.getGraphicsContext2D().clearRect(-100, -100, canvas.getWidth()+200, canvas.getHeight()+200);
 
     }
-    void update() {
+    public void update() {
             if (active) {
                 clear();
                 draw();

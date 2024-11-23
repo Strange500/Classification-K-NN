@@ -55,8 +55,7 @@ public class DataLoader {
             }
             CsvToBean<Data> csvToBean = new CsvToBeanBuilder<Data>(reader).withSeparator(SEPARATOR)
                     .withType(clazz).build();
-            List<? extends Data> records = csvToBean.parse();
-            return records;
+            return csvToBean.parse();
         } catch (IOException e) {
             System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
