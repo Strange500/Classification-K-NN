@@ -36,10 +36,35 @@ public class DataColorManager {
      * Méthode permettant de créer les couleurs
      * @param nbCategories le nombre de catégories
      */
-    protected void createColor(int nbCategories) {
+    private void createColor(int nbCategories) {
         colorMap.clear();
-        for (int i = 0; i < nbCategories; i++) {
-            colorMap.put("Color" + i, "rgb(" + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + "," + (int) (Math.random() * 255) + ")");
+        int nbColor = 0;
+        while (nbColor <= nbCategories || nbColor % 3 != 0) {
+            nbColor++;
+        }
+        int step = 0, r = 0, g = 0, b = 0;
+        for (int i = 0; i < nbColor; i++) {
+            switch (i % 3) {
+                case 0:
+                    step = i / 3;
+                    r = 255 - step * 255 / (nbColor / 3);
+                    g = step * 255 / (nbColor / 3);
+                    b = 0;
+                    break;
+                case 1:
+                    step = i / 3;
+                    r = 0;
+                    g = 255 - step * 255 / (nbColor / 3);
+                    b = step * 255 / (nbColor / 3);
+                    break;
+                case 2:
+                    step = i / 3;
+                    r = step * 255 / (nbColor / 3);
+                    g = 0;
+                    b = 255 - step * 255 / (nbColor / 3);
+                    break;
+            }
+            colorMap.put("Color" + i, "rgb(" + r + "," + g + "," + b + ")");
         }
     }
 }
