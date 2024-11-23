@@ -437,6 +437,7 @@ public class DataController extends Observer {
      * Met à jour les labels de robustesse
      */
     public void updateRobustesseLabels()  {
+
         double percent = 0;
         try {
             percent = dataManager.getBestNbVoisin(defaultDistance,getCsv().getPath(), cateCombo.getValue());
@@ -444,6 +445,8 @@ public class DataController extends Observer {
             genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
             throw new RuntimeException(e);
         }
+        pRobustesse.setVisible(true);
+        nbVoisin.setVisible(true);
         pRobustesse.setText((percent *100) + " %");
         nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
     }
