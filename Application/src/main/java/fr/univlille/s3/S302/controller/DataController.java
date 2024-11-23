@@ -37,7 +37,17 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
 
+/**
+ * Contrôleur de la fenêtre
+ */
 public class DataController extends Observer {
+
+    List<Pair<XYChart.Data<Number, Number>, Data>> data;
+    DataManager<Data> dataManager = DataManager.getInstance();
+    Pair<String, String> choosenAttributes;
+    Map<String, TextField> labelMap = new HashMap<>();
+    private Chart chartController;
+    private Distance defaultDistance = new DistanceEuclidienne();
 
     @FXML
     ScatterChart<Number, Number> chart;
@@ -45,9 +55,6 @@ public class DataController extends Observer {
     ComboBox<String> xCategory;
     @FXML
     ComboBox<String> yCategory;
-    List<Pair<XYChart.Data<Number, Number>, Data>> data;
-    DataManager<Data> dataManager = DataManager.getInstance();
-    Pair<String, String> choosenAttributes;
     @FXML
     private Button categoryBtn;
     @FXML
@@ -58,7 +65,6 @@ public class DataController extends Observer {
     private Button saveChart;
     @FXML
     private VBox addPointVBox;
-    Map<String, TextField> labelMap = new HashMap<>();
     @FXML
     Canvas canvas;
     @FXML
@@ -68,13 +74,9 @@ public class DataController extends Observer {
     @FXML
     Label nbVoisin;
     private HeatView heatView;
-
-    private Chart chartController;
-
-    private Distance defaultDistance = new DistanceEuclidienne();
-
     @FXML
     ComboBox<String> cateCombo;
+
     /**
      * Initialisation de la fenêtre
      */
@@ -128,6 +130,9 @@ public class DataController extends Observer {
         });
     }
 
+    /**
+     * Ajoute les champs de texte pour ajouter un point
+     */
     private void addTextFields() {
         addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
@@ -140,6 +145,13 @@ public class DataController extends Observer {
         }
     }
 
+    /**
+     * Génère une ligne d'attributs
+     *
+     * @param label le nom de l'attribut
+     *
+     * @return une VBox contenant le label et le champ de texte
+     */
     public VBox genererLigneAttributs(String label) {
         VBox vbox = new VBox();
         Label labels = new Label(cleanLabelName(label));
@@ -149,6 +161,9 @@ public class DataController extends Observer {
         return vbox;
     }
 
+    /**
+     * Ajoute un point à la liste de points
+     */
     public void addUserPoint() {
         Map<String, Number> tmp = new HashMap<>();
         try {
@@ -163,6 +178,13 @@ public class DataController extends Observer {
         }
     }
 
+    /**
+     * Nettoie le nom de l'attribut
+     *
+     * @param label le nom de l'attribut
+     *
+     * @return le nom de l'attribut nettoyé
+     */
     private static String cleanLabelName(String label) {
         int[] indexMajuscules = new int[label.length()];
         int j = 0;
@@ -199,7 +221,11 @@ public class DataController extends Observer {
         }
     }
 
-
+    /**
+     * Recrée la heatview
+     *
+     * @return la nouvelle heatview
+     */
     private HeatView recreateHeatView() {
         boolean heatViewActive = heatView.isActive();
         HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
@@ -209,6 +235,9 @@ public class DataController extends Observer {
         return tmp;
     }
 
+    /**
+     * Met à jour les catégories des axes
+     */
     private void updateAxisCategory() {
         chart.getXAxis().setLabel(xCategory.getValue());
         chart.getYAxis().setLabel(yCategory.getValue());
@@ -228,6 +257,9 @@ public class DataController extends Observer {
         rebuild();
     }
 
+    /**
+     * Reconstruit le graphique
+     */
     private void rebuild() {
         boolean heatViewActive = false;
         if (heatView != null) {
@@ -335,6 +367,9 @@ public class DataController extends Observer {
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
     }
 
+    /**
+     * @return le fichier CSV à charger
+     */
     private static File getCsv() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Ouvrir un fichier CSV");
@@ -366,6 +401,9 @@ public class DataController extends Observer {
         app.start(new Stage());
     }
 
+    /**
+     * @return la distance choisie par l'utilisateur dans la ComboBox
+     */
     private Distance getChosenDistance() {
         switch (distanceComboBox.getValue()) {
             case "Euclidienne":
@@ -381,16 +419,24 @@ public class DataController extends Observer {
         }
     }
 
+    /**
+     * Classifie les données
+     */
     public void classify() {
         dataManager.categorizeData(getChosenDistance());
     }
 
+    /**
+     * Affiche ou cache la HeatView
+     */
     public void toggleHeatView() {
         heatView.toggle();
     }
 
+    /**
+     * Met à jour les labels de robustesse
+     */
     public void updateRobustesseLabels()  {
-
         double percent = 0;
         try {
             percent = dataManager.getBestNbVoisin(defaultDistance,getCsv().getPath(), cateCombo.getValue());
