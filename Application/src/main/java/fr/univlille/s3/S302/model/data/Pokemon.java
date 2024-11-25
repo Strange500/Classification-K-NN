@@ -1,6 +1,8 @@
-package fr.univlille.s3.S302.model;
+package fr.univlille.s3.S302.model.data;
 
 import com.opencsv.bean.CsvBindByName;
+import fr.univlille.s3.S302.model.Data;
+import fr.univlille.s3.S302.model.DataLoader;
 import fr.univlille.s3.S302.utils.HasNoOrder;
 
 public class Pokemon extends Data {
@@ -11,46 +13,46 @@ public class Pokemon extends Data {
 
     @CsvBindByName(column = "name")
     @HasNoOrder
-    protected String name;
+    public String name;
 
     @CsvBindByName(column = "attack")
-    protected Integer attack;
+    public Integer attack;
 
     @CsvBindByName(column = "base_egg_steps")
-    protected Integer base_egg_steps;
+    public Integer base_egg_steps;
 
     @CsvBindByName(column = "capture_rate")
-    protected Double capture_rate;
+    public Double capture_rate;
 
     @CsvBindByName(column = "defense")
-    protected Integer defense;
+    public Integer defense;
 
     @CsvBindByName(column = "experience_growth")
-    protected Integer experience_growth;
+    public Integer experience_growth;
 
     @CsvBindByName(column = "hp")
-    protected Integer hp;
+    public Integer hp;
 
     @CsvBindByName(column = "sp_attack")
-    protected Integer sp_attack;
+    public Integer sp_attack;
 
     @CsvBindByName(column = "sp_defense")
-    protected Integer sp_defense;
+    public Integer sp_defense;
 
     @CsvBindByName(column = "type1")
     @HasNoOrder
-    protected String type1;
+    public String type1;
 
     @CsvBindByName(column = "type2")
     @HasNoOrder
-    protected String type2;
+    public String type2;
 
     @CsvBindByName(column = "speed")
-    protected Double speed;
+    public Double speed;
 
     @CsvBindByName(column = "is_legendary")
     @HasNoOrder
-    protected Boolean is_legendary;
+    public Boolean is_legendary;
 
 
 }

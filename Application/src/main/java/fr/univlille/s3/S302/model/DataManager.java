@@ -3,6 +3,7 @@ package fr.univlille.s3.S302.model;
 import java.io.FileNotFoundException;
 import java.util.*;
 
+import fr.univlille.s3.S302.model.data.FakeData;
 import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.ModelUtils;
 import javafx.util.Pair;
@@ -148,6 +149,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     @SuppressWarnings("unchecked")
     public void addUserData(Map<String, Number> map) {
         Data tmp = new FakeData(map, dataList.get(0).getCategoryField());
+        tmp.setCategoryField(dataList.get(0).getCategoryField());
         userData.add((E) tmp);
         notifyAllObservers();
     }

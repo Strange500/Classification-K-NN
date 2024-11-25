@@ -173,7 +173,10 @@ public class DataController extends Observer {
                     tmp.put(s, DataManager.valueOf(s, labelMap.get(s).getText()));
                 }
             }
-            dataManager.addUserData(tmp);
+            if (!tmp.isEmpty()) {
+                dataManager.addUserData(tmp);
+            }
+
         } catch (NumberFormatException e) {
             DataController.genErrorPopup("Entrez valeurs valides").show(addPointVBox.getScene().getWindow());
         }

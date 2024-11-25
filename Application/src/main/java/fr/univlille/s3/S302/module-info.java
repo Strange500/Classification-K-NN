@@ -15,4 +15,5 @@ module fr.univlille.s3.S302 {
     opens fr.univlille.s3.S302.controller to javafx.fxml;
     exports fr.univlille.s3.S302.view;
     exports fr.univlille.s3.S302.controller;
+    exports fr.univlille.s3.S302.model.data;
 }

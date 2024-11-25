@@ -1,17 +1,16 @@
 package fr.univlille.s3.S302.model;
 
+import fr.univlille.s3.S302.model.data.FakeData;
+import fr.univlille.s3.S302.model.data.Iris;
 import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
-import fr.univlille.s3.S302.model.Data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reflections.Reflections;
 
 import java.util.*;
 
-import static fr.univlille.s3.S302.model.DataLoader.preLoadClasses;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DataManagerTest {

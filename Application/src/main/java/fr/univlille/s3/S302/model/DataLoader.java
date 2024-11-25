@@ -95,7 +95,7 @@ public class DataLoader {
      */
     static void preLoadClasses() {
         try {
-            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);
+            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model.data").getSubTypesOf(Data.class);
             System.out.println("Liste des classe a charger : " + allClasses);
             for (Class<? extends Data> clazz : allClasses) {
                 Class.forName(clazz.getName());
