@@ -438,6 +438,9 @@ public class DataController extends Observer {
         } catch (FileNotFoundException e) {
             genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
             throw new RuntimeException(e);
+        } catch (NullPointerException e) {
+            genErrorPopup("Aucun fichier selectionné").show(chart.getScene().getWindow());
+            throw new RuntimeException(e);
         }
         pRobustesse.setVisible(true);
         nbVoisin.setVisible(true);
