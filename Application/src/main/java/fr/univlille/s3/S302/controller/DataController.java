@@ -90,8 +90,6 @@ public class DataController extends Observer {
             try {
                 updateAxisCategory();
                 update();
-                this.heatView = recreateHeatView();
-                this.heatView.update();
             } catch (IllegalArgumentException | NoSuchElementException ile) {
                 Popup popup = genErrorPopup(ile.getMessage());
                 popup.show(chart.getScene().getWindow());
@@ -106,12 +104,12 @@ public class DataController extends Observer {
         chart.widthProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setWidth(newVal.doubleValue());
             canvas.setHeight(chart.getHeight());
-            heatView.update();
+            update();
         });
         chart.heightProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setHeight(newVal.doubleValue());
             canvas.setWidth(chart.getWidth());
-            heatView.update();
+            update();
         });
 
         cateCombo.setOnAction(event -> {
@@ -219,20 +217,6 @@ public class DataController extends Observer {
     }
 
     /**
-     * Recrée la heatview
-     *
-     * @return la nouvelle heatview
-     */
-    private HeatView recreateHeatView() {
-        boolean heatViewActive = heatView.isActive();
-        HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
-        if (heatViewActive) {
-            tmp.toggle();
-        }
-        return tmp;
-    }
-
-    /**
      * Met à jour les catégories des axes
      */
     private void updateAxisCategory() {
@@ -261,6 +245,7 @@ public class DataController extends Observer {
         boolean heatViewActive = false;
         if (heatView != null) {
             heatViewActive = heatView.isActive();
+            heatView.destroy();
             this.heatView = null;
         }
 
