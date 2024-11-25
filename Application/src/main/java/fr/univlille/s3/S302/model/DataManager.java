@@ -18,6 +18,8 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     public static final String PATH = "iris.csv";
 
+    private final Map<String, Pair<Number, Number>> minMax = new HashMap<>();
+
     private static final int DEFAULT_NB_VOISIN = 3;
     private static DataManager<Data> instance;
 
@@ -93,6 +95,27 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         return categories.size();
     }
 
+    public Number getMax(String attribute) {
+        return minMax.get(attribute).getValue();
+    }
+
+    public Number getMin(String attribute) {
+        return minMax.get(attribute).getKey();
+    }
+
+    public void updateMinMax(String attribute, Number nb) {
+        if (!minMax.containsKey(attribute)) {
+            minMax.put(attribute, new Pair<>(nb, nb));
+        } else {
+            if (nb.doubleValue() > minMax.get(attribute).getValue().doubleValue()) {
+                minMax.put(attribute, new Pair<>(minMax.get(attribute).getKey(), nb));
+            }
+            if (nb.doubleValue() < minMax.get(attribute).getKey().doubleValue()) {
+                minMax.put(attribute, new Pair<>(nb, minMax.get(attribute).getValue()));
+            }
+        }
+    }
+
     /**
      * Ajoute une donnée à la liste de données.
      */
@@ -165,6 +188,9 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
             List<? extends Data> tmp = DataLoader.charger(path);
             for (Data f : tmp) {
                 f.makeData();
+                for (String key : f.getAttributes().keySet()) {
+                    updateMinMax(key, f.getAttributes().get(key));
+                }
                 dataList.add((E) f);
             }
             Data.updateDataTypes(dataList.get(0));

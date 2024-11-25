@@ -1,8 +1,10 @@
 package fr.univlille.s3.S302.utils;
 
+import java.util.HashMap;
 import java.util.Map;
 import fr.univlille.s3.S302.model.Data;
 import fr.univlille.s3.S302.model.DataManager;
+import javafx.util.Pair;
 
 public class DistanceEuclidienneNormalisee implements Distance {
 
@@ -13,22 +15,20 @@ public class DistanceEuclidienneNormalisee implements Distance {
         double somme = 0;
         double somme1 = 0;
         double somme2 = 0;
-
-        double facteurNormalisation = 0;
-        for (Data data : DataManager.getInstance().getDataList()) {
-            for (Number value : data.getAttributes().values()) {
-                facteurNormalisation += value.doubleValue() * value.doubleValue();
-            }
-        }
-        facteurNormalisation = Math.sqrt(facteurNormalisation);
+        DataManager<Data> dataManager = DataManager.getInstance();
 
         for (String key : attributs1.keySet()) {
-            double diff = attributs1.get(key).doubleValue() - attributs2.get(key).doubleValue();
-            somme += diff * diff;
-            somme1 += attributs1.get(key).doubleValue() * attributs1.get(key).doubleValue();
-            somme2 += attributs2.get(key).doubleValue() * attributs2.get(key).doubleValue();
+            double value1 = attributs1.get(key).doubleValue();
+            double value2 = attributs2.get(key).doubleValue();
+            double min = dataManager.getMin(key).doubleValue();
+            double max = dataManager.getMax(key).doubleValue();
+            double diff = max - min;
+            if (diff == 0) {
+                diff = 1;
+            }
+            somme += Math.pow((value1 - value2) - min / diff, 2);
         }
 
-        return Math.sqrt(somme) / facteurNormalisation;
+        return Math.sqrt(somme) ;
     }
 }
