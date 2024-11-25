@@ -48,6 +48,7 @@
                 <NumberAxis side="LEFT" />
               </yAxis>
             </ScatterChart>
+            <ProgressIndicator fx:id="loading" minHeight="100.0" minWidth="100.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
    </center>
@@ -111,8 +112,8 @@
             </HBox>
           <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
               <children>
-                  <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" visible="false"/>
-                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Label" visible="false"/>
+                  <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" visible="false" />
+                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Label" visible="false" />
               </children>
           </HBox>
          </children>

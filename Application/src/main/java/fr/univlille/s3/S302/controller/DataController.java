@@ -13,6 +13,8 @@ import fr.univlille.s3.S302.view.App;
 import fr.univlille.s3.S302.view.Chart;
 import fr.univlille.s3.S302.view.HeatView;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
@@ -30,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import javax.imageio.ImageIO;
 import javafx.embed.swing.SwingFXUtils;
@@ -73,12 +76,15 @@ public class DataController extends Observer {
     private HeatView heatView;
     @FXML
     ComboBox<String> cateCombo;
+    @FXML
+    ProgressIndicator loading;
 
     /**
      * Initialisation de la fenêtre
      */
     public void initialize() {
         chartController = new Chart(this.chart);
+        loading.setVisible(false);
         distanceComboBox.setValue("Euclidienne");
         distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
         cateCombo.getItems().addAll(dataManager.getAttributes());
@@ -417,19 +423,30 @@ public class DataController extends Observer {
      */
     public void updateRobustesseLabels()  {
 
-        double percent;
-        try {
-            percent = dataManager.getBestNbVoisin(defaultDistance,getCsv().getPath(), cateCombo.getValue());
-        } catch (FileNotFoundException e) {
-            genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
-            throw new RuntimeException(e);
-        } catch (NullPointerException e) {
-            genErrorPopup("Aucun fichier selectionné").show(chart.getScene().getWindow());
-            throw new RuntimeException(e);
-        }
-        pRobustesse.setVisible(true);
-        nbVoisin.setVisible(true);
-        pRobustesse.setText((percent *100) + " %");
-        nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+        AtomicReference<Double> percent = new AtomicReference<>((double) 0);
+
+            String path = getCsv().getPath();
+            loading.setVisible(true);
+            Service<Double> service = new Service<Double>() {
+                @Override
+                protected Task<Double> createTask() {
+                    return new Task<Double>() {
+                        @Override
+                        protected Double call() throws Exception {
+                            loading.setProgress(-1);
+                            return dataManager.getBestNbVoisin(defaultDistance, path, cateCombo.getValue());
+                        }
+                    };
+                }
+            };
+            service.setOnSucceeded(e -> {
+                percent.set(service.getValue());
+                pRobustesse.setVisible(true);
+                nbVoisin.setVisible(true);
+                pRobustesse.setText((percent.get() *100) + " %");
+                nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+                loading.setVisible(false);
+            });
+            service.start();
     }
 }

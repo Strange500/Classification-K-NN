@@ -184,6 +184,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     @SuppressWarnings("unchecked")
     public void loadData(String path) {
         try {
+            minMax.clear();
             dataList = new ArrayList<>();
             List<? extends Data> tmp = DataLoader.charger(path);
             for (Data f : tmp) {
@@ -300,8 +301,6 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         List<E> listetest= (List<E>) DataLoader.charger(path);
         for (Data da : listetest) {
             da.makeData();
-        }
-        for (Data da : listetest) {
             da.setCategoryField(targetField);
         }
         Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
