@@ -3,6 +3,7 @@ package fr.univlille.s3.S302.model;
 import com.google.common.collect.Maps;
 import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.HasNoOrder;
+import fr.univlille.s3.S302.model.data.FakeData;
 import javafx.util.Pair;
 
 import java.lang.reflect.Field;
