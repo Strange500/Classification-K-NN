@@ -62,6 +62,17 @@ La normalisation est effectuée en suivant les étapes suivantes :
 
 ### Optimisation de la Normalisation
 
-Pour accélérer le traitement, nous stockons le minimum et le maximum de chaque attribut dans la map `minMax` de la classe `DataManager`. Cela permet à la normalisation d'être exécutée en O(1) pour chaque attribut.
+Pour accélérer le traitement, nous stockons le minimum et le maximum de chaque attribut dans la map `minMax` de la classe `DataManager`. Cela permet à la normalisation d'être exécutée en O(1) pour chaque attribut au lieu de recalculer les valeurs minimales et maximales à chaque fois O(N).
+
+## Classification des Données
+
+La classification des données est réalisée par la méthode `categorizeData` de la classe `DataManager`. 
+Cette méthode utilise l'algorithme K-NN pour classer une donnée cible en fonction de ses voisins les plus proches.
+
+1. **Récupération des K plus proches voisins** : Les K plus proches voisins de la donnée cible sont extraits à l'aide de l'algorithme K-NN.
+2. **Détermination de la classe majoritaire** : La classe majoritaire parmi les K voisins est déterminée.
+
+Nous stockons un compteur pour chaque classe possible, et la classe majoritaire est celle avec le plus grand nombre de voisins.
+
 
 
