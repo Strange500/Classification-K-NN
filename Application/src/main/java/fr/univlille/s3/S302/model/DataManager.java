@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.util.*;
 
 import fr.univlille.s3.S302.model.data.FakeData;
+import fr.univlille.s3.S302.model.data.FakeDataValidation;
 import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.ModelUtils;
 import javafx.util.Pair;
@@ -324,6 +325,55 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
         this.bestNbVoisin = p.getKey();
         return p.getValue();
+    }
+
+    public double validationCroisee(Distance d, String targetField) throws FileNotFoundException {
+        System.out.println("1");
+        List<Data> listeOriginal = new ArrayList<>(dataList);
+        int subdivision = 10;
+        List<FakeDataValidation> listetest = new ArrayList<>();
+        for (Data da : dataList) {
+            FakeDataValidation f = new FakeDataValidation(da.getAttributes(), targetField, da.getCategory());
+            f.setCategoryField(targetField);
+            listetest.add(f);
+        }
+        System.out.println("2");
+        Collections.shuffle(listetest);
+        List<List<FakeDataValidation>> listes = new ArrayList<>();
+        for (int i = 0; i < subdivision; i++) {
+            listes.add(new ArrayList<>());
+        }
+        System.out.println("3");
+        for (int i = 0; i < listetest.size(); i++) {
+            listes.get(i % subdivision).add(listetest.get(i));
+        }
+        System.out.println("4");
+        double moyenne = 0;
+        Map<Integer, Integer> nbVoisin = new HashMap<>();
+        for (int i = 0; i < subdivision; i++) {
+            List<FakeDataValidation> test = listes.get(i);
+            List<Data> train = new ArrayList<>();
+            for (int j = 0; j < subdivision; j++) {
+                if (j != i) {
+                    train.addAll(listes.get(j));
+                }
+            }
+            System.out.println("5");
+
+            System.out.println("6");
+
+            dataList = (List<E>) train;
+            List<Data> testV = new ArrayList<>(test);
+            Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, testV, d);
+            System.out.println("7");
+            nbVoisin.put(p.getKey(), nbVoisin.getOrDefault(p.getKey(), 0) + 1);
+            moyenne += p.getValue();
+        }
+        System.out.println("8");
+        moyenne /= subdivision;
+        dataList = (List<E>) listeOriginal;
+        bestNbVoisin = Collections.max(nbVoisin.entrySet(), Map.Entry.comparingByValue()).getKey();
+        return moyenne;
     }
 
 
