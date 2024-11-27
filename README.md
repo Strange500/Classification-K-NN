@@ -41,6 +41,17 @@ Utilisez la commande suivante dans un terminal en remplaçant /chemin/ par le ch
 java -jar /chemin/artifacts/Application/target/VisualisationDonnees-1.0-SNAPSHOT.jar
 ````
 
+### Comment utiliser un nouveau type de données ?
+
+Pour utiliser un nouveau type de données, il suffit de créer une nouvelle classe étendant la classe Data. Il faut aussi que la classe soit dans le package fr.univlille.s3.S302.model.data. 
+Ensuite, dans un bloc static, il convient d'appeler la fonction registerHeader de DataLoader, en y mettant le header de votre fichier CSV (sans le retour à la ligne). 
+
+Il ne vous reste plus qu'à déclarer les attributs de votre classe en suivant les conventions d'OpenCSV. 
+Si, pour un attribut, les valeurs entre elles n'ont pas d'ordre spécifique, il suffit d'ajouter l'annotation @HasNoOrder devant la déclaration de l'attribut.
+Ainsi, la distance entre deux points sera calculée en fonction de l'égalité des attributs. 
+
+Votre classe est maintenant prête à être utilisée dans le projet.
+
 
 # Fonctionnement
 
@@ -82,4 +93,15 @@ Pour permmettre a toutes les classe de partager le meme DataManager, on a utilis
 
 La classe delegue le chargment et la créationdes objets Data a la classe DataLoader.
 
-// TODO DataLoader
+
+## DataLoader
+
+La classe DataLoader permet de charger les données depuis un fichier CSV.
+
+Elle utilise la librairie OpenCSV pour lire les données du fichier CSV et les convertir en objets Data.
+
+Avant de charger les données avec OpenCSV, DataLoader doit être configuré pour reconnaître les classes Data qui seront utilisées pour représenter les données.
+
+Pour cela, DataLoader utilise la méthode statique `registerHeader` pour enregistrer les entêtes des colonnes des fichiers CSV.
+
+La fonction getClassFromHeader permet de récupérer la classe Data correspondant à un entête CSV. Il ne reste plus qu'à appeler la fonction `csvToList` pour charger les données.
