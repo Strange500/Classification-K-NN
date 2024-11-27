@@ -267,23 +267,39 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
      * @return une liste de données
      */
     public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nbVoisin) {
-        List<Data> nearestData = new ArrayList<>();
-        List<Data> tmp = new ArrayList<>(dataList);
+        PriorityQueue<DataDistance> maxHeap = new PriorityQueue<>((a, b) -> Double.compare(b.distance, a.distance));
 
-        for (int i = 0; i < nbVoisin; i++) {
-            Data nearest = tmp.get(0);
-            double minDistance = Data.distance(data, nearest, distanceSouhaitee);
-            for (Data d : tmp) {
-                double distance = Data.distance(data, d, distanceSouhaitee);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = d;
-                }
+        // Calculer les distances et garder seulement les 'nbVoisin' plus proches
+        for (Data d : dataList) {
+            double distance = Data.distance(data, d, distanceSouhaitee);
+
+            if (maxHeap.size() < nbVoisin) {
+                maxHeap.offer(new DataDistance(d, distance));
+            } else if (distance < maxHeap.peek().distance) {
+                maxHeap.poll();
+                maxHeap.offer(new DataDistance(d, distance));
             }
-            nearestData.add(nearest);
-            tmp.remove(nearest);
         }
+
+        // Extraire les données du maxHeap
+        List<Data> nearestData = new ArrayList<>(maxHeap.size());
+        while (!maxHeap.isEmpty()) {
+            nearestData.add(maxHeap.poll().data);
+        }
+
+        // Renvoyer la liste des données les plus proches
         return nearestData;
+    }
+
+    // Classe interne pour stocker une donnée et sa distance
+    private static class DataDistance {
+        Data data;
+        double distance;
+
+        DataDistance(Data data, double distance) {
+            this.data = data;
+            this.distance = distance;
+        }
     }
 
     public static double valueOf(String attribute, String value) {
