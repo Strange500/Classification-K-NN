@@ -437,7 +437,7 @@ public class DataController extends Observer {
                         @Override
                         protected Double call() throws Exception {
                             loading.setProgress(-1);
-                            return dataManager.getBestNbVoisin(defaultDistance, path, cateCombo.getValue());
+                            return dataManager.getBestNbVoisin(defaultDistance,path, cateCombo.getValue());
                         }
                     };
                 }
@@ -451,5 +451,32 @@ public class DataController extends Observer {
                 loading.setVisible(false);
             });
             service.start();
+    }
+
+    public void triggerCrossValidation() {
+        AtomicReference<Double> percent = new AtomicReference<>((double) 0);
+
+        loading.setVisible(true);
+        Service<Double> service = new Service<Double>() {
+            @Override
+            protected Task<Double> createTask() {
+                return new Task<Double>() {
+                    @Override
+                    protected Double call() throws Exception {
+                        loading.setProgress(-1);
+                        return dataManager.validationCroisee(defaultDistance, cateCombo.getValue());
+                    }
+                };
+            }
+        };
+        service.setOnSucceeded(e -> {
+            percent.set(service.getValue());
+            pRobustesse.setVisible(true);
+            nbVoisin.setVisible(true);
+            pRobustesse.setText((percent.get() *100) + " %");
+            nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+            loading.setVisible(false);
+        });
+        service.start();
     }
 }

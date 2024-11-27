@@ -13,8 +13,11 @@
           <Menu style="-fx-text-fill: #f8f8f2;" text="Fichier">
             <items>
               <MenuItem onAction="#loadNewCsv" style="-fx-text-fill: #f8f8f2;" text="Charger un CSV" />
-                <MenuItem mnemonicParsing="false" onAction="#updateRobustesseLabels" text="Test robustesse" />
                 <MenuItem onAction="#saveChartAsImage" style="-fx-text-fill: #f8f8f2;" text="Sauvegarder le graphique" />
+
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#updateRobustesseLabels" text="Test robustesse" />
+                <MenuItem mnemonicParsing="false" onAction="#triggerCrossValidation" text="Cross validation" />
             </items>
           </Menu>
           <Menu style="-fx-text-fill: #f8f8f2;" text="Affichage">

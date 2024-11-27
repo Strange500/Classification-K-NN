@@ -327,53 +327,77 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         return p.getValue();
     }
 
-    public double validationCroisee(Distance d, String targetField) throws FileNotFoundException {
-        System.out.println("1");
-        List<Data> listeOriginal = new ArrayList<>(dataList);
-        int subdivision = 10;
-        List<FakeDataValidation> listetest = new ArrayList<>();
-        for (Data da : dataList) {
-            FakeDataValidation f = new FakeDataValidation(da.getAttributes(), targetField, da.getCategory());
-            f.setCategoryField(targetField);
-            listetest.add(f);
+    public double validationCroisee(Distance d, String targetField) {
+        List<Data> originalDataList = new ArrayList<>(dataList);
+        List<FakeDataValidation> validationList = prepareValidationData(targetField);
+
+        Collections.shuffle(validationList);
+        System.out.println("Validation croisée en cours...");
+        List<List<FakeDataValidation>> subsets = createSubsets(validationList, 10);
+        System.out.println("Subsets created");
+
+
+
+        double averageScore = performCrossValidation(d, subsets);
+
+        dataList = (List<E>) new ArrayList<>(originalDataList); // Restore original data list
+        return averageScore;
+    }
+
+    private List<FakeDataValidation> prepareValidationData(String targetField) {
+        List<FakeDataValidation> validationData = new ArrayList<>();
+
+        for (Data data : dataList) {
+            FakeDataValidation fakeData = new FakeDataValidation(data.getAttributes(), targetField, data.getCategory());
+            fakeData.setCategoryField(targetField);
+            validationData.add(fakeData);
         }
-        System.out.println("2");
-        Collections.shuffle(listetest);
-        List<List<FakeDataValidation>> listes = new ArrayList<>();
-        for (int i = 0; i < subdivision; i++) {
-            listes.add(new ArrayList<>());
+
+        return validationData;
+    }
+
+    private List<List<FakeDataValidation>> createSubsets(List<FakeDataValidation> validationList, int subdivisions) {
+        List<List<FakeDataValidation>> subsets = new ArrayList<>();
+
+        for (int i = 0; i < subdivisions; i++) {
+            subsets.add(new ArrayList<>());
         }
-        System.out.println("3");
-        for (int i = 0; i < listetest.size(); i++) {
-            listes.get(i % subdivision).add(listetest.get(i));
+
+        for (int i = 0; i < validationList.size(); i++) {
+            subsets.get(i % subdivisions).add(validationList.get(i));
         }
-        System.out.println("4");
-        double moyenne = 0;
-        Map<Integer, Integer> nbVoisin = new HashMap<>();
-        for (int i = 0; i < subdivision; i++) {
-            List<FakeDataValidation> test = listes.get(i);
-            List<Data> train = new ArrayList<>();
-            for (int j = 0; j < subdivision; j++) {
-                if (j != i) {
-                    train.addAll(listes.get(j));
-                }
+
+        return subsets;
+    }
+
+    private double performCrossValidation(Distance d, List<List<FakeDataValidation>> subsets) {
+        double totalScore = 0;
+        Map<Integer, Integer> neighborCount = new HashMap<>();
+
+        for (int i = 0; i < subsets.size(); i++) {
+            List<FakeDataValidation> testSet = subsets.get(i);
+            List<Data> trainingSet = createTrainingSet(subsets, i);
+
+            dataList = (List<E>) new ArrayList<>(trainingSet); // Update dataList to use the training set
+            Pair<Integer, Double> result = ModelUtils.Robustesse((DataManager<Data>) this, new ArrayList<>(testSet), d);
+
+            neighborCount.put(result.getKey(), neighborCount.getOrDefault(result.getKey(), 0) + 1);
+            totalScore += result.getValue();
+        }
+
+        return totalScore / subsets.size(); // Calculate average score
+    }
+
+    private List<Data> createTrainingSet(List<List<FakeDataValidation>> subsets, int testIndex) {
+        List<Data> trainingSet = new ArrayList<>();
+
+        for (int j = 0; j < subsets.size(); j++) {
+            if (j != testIndex) {
+                trainingSet.addAll(subsets.get(j));
             }
-            System.out.println("5");
-
-            System.out.println("6");
-
-            dataList = (List<E>) train;
-            List<Data> testV = new ArrayList<>(test);
-            Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, testV, d);
-            System.out.println("7");
-            nbVoisin.put(p.getKey(), nbVoisin.getOrDefault(p.getKey(), 0) + 1);
-            moyenne += p.getValue();
         }
-        System.out.println("8");
-        moyenne /= subdivision;
-        dataList = (List<E>) listeOriginal;
-        bestNbVoisin = Collections.max(nbVoisin.entrySet(), Map.Entry.comparingByValue()).getKey();
-        return moyenne;
+
+        return trainingSet;
     }
 
 
