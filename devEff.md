@@ -20,3 +20,48 @@ L’implémentation de K-NN (K-Nearest Neighbors) une `PriorityQueue` pour ident
 - **Mémoire** : Le `maxHeap` fixe de taille K permet une gestion efficace de la mémoire, même avec des `dataList` volumineuses, réduisant l'empreinte mémoire de l’algorithme. (Une PriorityQueue est par default de taille 11, elle est dynamique et est augmentée si nécessaire)
 
 - **Scalabilité** : Cette méthode est capable de traiter des ensembles de données croissants, car le temps de traitement dépend principalement du nombre de voisins et non de la taille totale des données.
+
+
+## Calcul de la Distance
+
+La classe `Data` contient une méthode `distance` qui permet de calculer la distance entre deux objets `Data`. Cette méthode utilise la distance souhaitée pour effectuer le calcul.
+
+### Distances Disponibles
+
+Les distances disponibles sont :
+
+- **Distance de Manhattan** : La distance de Manhattan est la somme des différences absolues entre les coordonnées des points.
+
+- **Distance Euclidienne** : La distance euclidienne est la racine carrée de la somme des carrés des différences entre les coordonnées des points.
+
+- **Distance de Manhattan Normalisée** : La distance de Manhattan normalisée est la somme des différences absolues entre les coordonnées des points moins le minimum, divisée par la plage de valeurs.
+
+- **Distance Euclidienne Normalisée** : La distance euclidienne normalisée est la racine carrée de la somme des carrés des différences entre les coordonnées des points moins le minimum, divisée par la plage de valeurs.
+
+Ces distances permettent de comparer les objets `Data` en fonction de leurs attributs, en prenant en compte les valeurs numériques et les attributs sans ordre spécifique.
+
+### Traitement des Attributs Sans Ordre Spécifique
+
+Lors du calcul de la distance entre deux objets `Data`, les attributs sans ordre spécifique sont traités différemment. Voici comment cela fonctionne :
+
+- Si les attributs sont égaux, la distance est nulle.
+- Sinon, un attribut est noté 1 et l'autre 0, ce qui permet de ne prendre en compte que l'égalité des attributs dans le calcul de la distance.
+
+L'ordre est déterminé par la présence de l'annotation `@HasNoOrder` sur l'attribut lors de la déclaration de la classe.
+
+## Traitement de la normalisation
+
+La normalisation est réalisée par les implémentations de `Distance` qui en ont besoin. Ces implémentations normalisent les valeurs des attributs avant de calculer la distance.
+
+### Méthode de Normalisation
+
+La normalisation est effectuée en suivant les étapes suivantes :
+
+1. Soustraction de la valeur minimale de chaque attribut.
+2. Division par la plage de valeurs (max - min) de l'attribut.
+
+### Optimisation de la Normalisation
+
+Pour accélérer le traitement, nous stockons le minimum et le maximum de chaque attribut dans la map `minMax` de la classe `DataManager`. Cela permet à la normalisation d'être exécutée en O(1) pour chaque attribut.
+
+
