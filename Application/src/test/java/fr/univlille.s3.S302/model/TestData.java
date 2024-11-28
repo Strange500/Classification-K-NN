@@ -78,33 +78,22 @@ public class TestData {
     }
 
     @Test
-    void updateAttributesIndexes() {
-    }
-
-    @Test
-    void makeData() {
-    }
-
-    @Test
-    void hasOrder() {
-    }
-
-    @Test
-    void updateDataTypes() {
-    }
-
-    @Test
     void getAttributes() {
         assertEquals(map, data.getAttributes());
     }
 
     @Test
     void getCategory() {
+        data.setCategoryField("1.0");
+        assertEquals("1.0", data.getCategory());
     }
 
     @Test
     void setCategory() {
-
+        int sizeMap = data.attributes.size();
+        data.setCategory("1.0");
+        assertEquals("1.0", data.getCategory());
+        assertEquals(sizeMap+1, data.attributes.size());
     }
 
     @Test
