@@ -74,5 +74,15 @@ Cette méthode utilise l'algorithme K-NN pour classer une donnée cible en fonct
 
 Nous stockons un compteur pour chaque classe possible, et la classe majoritaire est celle avec le plus grand nombre de voisins.
 
+## Robustesse de l'Algorithme
 
+Pour évaluer la robustesse de l'algorithme, nous avons mis en œuvre deux approches :
 
+### 1. Robustesse Simple
+L'utilisateur transmet un fichier contenant des données de test. L'algorithme K-NN est appliqué sur ces données, et les classes prédites sont comparées aux classes réelles pour évaluer la précision de l'algorithme. Le pourcentage de précision est calculé en fonction du nombre de classes prédites correctement.
+
+### 2. Validation Croisée
+L'utilisateur utilise la fonction de validation croisée, qui sépare les données actuelles en 10 sous-ensembles. À chaque itération, une sous-partie est testée tandis que les neuf autres servent à prédire les classes. À la fin des 10 itérations, nous calculons la moyenne des pourcentages de réussite.
+
+### Conditions de Test
+Pour chaque approche, l'algorithme teste tous les N inférieurs à la moitié de la taille de la liste de données, car il n'est pas pertinent de tester pour un N trop grand. Le meilleur N est alors appliqué à toutes les futures classifications.
