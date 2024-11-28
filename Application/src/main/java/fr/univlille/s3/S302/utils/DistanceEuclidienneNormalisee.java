@@ -13,20 +13,25 @@ public class DistanceEuclidienneNormalisee implements Distance {
         Map<String, Number> attributs1 = j1.getAttributes();
         Map<String, Number> attributs2 = j2.getAttributes();
         double somme = 0;
-        double somme1 = 0;
-        double somme2 = 0;
+
         DataManager<Data> dataManager = DataManager.getInstance();
 
         for (String key : attributs1.keySet()) {
             double value1 = attributs1.get(key).doubleValue();
             double value2 = attributs2.get(key).doubleValue();
+
             double min = dataManager.getMin(key).doubleValue();
             double max = dataManager.getMax(key).doubleValue();
+
             double diff = max - min;
             if (diff == 0) {
                 diff = 1;
             }
-            somme += Math.pow((value1 - value2) - min / diff, 2);
+
+            double normalizedValue1 = (value1 - min) / diff;
+            double normalizedValue2 = (value2 - min) / diff;
+
+            somme += Math.pow(normalizedValue1 - normalizedValue2, 2);
         }
 
         return Math.sqrt(somme) ;
