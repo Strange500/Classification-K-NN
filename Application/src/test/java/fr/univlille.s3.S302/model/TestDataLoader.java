@@ -1,12 +1,8 @@
 package fr.univlille.s3.S302.model;
 
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.FileNotFoundException;
-import java.util.List;
-
-public class DataLoaderTest {
+public class TestDataLoader {
 //    @Test
 //    public void testCharger() {
 //        String fileName = "testfile.csv";

@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DistanceEuclidienneTest {
+public class TestDistanceEuclidienne {
      @Test
     public void testDistanceEuclidienne() {
          DistanceEuclidienne distance = new DistanceEuclidienne();
