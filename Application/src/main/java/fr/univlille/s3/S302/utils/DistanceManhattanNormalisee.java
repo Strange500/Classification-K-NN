@@ -17,16 +17,21 @@ public class DistanceManhattanNormalisee implements Distance {
         for (String key : attributs1.keySet()) {
             double value1 = attributs1.get(key).doubleValue();
             double value2 = attributs2.get(key).doubleValue();
+
             double min = dataManager.getMin(key).doubleValue();
             double max = dataManager.getMax(key).doubleValue();
+
             double diff = max - min;
+
             if (diff == 0) {
                 diff = 1;
             }
-            somme += Math.abs((value1 - value2) - min / diff);
 
+            double normalizedValue1 = (value1 - min) / diff;
+            double normalizedValue2 = (value2 - min) / diff;
+
+            somme += Math.abs(normalizedValue1 - normalizedValue2);
         }
-
         return somme;
     }
 }
