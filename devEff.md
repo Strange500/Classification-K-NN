@@ -86,3 +86,5 @@ L'utilisateur utilise la fonction de validation croisée, qui sépare les donné
 
 ### Conditions de Test
 Pour chaque approche, l'algorithme teste tous les N inférieurs à la moitié de la taille de la liste de données, car il n'est pas pertinent de tester pour un N trop grand. Le meilleur N est alors appliqué à toutes les futures classifications.
+
+Des fichiers de resulats de Robustesse et de Validation Croisée sont disponibles à la racine du projet. Vous pouvez en visualiser d'autre dans le terminal en lancant des tests de robustesse ou de validation croisée depuis l'inteface graphique.
