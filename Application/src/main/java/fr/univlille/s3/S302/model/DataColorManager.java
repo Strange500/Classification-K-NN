@@ -1,8 +1,6 @@
 package fr.univlille.s3.S302.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,14 +8,14 @@ import java.util.Map;
  */
 public class DataColorManager {
 
-    private final List<String> colorList;
+    private final Map<String, String> colorMap;
     private static int idxColor = 0;
 
     /**
      * Constructeur de la classe DataColorManager
      */
     public DataColorManager() {
-        this.colorList = new ArrayList<>();
+        this.colorMap = new HashMap<>();
     }
 
     /**
@@ -26,10 +24,10 @@ public class DataColorManager {
      * @return la couleur suivante
      */
     public String nextColor(int nbCategories) {
-        if (colorList.size() != nbCategories) {
+        if (colorMap.size() != nbCategories) {
             createColor(nbCategories);
         }
-        String color = colorList.get(idxColor);
+        String color = colorMap.get("Color" + idxColor);
         idxColor = (idxColor + 1) % nbCategories;
         return color;
     }
@@ -39,12 +37,12 @@ public class DataColorManager {
      * @param nbCategories le nombre de catégories
      */
     private void createColor(int nbCategories) {
-        colorList.clear();
+        colorMap.clear();
         int nbColor = 0;
-        while (nbColor % 3 != 0 || nbColor < nbCategories) {
+        while (nbColor <= nbCategories || nbColor%3 != 0) {
             nbColor++;
         }
-        int step, r = 0, g = 0, b = 0;
+        int step=0, r=0, g=0, b=0;
         for (int i = 0; i < nbColor; i++) {
             switch (i % 3) {
                 case 0:
@@ -66,7 +64,7 @@ public class DataColorManager {
                     b = 255 - step * 255 / (nbColor / 3);
                     break;
             }
-            colorList.add("rgb(" + r + "," + g + "," + b + ")");
+            colorMap.put("Color" + i, "rgb(" + r + "," + g + "," + b + ")");
         }
     }
 }

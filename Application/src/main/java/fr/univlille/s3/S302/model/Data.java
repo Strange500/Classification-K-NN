@@ -10,7 +10,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 /**
- * Interface représentant une donnée
+ * Classe abstraite représentant un point de données.
  */
 public abstract class Data {
 
@@ -24,8 +24,12 @@ public abstract class Data {
     protected static final Map<String, Field> fieldsMap = new HashMap<>();
 
     /**
-     * @param distance la distance à utiliser
-     * @return la distance entre deux données
+     * Calcule la distance entre deux points de données en utilisant la métrique de distance spécifiée.
+     *
+     * @param d1       le premier point de données
+     * @param d2       le deuxième point de données
+     * @param distance la métrique de distance à utiliser
+     * @return la distance entre les deux points de données
      */
     public static double distance(Data d1, Data d2, Distance distance) {
         Pair<Data, Data> pair = computeAttributes(d1, d2);
@@ -33,21 +37,19 @@ public abstract class Data {
     }
 
     /**
-     * Cette fonction permet d'ajuster les valeurs des attributs n'ayant pas d'ordre entre eux
-     * Les deux données doivent avoir les mêmes attributs.
+     * Ajuste les valeurs des attributs pour les attributs qui n'ont pas d'ordre.
+     * Les deux points de données doivent avoir les mêmes attributs.
      */
     private static Pair<Data, Data> computeAttributes(Data d1, Data d2) {
         FakeData fakeData1 = new FakeData(d1.getAttributes(), d1.categoryField);
         FakeData fakeData2 = new FakeData(d2.getAttributes(), d2.categoryField);
-        // on ne compare pas la catégorie
+
         fakeData2.attributes.remove(d2.categoryField);
         fakeData1.attributes.remove(d1.categoryField);
 
-        // on retire les attributs qui ne sont pas dans les deux données
-
         fakeData1.attributes = Maps.filterKeys(fakeData1.attributes, fakeData2.attributes::containsKey);
         fakeData2.attributes = Maps.filterKeys(fakeData2.attributes, fakeData1.attributes::containsKey);
-        // on fait en sorte que les attributs qui n'ont pas d'ordre soient soit eqaux (alors leur différence est 0) soit différents (alors leur différence est 0)
+
         for (String key : fakeData1.getAttributes().keySet()) {
             if (!d1.hasOrder(key)) {
                 int diff = fakeData1.getAttributes().get(key).equals(fakeData2.getAttributes().get(key)) ? 0 : 1;
@@ -59,6 +61,10 @@ public abstract class Data {
     }
 
     /**
+     * Convertit la valeur de l'attribut en une valeur numérique.
+     *
+     * @param attribute le nom de l'attribut
+     * @param value     la valeur de l'attribut
      * @return la valeur numérique de l'attribut
      */
     public static double valueOf(String attribute, String value) {
@@ -74,7 +80,11 @@ public abstract class Data {
     }
 
     /**
-     * @return si l'attribut est de la classe clazz
+     * Vérifie si l'attribut est de la classe spécifiée.
+     *
+     * @param attribute le nom de l'attribut
+     * @param clazz     la classe à vérifier
+     * @return true si l'attribut est de la classe spécifiée, false sinon
      */
     protected boolean attributeIsClass(String attribute, Class<?> clazz) {
         if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
@@ -84,14 +94,22 @@ public abstract class Data {
     }
 
     /**
-     * @return si class1 est égal ou une sous-classe de class2
+     * Vérifie si class1 est égale ou une sous-classe de class2.
+     *
+     * @param class1 la première classe
+     * @param class2 la deuxième classe
+     * @return true si class1 est égale ou une sous-classe de class2, false sinon
      */
     protected static boolean isEqualOrSubclass(Class<?> class1, Class<?> class2) {
         return class2.isAssignableFrom(class1);
     }
 
     /**
-     * @return la valeur de l'attribut
+     * Obtient la valeur originale de l'attribut à partir de sa valeur numérique.
+     *
+     * @param attribute le nom de l'attribut
+     * @param value     la valeur numérique
+     * @return la valeur originale de l'attribut
      */
     public String getValue(String attribute, Number value) {
         if (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size()) {
@@ -104,8 +122,10 @@ public abstract class Data {
     }
 
     /**
-     * @param insertedIndex
-     * Met à jour les index des attributs
+     * Met à jour les index des attributs.
+     *
+     * @param attribute     le nom de l'attribut
+     * @param insertedIndex l'index à insérer
      */
     public static void updateAttributesIndexes(String attribute, int insertedIndex) {
         List<? extends Data> ls = DataManager.getInstance().getDataList();
@@ -120,7 +140,7 @@ public abstract class Data {
     }
 
     /**
-     * Crée les données
+     * Initialise les attributs du point de données.
      */
     public void makeData() {
         Field[] fields = this.getClass().getDeclaredFields();
@@ -158,7 +178,10 @@ public abstract class Data {
     }
 
     /**
-     * @return si l'attribut a un ordre
+     * Vérifie si l'attribut a un ordre.
+     *
+     * @param attribute le nom de l'attribut
+     * @return true si l'attribut a un ordre, false sinon
      */
     public boolean hasOrder(String attribute) {
         if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
@@ -168,6 +191,10 @@ public abstract class Data {
     }
 
     /**
+     * Convertit la valeur de l'attribut en une valeur numérique.
+     *
+     * @param field le champ représentant l'attribut
+     * @param value la valeur de l'attribut
      * @return la valeur numérique de l'attribut
      */
     private static Number getIntValue(Field field, Object value) {
@@ -211,8 +238,9 @@ public abstract class Data {
     }
 
     /**
-     * @param obj
-     * Met à jour les types des données
+     * Met à jour les types de données des attributs.
+     *
+     * @param obj l'objet de données
      */
     static void updateDataTypes(Data obj) {
         dataTypes.clear();
@@ -223,14 +251,18 @@ public abstract class Data {
     }
 
     /**
-     * @return les attributs de la donnée
+     * Obtient les attributs du point de données.
+     *
+     * @return les attributs du point de données
      */
     public Map<String, Number> getAttributes() {
         return this.attributes;
     }
 
     /**
-     * @return la catégorie de la donnée
+     * Obtient la catégorie du point de données.
+     *
+     * @return la catégorie du point de données
      */
     public String getCategory() {
         if (attributeIsClass(categoryField, Number.class)) {
@@ -239,9 +271,10 @@ public abstract class Data {
         return getValue(categoryField, attributes.get(categoryField));
     }
 
-    
     /**
-     * @param category la nouvelle catégorie de la donnée
+     * Définit la catégorie du point de données.
+     *
+     * @param category la nouvelle catégorie
      */
     public void setCategory(String category) {
         this.category = category;
@@ -249,18 +282,22 @@ public abstract class Data {
     }
 
     /**
-     * @param categoryField la nouvelle catégorie de la donnée
+     * Définit le champ de catégorie du point de données.
+     *
+     * @param categoryField le nouveau champ de catégorie
      */
     public void setCategoryField(String categoryField) {
         if (!attributes.containsKey(categoryField)) {
-            System.err.println("The category field does not exist in the attributes");
+            System.err.println("Le champ de catégorie n'existe pas dans les attributs");
         }
         this.categoryField = categoryField;
         this.category = getCategory();
     }
 
     /**
-     * @return le nom de la catégorie
+     * Obtient le champ de catégorie du point de données.
+     *
+     * @return le champ de catégorie
      */
     public String getCategoryField() {
         return categoryField;

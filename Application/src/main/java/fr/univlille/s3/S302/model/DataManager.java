@@ -1,6 +1,7 @@
 package fr.univlille.s3.S302.model;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 import fr.univlille.s3.S302.model.data.FakeData;
@@ -201,7 +202,9 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
             notifyAllObservers();
 
         } catch (FileNotFoundException e) {
-            System.out.println(e.getMessage());
+            throw new RuntimeException("Fichier introuvable : " + path, e);
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors du chargement des données", e);
         }
     }
 
