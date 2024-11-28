@@ -77,10 +77,10 @@ public abstract class Data {
      * @return si l'attribut est de la classe clazz
      */
     protected boolean attributeIsClass(String attribute, Class<?> clazz) {
-        if (dataTypes.getOrDefault(attribute, null) == null) {
-            throw new NoSuchElementException("Attribute not found");
+        if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
+            return isEqualOrSubclass(dataTypes.get(attribute), clazz);
         }
-        return isEqualOrSubclass(dataTypes.get(attribute), clazz);
+        throw new NoSuchElementException("Attribute not found");
     }
 
     /**
@@ -161,10 +161,10 @@ public abstract class Data {
      * @return si l'attribut a un ordre
      */
     public boolean hasOrder(String attribute) {
-        if (fieldsMap.getOrDefault(attribute, null) == null) {
-            throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
+        if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
+            return !dataTypes.get(attribute).isAnnotationPresent(HasNoOrder.class);
         }
-        return !fieldsMap.get(attribute).isAnnotationPresent(HasNoOrder.class);
+        throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
     }
 
     /**

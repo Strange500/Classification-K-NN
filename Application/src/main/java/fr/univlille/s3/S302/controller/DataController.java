@@ -221,6 +221,7 @@ public class DataController extends Observer {
             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
             System.out.println("Image saved; path: " + file.getAbsolutePath());
         } catch (IOException e) {
+            genErrorPopup("Erreur lors de la sauvegarde de l'image").show(chart.getScene().getWindow());
             System.err.println("An error occurred while saving the image");
         }
     }
@@ -453,6 +454,9 @@ public class DataController extends Observer {
             service.start();
     }
 
+    /**
+     * Déclenche la validation croisée
+     */
     public void triggerCrossValidation() {
         AtomicReference<Double> percent = new AtomicReference<>((double) 0);
 

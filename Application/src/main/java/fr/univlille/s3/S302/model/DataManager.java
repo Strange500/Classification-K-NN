@@ -229,7 +229,10 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
                 List<Data> nearestData = getNearestDatas(d, distanceSouhaitee, bestNbVoisin);
                 Map<String, Integer> categories = new HashMap<>();
                 for (Data data : nearestData) {
-                    categories.put(data.getCategory(), categories.getOrDefault(data.getCategory(), 0) + 1);
+                    String category = data.getCategory();
+                    if (category != null) {
+                        categories.put(category, categories.getOrDefault(category, 0) + 1);
+                    }
                 }
                 d.setCategory(Collections.max(categories.entrySet(), Map.Entry.comparingByValue()).getKey());
             }
@@ -241,7 +244,8 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         if (userData == null) {
             throw new IllegalArgumentException("userDataIsNotCategorized : userData ne peut pas être nul ");
         }
-        return userData.getCategory().equals("Unknown");
+        String category = userData.getCategory();
+        return category == null || category.equals("Unknown");
     }
 
     /**
