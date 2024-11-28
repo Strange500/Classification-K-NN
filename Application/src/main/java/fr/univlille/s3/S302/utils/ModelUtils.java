@@ -21,6 +21,8 @@ public class ModelUtils {
         double pourcentageMax=0.0;
         int cpt=0;
         int size= listeData.size();
+        System.out.println("Tableau meilleur NB voisin et pourcentage de robustesse");
+        System.out.println("NB voisin | Pourcentage de robustesse");
         for (int i=1;i<(dm.getDataList().size())/2;i++){
             for (Data d : listeData){
                 String cate=d.getCategory();
@@ -34,6 +36,7 @@ public class ModelUtils {
                pourcentageMax = cpt /(double) size;
                bestNBVoisin=i;
            }
+            System.out.println(i+" | "+(cpt /(double) size));
            cpt=0;
         }
         return new Pair<>(bestNBVoisin,pourcentageMax);

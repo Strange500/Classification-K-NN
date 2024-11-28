@@ -389,6 +389,8 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
             totalScore += result.getValue();
         }
 
+        bestNbVoisin = Collections.max(neighborCount.entrySet(), Map.Entry.comparingByValue()).getKey();
+
         return totalScore / subsets.size(); // Calculate average score
     }
 
