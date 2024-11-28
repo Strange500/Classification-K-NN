@@ -14,6 +14,7 @@ public class DataLoader {
 
     private static final Map<String, Class<? extends Data>> headerToClassMap = new HashMap<>();
     private static final char SEPARATOR = ',';
+
     /**
      * Charge un fichier CSV et le transforme en liste d'objets FormatDonneeBrut
      * 
@@ -23,7 +24,7 @@ public class DataLoader {
      */
     public static List<? extends Data> charger(String fileName) throws FileNotFoundException {
         if (fileName == null) {
-            throw new FileNotFoundException("Fichier non trouvé");
+            throw new FileNotFoundException("check is null : Fichier non trouvé: " + fileName);
         }
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
         Class<? extends Data> clazz = null;
@@ -32,16 +33,13 @@ public class DataLoader {
                 input = new FileInputStream(fileName);
                 clazz = getClassFromHeader(new FileReader(fileName));
             } else {
-                throw new FileNotFoundException("Fichier non trouvé");
+                throw new FileNotFoundException("check filename exist : Fichier non trouvé: " + fileName);
             }
         } else{
             clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
         }
         return csvToList(input, clazz);
-
     }
-
-
 
     /**
      * Transforme un fichier CSV en liste d'objets FormatDonneeBrut
@@ -60,11 +58,17 @@ public class DataLoader {
             List<? extends Data> records = csvToBean.parse();
             return records;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
-        throw new FileNotFoundException("Fichier non trouvé");
+        throw new FileNotFoundException("Fichier non trouvé" );
     }
 
+    /**
+     * Récupère la classe correspondant à l'entête du fichier CSV
+     *
+     * @param fileReader le fichier CSV
+     * @return la classe correspondant à l'entête
+     */
     private static Class<? extends  Data> getClassFromHeader(Reader fileReader) {
         preLoadClasses();
         try (BufferedReader reader = new BufferedReader(fileReader)) {
@@ -72,22 +76,31 @@ public class DataLoader {
 
             return headerToClassMap.getOrDefault(header, null);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
         return null;
     }
 
-
-
+    /**
+     * Enregistre une correspondance entre un entête et une classe
+     *
+     * @param clazz la classe
+     * @param header l'entête
+     */
     public static void registerHeader(Class<? extends Data> clazz, String header) {
         headerToClassMap.put(header, clazz);
     }
 
-    private static void preLoadClasses() {
+    /**
+     * Charge toutes les classes héritant de Data
+     */
+    static void preLoadClasses() {
         try {
             Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);
+            System.out.println("Liste des classe a charger : " + allClasses);
             for (Class<? extends Data> clazz : allClasses) {
                 Class.forName(clazz.getName());
+                System.out.println("Chargement de la classe " + clazz.getName());
             }
         } catch (ClassNotFoundException e) {
             System.err.println("Impossible de charger les classes");

@@ -2,6 +2,8 @@ module fr.univlille.s3.S302 {
     requires  javafx.controls;
     requires  javafx.fxml;
     requires  javafx.graphics;
+    requires  javafx.base;
+    requires  javafx.swing;
     requires  com.opencsv;
     requires  java.sql;
     requires atlantafx.base;

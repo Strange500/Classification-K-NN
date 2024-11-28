@@ -22,4 +22,3 @@ public class DistanceEuclidienne implements Distance {
         return Math.sqrt(somme);
     }
 }
-

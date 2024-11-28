@@ -5,10 +5,11 @@ import com.opencsv.bean.CsvDate;
 
 import java.util.Date;
 
-public class random extends Data {
+
+public class Random extends Data {
 
     static {
-        DataLoader.registerHeader(random.class, "\"date\",\"name\"");
+        DataLoader.registerHeader(Random.class, "\"date\",\"name\"");
     }
     @CsvDate(value = "dd-MM-yyyy")
     @CsvBindByName(column = "date")
@@ -16,10 +17,4 @@ public class random extends Data {
 
     @CsvBindByName(column = "name")
     protected String name;
-
-    public static void main(String[] args) {
-        DataManager<Data> dm = new DataManager<>("iris.csv");
-        System.out.println(dm.getDataList());
-    }
-
 }

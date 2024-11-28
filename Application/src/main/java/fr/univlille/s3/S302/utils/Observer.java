@@ -1,8 +1,8 @@
 package fr.univlille.s3.S302.utils;
 
-public interface Observer<E> {
+public abstract class Observer {
 
-    void update(Observable<E> ob);
+    protected abstract void update(Observable ob);
 
-    void update(Observable<E> ob, E elt);
+    protected abstract void update(Observable ob, Object elt);
 }

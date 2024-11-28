@@ -1,19 +1,19 @@
 package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.*;
-import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
+import fr.univlille.s3.S302.utils.*;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Popup;
@@ -21,13 +21,16 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
-public class DataController implements Observer<Data> {
+import javax.imageio.ImageIO;
+import javafx.embed.swing.SwingFXUtils;
 
-    private final Map<String, String> categorieColor = new HashMap<>();
+public class DataController extends Observer {
+
     @FXML
     ScatterChart<Number, Number> chart;
     @FXML
@@ -42,20 +45,88 @@ public class DataController implements Observer<Data> {
     @FXML
     private Button addDataBtn;
     @FXML
+    private ComboBox<String> distanceComboBox;
+    @FXML
+    private Button saveChart;
+    @FXML
     private VBox addPointVBox;
     Map<String, TextField> labelMap = new HashMap<>();
     @FXML
     Canvas canvas;
     @FXML
     GridPane grid;
+    @FXML
+    Label pRobustesse;
+    @FXML
+    Label nbVoisin;
     private HeatView heatView;
 
-    private final static Distance DEFAULT_DISTANCE = new DistanceEuclidienne();
+    private Chart chartController;
+
+    private Distance defaultDistance = new DistanceEuclidienne();
+
+    @FXML
+    ComboBox<String> cateCombo;
+    /**
+     * Initialisation de la fenêtre
+     */
+    public void initialize() {
+        chartController = new Chart(this.chart);
+        distanceComboBox.setValue("Euclidienne");
+        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
+        cateCombo.getItems().addAll(dataManager.getAttributes());
+        cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
+        nbVoisin.setText(dataManager.getBestN() + " Voisins");
+        buildWidgets();
+        constructVBox();
+        categoryBtn.setOnAction(event -> {
+            try {
+                updateAxisCategory();
+                update();
+                this.heatView = recreateHeatView();
+                this.heatView.update();
+            } catch (IllegalArgumentException | NoSuchElementException ile) {
+                Popup popup = genErrorPopup(ile.getMessage());
+                popup.show(chart.getScene().getWindow());
+            }
+        });
+
+        addDataBtn.setOnAction(event -> {
+            addUserPoint();
+        });
+
+        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
+        chart.widthProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setWidth(newVal.doubleValue());
+            canvas.setHeight(chart.getHeight());
+            heatView.update();
+        });
+        chart.heightProperty().addListener((obs, oldVal, newVal) -> {
+            canvas.setHeight(newVal.doubleValue());
+            canvas.setWidth(chart.getWidth());
+            heatView.update();
+        });
+
+        cateCombo.setOnAction(event -> {
+            if (cateCombo.getValue() == null) {
+                return;
+            }
+            changeCategoryField();
+        });
+
+        distanceComboBox.setOnAction(event -> {
+            defaultDistance = getChosenDistance();
+            update();
+        });
+    }
 
     private void addTextFields() {
         addPointVBox.getChildren().clear();
         Map<String, Number> map = dataManager.getDataList().get(0).getAttributes();
         for (String s : map.keySet()) {
+            if (s.equals(cateCombo.getValue())) {
+                continue;
+            }
             VBox tmp = genererLigneAttributs(s);
             addPointVBox.getChildren().add(tmp);
         }
@@ -75,71 +146,55 @@ public class DataController implements Observer<Data> {
         try {
             for (String s : labelMap.keySet()) {
                 if (!labelMap.get(s).getText().isEmpty()) {
-                    tmp.put(s, dataManager.valueOf(s, labelMap.get(s).getText()));
+                    tmp.put(s, DataManager.valueOf(s, labelMap.get(s).getText()));
                 }
             }
-            dataManager.addData(tmp);
+            dataManager.addUserData(tmp);
         } catch (NumberFormatException e) {
             DataController.genErrorPopup("Entrez valeurs valides").show(addPointVBox.getScene().getWindow());
         }
     }
 
-    private static String cleanLabelName(String s) {
-        int[] indexMajuscules = new int[s.length()];
+    private static String cleanLabelName(String label) {
+        int[] indexMajuscules = new int[label.length()];
         int j = 0;
-        for (int i = 0; i < s.length(); i++) {
-            if (Character.isUpperCase(s.charAt(i))) {
+        for (int i = 0; i < label.length(); i++) {
+            if (Character.isUpperCase(label.charAt(i))) {
                 indexMajuscules[j] = i;
                 j++;
             }
         }
-        StringBuilder sb = new StringBuilder(s);
+        StringBuilder sb = new StringBuilder(label);
         for (int i = j - 1; i >= 0; i--) {
             sb.insert(indexMajuscules[i], " ");
         }
-        return sb.toString().substring(0, 1).toUpperCase() + sb.toString().substring(1);
+        return sb.substring(0, 1).toUpperCase() + sb.substring(1);
     }
 
-    @FXML
     /**
-     * Initialisation de la fenêtre
+     * Sauvegarde le graphique en image à l'endroit où l'utilisateur le souhaite
      */
-    public void initialize() {
-        buildWidgets();
-        constructVBox();
-        categoryBtn.setOnAction(event -> {
-            try {
-                updateAxisCategory();
-                update();
-                this.heatView = recreateHeatView();
-                this.heatView.update();
-            } catch (IllegalArgumentException | NoSuchElementException ile) {
-                Popup popup = genErrorPopup(ile.getMessage());
-                popup.show(chart.getScene().getWindow());
-            }
-        });
+    public void saveChartAsImage() {
+        String path = getPathToSaveChart();
 
-        addDataBtn.setOnAction(event -> {
-            addUserPoint();
-        });
+        if (path == null) {
+            return;
+        }
 
-        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
-        chart.widthProperty().addListener((obs, oldVal, newVal) -> {
-            canvas.setWidth(newVal.doubleValue());
-            canvas.setHeight(chart.getHeight());
-            heatView.update();
-        });
-        chart.heightProperty().addListener((obs, oldVal, newVal) -> {
-            canvas.setHeight(newVal.doubleValue());
-            canvas.setWidth(chart.getWidth());
-            heatView.update();
-        });
-
+        WritableImage image = chart.snapshot(new SnapshotParameters(), null);
+        File file = new File(path);
+        try {
+            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+            System.out.println("Image saved; path: " + file.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("An error occurred while saving the image");
+        }
     }
+
 
     private HeatView recreateHeatView() {
         boolean heatViewActive = heatView.isActive();
-        HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
+        HeatView tmp = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
         if (heatViewActive) {
             tmp.toggle();
         }
@@ -153,10 +208,7 @@ public class DataController implements Observer<Data> {
     }
 
     private void changeCategoryField() {
-        // random choice from attributes
-        int i = 1;
-        // decommenter quand c'est finit
-        //dataManager.changeCategoryField(attributes.get(x));
+        dataManager.changeCategoryField(cateCombo.getValue());
     }
 
     /**
@@ -164,16 +216,7 @@ public class DataController implements Observer<Data> {
      */
     private void buildWidgets() {
         data = new ArrayList<>();
-        categorieColor.clear();
-        categorieColor.put("Unknown", "black");
-
-        chart.getXAxis().setAutoRanging(true);
-        chart.getYAxis().setAutoRanging(true);
-        chart.setAnimated(false);
-        chart.legendVisibleProperty().setValue(false);
-
         dataManager.attach(this);
-
         rebuild();
     }
 
@@ -192,12 +235,13 @@ public class DataController implements Observer<Data> {
             yCategory.setValue(it.next());
         }
         updateAxisCategory();
-        constructChart();
+        chartController.recreateChart(dataManager.getDataList(), dataManager.getUserDataList(), choosenAttributes);
 
-        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), categorieColor);
+        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
         if (heatViewActive) {
             this.heatView.toggle();
         }
+
     }
 
     /**
@@ -231,101 +275,6 @@ public class DataController implements Observer<Data> {
         constructVBox();
     }
 
-    /**
-     * Met le style du graphique
-     */
-    private void setChartStyle() {
-        for (final XYChart.Series<Number, Number> s : chart.getData()) {
-            for (final XYChart.Data<Number, Number> data : s.getData()) {
-                Data d = getNode(data);
-                attachInfoTooltip(data, d);
-                data.getNode().setOnMouseEntered(event -> {
-                    data.getNode().setScaleX(1.5);
-                    data.getNode().setScaleY(1.5);
-                });
-                data.getNode().setOnMouseExited(event -> {
-                    data.getNode().setScaleX(1);
-                    data.getNode().setScaleY(1);
-                });
-
-                setNodeColor(data.getNode(), d.getCategory());
-                if (dataManager.isUserData(d)) {
-                    displaySquare(data);
-                }
-            }
-        }
-    }
-
-    private static void displaySquare(XYChart.Data<Number, Number> data) {
-        String st = data.getNode().getStyle();
-        data.getNode().setStyle(st + "-fx-background-radius: 0;");
-    }
-
-    private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
-        Tooltip tooltip = new Tooltip();
-        tooltip.setText(d.getCategoryField() + ":" + d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
-        tooltip.setShowDuration(javafx.util.Duration.seconds(10));
-        tooltip.setShowDelay(javafx.util.Duration.seconds(0));
-        Tooltip.install(data.getNode(), tooltip);
-    }
-
-    /**
-     * Récupère les coordonnées d'un noeud
-     * 
-     * @param f le noeud
-     * 
-     * @return les coordonnées du noeud
-     */
-    private Pair<Number, Number> getNodeXY(Data f) {
-        Map<String, Number> attributes = f.getAttributes();
-        return new Pair<>(attributes.get(choosenAttributes.getKey()), attributes.get(choosenAttributes.getValue()));
-    }
-
-    /**
-     * Construit le graphique
-     */
-    private void constructChart() {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
-        chart.getData().clear();
-        this.data.clear();
-        List<Data> dataList = dataManager.getDataList();
-        for (Data f : dataList) {
-            addPoint(f, series);
-        }
-        for (Data f : dataManager.getUserDataList()) {
-            if (f.getAttributes().containsKey(choosenAttributes.getKey())
-                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
-                addPoint(f, series);
-            }
-
-        }
-        chart.getData().add(series);
-        setChartStyle();
-    }
-
-    private void addPoint(Data f, XYChart.Series<Number, Number> series) {
-        Pair<Number, Number> choosenAttributes = getNodeXY(f);
-        XYChart.Data<Number, Number> node = new XYChart.Data<>(choosenAttributes.getKey(),
-                choosenAttributes.getValue());
-        data.add(new Pair<>(node, f));
-        series.getData().add(node);
-    }
-
-    /**
-     * Récupère le un point sur le graphique
-     * 
-     * @param data le noeud
-     * 
-     * @return le noeud
-     */
-    private Data getNode(XYChart.Data<Number, Number> data) {
-        for (Pair<XYChart.Data<Number, Number>, Data> d : this.data) {
-            if (d.getKey() == data) {
-                return d.getValue();
-            }
-        }
-        return null;
-    }
 
     /**
      * Récupère les attributs
@@ -347,34 +296,10 @@ public class DataController implements Observer<Data> {
     }
 
     /**
-     * Met la couleur d'un noeud
-     * 
-     * @param node     le noeud
-     * @param category la catégorie
-     */
-    public void setNodeColor(Node node, String category) {
-        if (node == null) {
-            return;
-        }
-        if (categorieColor.isEmpty()) {
-            createColor();
-        }
-        if (!categorieColor.containsKey(category)) {
-            categorieColor.put(category, dataManager.nextColor());
-        }
-
-        node.setStyle("-fx-background-color: " + categorieColor.get(category) + ";");
-    }
-
-    private void createColor() {
-        dataManager.createColor();
-    }
-
-    /**
      * Met à jour le graphique
      */
     @Override
-    public void update(Observable<Data> ob) {
+    public void update(Observable ob) {
         update();
     }
 
@@ -384,7 +309,7 @@ public class DataController implements Observer<Data> {
      * @param elt les données
      */
     @Override
-    public void update(Observable<Data> ob, Data elt) {
+    public void update(Observable ob, Object elt) {
         update();
     }
 
@@ -397,6 +322,9 @@ public class DataController implements Observer<Data> {
             dataManager.loadData(file.getAbsolutePath());
             buildWidgets();
         }
+        cateCombo.getItems().clear();
+        cateCombo.getItems().addAll(dataManager.getAttributes());
+        cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
     }
 
     private static File getCsv() {
@@ -409,6 +337,18 @@ public class DataController implements Observer<Data> {
     }
 
     /**
+     * @return le chemin où le graphique doit être sauvegardée
+     */
+    private static String getPathToSaveChart() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sauvegarder le graphique");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers PNG", "*.png"));
+        fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
+        File file = fileChooser.showSaveDialog(null);
+        return (file != null) ? file.getAbsolutePath() : null;
+    }
+
+    /**
      * Ouvre une nouvelle fenêtre
      * 
      * @throws IOException si la fenêtre ne peut pas être ouverte
@@ -418,18 +358,39 @@ public class DataController implements Observer<Data> {
         app.start(new Stage());
     }
 
-    public void genererEcran() throws IOException {
-        Stage stage = new Stage();
-        Scene scene = new Scene(App.loadFXML("AddPointWindow"));
-        stage.setScene(scene);
-        stage.show();
+    private Distance getChosenDistance() {
+        switch (distanceComboBox.getValue()) {
+            case "Euclidienne":
+                return new DistanceEuclidienne();
+            case "Manhattan":
+                return new DistanceManhattan();
+            case "Euclidienne normalisée":
+                return new DistanceEuclidienneNormalisee();
+            case "Manhattan normalisée":
+                return new DistanceManhattanNormalisee();
+            default:
+                return new DistanceEuclidienne();
+        }
     }
 
     public void classify() {
-        dataManager.categorizeData(DEFAULT_DISTANCE);
+        dataManager.categorizeData(getChosenDistance());
     }
 
     public void toggleHeatView() {
         heatView.toggle();
+    }
+
+    public void updateRobustesseLabels()  {
+
+        double percent = 0;
+        try {
+            percent = dataManager.getBestN(defaultDistance,getCsv().getPath(), cateCombo.getValue());
+        } catch (FileNotFoundException e) {
+            genErrorPopup("Erreur lors du chargement du fichier").show(chart.getScene().getWindow());
+            throw new RuntimeException(e);
+        }
+        pRobustesse.setText((percent *100) + " %");
+        nbVoisin.setText(dataManager.getBestN() + " Voisins");
     }
 }
