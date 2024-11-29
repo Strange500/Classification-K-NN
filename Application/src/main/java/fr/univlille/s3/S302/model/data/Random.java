@@ -7,7 +7,6 @@ import fr.univlille.s3.S302.model.DataLoader;
 
 import java.util.Date;
 
-
 public class Random extends Data {
 
     static {

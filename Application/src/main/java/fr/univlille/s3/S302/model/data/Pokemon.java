@@ -8,7 +8,8 @@ import fr.univlille.s3.S302.utils.HasNoOrder;
 public class Pokemon extends Data {
 
     static {
-        DataLoader.registerHeader(Pokemon.class, "name,attack,base_egg_steps,capture_rate,defense,experience_growth,hp,sp_attack,sp_defense,type1,type2,speed,is_legendary");
+        DataLoader.registerHeader(Pokemon.class,
+                "name,attack,base_egg_steps,capture_rate,defense,experience_growth,hp,sp_attack,sp_defense,type1,type2,speed,is_legendary");
     }
 
     @CsvBindByName(column = "name")
@@ -53,6 +54,5 @@ public class Pokemon extends Data {
     @CsvBindByName(column = "is_legendary")
     @HasNoOrder
     public Boolean is_legendary;
-
 
 }

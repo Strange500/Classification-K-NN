@@ -6,7 +6,8 @@ import com.google.common.collect.Maps;
 import fr.univlille.s3.S302.model.Data;
 
 /**
- * Classe implémentant l'interface Distance, permettant de calculer la distance de Manhattan entre deux données.
+ * Classe implémentant l'interface Distance, permettant de calculer la distance
+ * de Manhattan entre deux données.
  */
 public class DistanceManhattan implements Distance {
 

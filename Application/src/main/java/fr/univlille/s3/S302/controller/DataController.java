@@ -96,7 +96,8 @@ public class DataController extends Observer {
         chartController = new Chart(this.chart);
         loading.setVisible(false);
         distanceComboBox.setValue("Euclidienne");
-        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
+        distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan",
+                "Euclidienne normalisée", "Manhattan normalisée"));
         cateCombo.getItems().addAll(dataManager.getAttributes());
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
         nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
@@ -117,7 +118,8 @@ public class DataController extends Observer {
             addUserPoint();
         });
 
-        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
+        heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(),
+                chartController.categorieColor, defaultDistance);
         chart.widthProperty().addListener((obs, oldVal, newVal) -> {
             canvas.setWidth(newVal.doubleValue());
             canvas.setHeight(chart.getHeight());
@@ -280,7 +282,8 @@ public class DataController extends Observer {
         updateAxisCategory();
         chartController.recreateChart(dataManager.getDataList(), dataManager.getUserDataList(), choosenAttributes);
 
-        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(), chartController.categorieColor, defaultDistance);
+        this.heatView = new HeatView(canvas, chart, xCategory.getValue(), yCategory.getValue(),
+                chartController.categorieColor, defaultDistance);
         if (heatViewActive) {
             this.heatView.toggle();
         }
@@ -317,7 +320,6 @@ public class DataController extends Observer {
         rebuild();
         constructVBox();
     }
-
 
     /**
      * Récupère les attributs
@@ -378,7 +380,7 @@ public class DataController extends Observer {
         fileChooser.setTitle("Ouvrir un fichier CSV");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichiers CSV", "*.csv"));
         fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-        return  fileChooser.showOpenDialog(null);
+        return fileChooser.showOpenDialog(null);
     }
 
     /**
@@ -436,33 +438,33 @@ public class DataController extends Observer {
     /**
      * Met à jour les labels de robustesse
      */
-    public void updateRobustesseLabels()  {
+    public void updateRobustesseLabels() {
 
         AtomicReference<Double> percent = new AtomicReference<>((double) 0);
 
-            String path = getCsv().getPath();
-            loading.setVisible(true);
-            Service<Double> service = new Service<Double>() {
-                @Override
-                protected Task<Double> createTask() {
-                    return new Task<Double>() {
-                        @Override
-                        protected Double call() throws Exception {
-                            loading.setProgress(-1);
-                            return dataManager.getBestNbVoisin(defaultDistance,path, cateCombo.getValue());
-                        }
-                    };
-                }
-            };
-            service.setOnSucceeded(e -> {
-                percent.set(service.getValue());
-                //pRobustesse.setVisible(true);
-                //nbVoisin.setVisible(true);
-                pRobustesse.setText("Taux : " + (percent.get() *100) + " %");
-                nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
-                loading.setVisible(false);
-            });
-            service.start();
+        String path = getCsv().getPath();
+        loading.setVisible(true);
+        Service<Double> service = new Service<Double>() {
+            @Override
+            protected Task<Double> createTask() {
+                return new Task<Double>() {
+                    @Override
+                    protected Double call() throws Exception {
+                        loading.setProgress(-1);
+                        return dataManager.getBestNbVoisin(defaultDistance, path, cateCombo.getValue());
+                    }
+                };
+            }
+        };
+        service.setOnSucceeded(e -> {
+            percent.set(service.getValue());
+            // pRobustesse.setVisible(true);
+            // nbVoisin.setVisible(true);
+            pRobustesse.setText("Taux : " + (percent.get() * 100) + " %");
+            nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
+            loading.setVisible(false);
+        });
+        service.start();
     }
 
     /**
@@ -486,9 +488,9 @@ public class DataController extends Observer {
         };
         service.setOnSucceeded(e -> {
             percent.set(service.getValue());
-            //pRobustesse.setVisible(true);
-            //nbVoisin.setVisible(true);
-            pRobustesse.setText("Taux : " + (percent.get() *100) + " %");
+            // pRobustesse.setVisible(true);
+            // nbVoisin.setVisible(true);
+            pRobustesse.setText("Taux : " + (percent.get() * 100) + " %");
             nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
             loading.setVisible(false);
         });

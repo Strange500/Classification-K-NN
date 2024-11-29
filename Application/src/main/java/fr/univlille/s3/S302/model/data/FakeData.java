@@ -8,15 +8,18 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 /**
- * Classe qui permet de créer des données à partir d'une Map d'attributs et d'un champ de catégorie.
+ * Classe qui permet de créer des données à partir d'une Map d'attributs et d'un
+ * champ de catégorie.
  */
 public class FakeData extends Data {
 
     /**
      * Constructeur de la classe FakeData
-     * @param attr Map d'attributs
+     * 
+     * @param attr           Map d'attributs
      * @param categorieField Champ de catégorie
-     * @throws IllegalArgumentException si le champ de catégorie n'est pas une clé valide dans attr
+     * @throws IllegalArgumentException si le champ de catégorie n'est pas une clé
+     *                                  valide dans attr
      */
     public FakeData(Map<String, Number> attr, String categorieField) {
         this.attributes = new HashMap<>(attr);
@@ -33,10 +36,13 @@ public class FakeData extends Data {
     }
 
     /**
-     * Vérifie si un attribut correspond à une classe donnée ou à l'une de ses sous-classes.
+     * Vérifie si un attribut correspond à une classe donnée ou à l'une de ses
+     * sous-classes.
+     * 
      * @param attribute Nom de l'attribut.
-     * @param clazz Classe cible à vérifier.
-     * @return true si l'attribut correspond à la classe ou à l'une de ses sous-classes, false sinon.
+     * @param clazz     Classe cible à vérifier.
+     * @return true si l'attribut correspond à la classe ou à l'une de ses
+     *         sous-classes, false sinon.
      * @throws NoSuchElementException si l'attribut n'est pas trouvé.
      */
     @Override

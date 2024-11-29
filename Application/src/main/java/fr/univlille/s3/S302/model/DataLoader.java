@@ -8,7 +8,8 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Classe permettant de charger un fichier CSV et de le transformer en liste d'objets
+ * Classe permettant de charger un fichier CSV et de le transformer en liste
+ * d'objets
  */
 public class DataLoader {
 
@@ -35,8 +36,9 @@ public class DataLoader {
             } else {
                 throw new FileNotFoundException("check filename exist : Fichier non trouvé: " + fileName);
             }
-        } else{
-            clazz = getClassFromHeader(new InputStreamReader(Objects.requireNonNull(DataLoader.class.getResourceAsStream(fileName))));
+        } else {
+            clazz = getClassFromHeader(
+                    new InputStreamReader(Objects.requireNonNull(DataLoader.class.getResourceAsStream(fileName))));
         }
         return csvToList(input, clazz);
     }
@@ -48,7 +50,8 @@ public class DataLoader {
      * @return la liste d'objets FormatDonneeBrut
      * @throws FileNotFoundException si le fichier n'existe pas
      */
-    private static List<? extends Data> csvToList(InputStream input, Class<? extends Data> clazz) throws FileNotFoundException {
+    private static List<? extends Data> csvToList(InputStream input, Class<? extends Data> clazz)
+            throws FileNotFoundException {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(input))) {
             if (clazz == null) {
                 throw new IllegalStateException("Entête non reconnue");
@@ -59,7 +62,7 @@ public class DataLoader {
         } catch (IOException e) {
             System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
-        throw new FileNotFoundException("Fichier non trouvé" );
+        throw new FileNotFoundException("Fichier non trouvé");
     }
 
     /**
@@ -68,7 +71,7 @@ public class DataLoader {
      * @param fileReader le fichier CSV
      * @return la classe correspondant à l'entête
      */
-    private static Class<? extends  Data> getClassFromHeader(Reader fileReader) {
+    protected static Class<? extends Data> getClassFromHeader(Reader fileReader) {
         preLoadClasses();
         try (BufferedReader reader = new BufferedReader(fileReader)) {
             String header = reader.readLine();
@@ -83,7 +86,7 @@ public class DataLoader {
     /**
      * Enregistre une correspondance entre un entête et une classe
      *
-     * @param clazz la classe
+     * @param clazz  la classe
      * @param header l'entête
      */
     public static void registerHeader(Class<? extends Data> clazz, String header) {
@@ -95,7 +98,8 @@ public class DataLoader {
      */
     static void preLoadClasses() {
         try {
-            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model.data").getSubTypesOf(Data.class);
+            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model.data")
+                    .getSubTypesOf(Data.class);
             System.out.println("Liste des classe a charger : " + allClasses);
             for (Class<? extends Data> clazz : allClasses) {
                 Class.forName(clazz.getName());

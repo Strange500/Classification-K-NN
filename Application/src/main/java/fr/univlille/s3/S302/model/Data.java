@@ -24,7 +24,8 @@ public abstract class Data {
     protected static final Map<String, Field> fieldsMap = new HashMap<>();
 
     /**
-     * Calcule la distance entre deux points de données en utilisant la métrique de distance spécifiée.
+     * Calcule la distance entre deux points de données en utilisant la métrique de
+     * distance spécifiée.
      *
      * @param d1       le premier point de données
      * @param d2       le deuxième point de données
@@ -112,7 +113,9 @@ public abstract class Data {
      * @return la valeur originale de l'attribut
      */
     public String getValue(String attribute, Number value) {
-        if (!attributeIsClass(attribute, Number.class) && (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size())) {
+        if (!attributeIsClass(attribute, Number.class)
+                && (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null
+                        || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size())) {
             return null;
         }
         if (attributeIsClass(attribute, Number.class)) {
@@ -155,10 +158,12 @@ public abstract class Data {
                     Number tmp = registerValue(fields, i, values);
                     values[i] = tmp;
                 }
-                attrMap.put(fields[i].getName(), (Number)values[i]);
-                fieldsMap.put(fields[i].getName(), fields[i]); // on garde une référence vers les fields pour accelerer les accès
+                attrMap.put(fields[i].getName(), (Number) values[i]);
+                fieldsMap.put(fields[i].getName(), fields[i]); // on garde une référence vers les fields pour accelerer
+                                                               // les accès
             } catch (IllegalAccessException e) {
-                System.err.println("Erreur lors de la récupération de la valeur de l'attribut : " + fields[i].getName());
+                System.err
+                        .println("Erreur lors de la récupération de la valeur de l'attribut : " + fields[i].getName());
             }
         }
         this.categoryField = category;
@@ -167,12 +172,15 @@ public abstract class Data {
     }
 
     private static Number registerValue(Field[] fields, int i, Object[] values) {
-        Number tmp  = getIntValue(fields[i], values[i]);
-        attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>(){{
-            add(0, "Unknown");
-        }});
+        Number tmp = getIntValue(fields[i], values[i]);
+        attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>() {
+            {
+                add(0, "Unknown");
+            }
+        });
         if (!attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).contains(values[i].toString())) {
-            attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+            attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(),
+                    values[i].toString());
         }
         return tmp;
     }
@@ -202,7 +210,7 @@ public abstract class Data {
         List<Object> ls = attributesMap.get(field.getName());
         if (ls.contains(value)) {
             return ls.indexOf(value);
-        } else if (value instanceof Comparable){
+        } else if (value instanceof Comparable) {
             // skip the first as it is "Unknown"
             return insertValue(field, value, ls);
 
@@ -214,8 +222,8 @@ public abstract class Data {
 
     private static int appendValue(Field field, Object value, List<Object> ls) {
         int max = ls.size();
-        ls.add( max, value.toString());
-        attributesMap.get(field.getName()).add( max , value.toString());
+        ls.add(max, value.toString());
+        attributesMap.get(field.getName()).add(max, value.toString());
         return max;
     }
 
@@ -232,7 +240,7 @@ public abstract class Data {
     private static void initField(Field field) {
         if (attributesMap.getOrDefault(field.getName(), null) == null) {
             List<Object> map = new ArrayList<>();
-            map.add( 0,"Unknown");
+            map.add(0, "Unknown");
             attributesMap.put(field.getName(), map);
         }
     }
@@ -321,10 +329,13 @@ public abstract class Data {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Data data = (Data) o;
-        return Objects.equals(categoryField, data.categoryField) && Objects.equals(category, data.category) && Objects.equals(attributes, data.attributes);
+        return Objects.equals(categoryField, data.categoryField) && Objects.equals(category, data.category)
+                && Objects.equals(attributes, data.attributes);
     }
 
     @Override
@@ -332,4 +343,3 @@ public abstract class Data {
         return Objects.hash(categoryField, category, attributes);
     }
 }
-

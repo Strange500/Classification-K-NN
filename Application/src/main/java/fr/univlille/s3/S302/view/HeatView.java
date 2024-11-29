@@ -15,12 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class HeatView {
 
     // (!=0) 1 is better higher is worse
     public static int quality = 7;
-
 
     private final Canvas canvas;
     private final ScatterChart<Number, Number> scatterChart;
@@ -28,7 +26,7 @@ public class HeatView {
     private final String yAttribute;
     private final Map<String, List<Double>> colorMap;
     private boolean active = false;
-    private Distance distance ;
+    private Distance distance;
     private Service<Void> service = new Service<>() {
         @Override
         protected Task<Void> createTask() {
@@ -43,7 +41,7 @@ public class HeatView {
                     double maxX = getMaxX();
                     double stepX = (maxX / boundsChartArea.getWidth()) * quality;
                     double stepY = (getMaxY() / boundsChartArea.getHeight()) * quality;
-                    Map<String, Number> data =new HashMap<>();
+                    Map<String, Number> data = new HashMap<>();
                     for (double y = 0; y < getMaxY(); y += stepY) {
                         for (double x = 0; x < maxX; x += stepX) {
                             if (isCancelled()) {
@@ -53,21 +51,23 @@ public class HeatView {
                             data.put(yAttribute, y);
                             String cat = DataManager.getInstance().guessCategory(data, distance);
                             List<Double> tmp = colorMap.get(cat);
-                            canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
-                            canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,
-                                    scatterChart.getYAxis().getDisplayPosition(y) + yOffset , 10,10);
+                            canvas.getGraphicsContext2D().setFill(
+                                    Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
+                            canvas.getGraphicsContext2D().fillRect(
+                                    scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,
+                                    scatterChart.getYAxis().getDisplayPosition(y) + yOffset, 10, 10);
                             data.clear();
                         }
                     }
                     return null;
                 }
 
-
             };
         }
     };
 
-    public HeatView(Canvas cv, ScatterChart<Number, Number> scatterChart, String xAttribute, String yAttribute, Map<String, String> colorMap, Distance distance) {
+    public HeatView(Canvas cv, ScatterChart<Number, Number> scatterChart, String xAttribute, String yAttribute,
+            Map<String, String> colorMap, Distance distance) {
         canvas = cv;
         this.scatterChart = scatterChart;
         this.xAttribute = xAttribute;
@@ -86,16 +86,17 @@ public class HeatView {
         if (active) {
             scatterChart.setOpacity(0.7);
             update();
-        }else {
+        } else {
             clear();
             scatterChart.setOpacity(1);
         }
     }
 
-    private void clear () {
-        canvas.getGraphicsContext2D().clearRect(-100, -100, canvas.getWidth()+200, canvas.getHeight()+200);
+    private void clear() {
+        canvas.getGraphicsContext2D().clearRect(-100, -100, canvas.getWidth() + 200, canvas.getHeight() + 200);
 
     }
+
     private void update() {
         try {
             if (service.isRunning()) {
@@ -143,16 +144,15 @@ public class HeatView {
         return List.of(Double.parseDouble(rgb[0]), Double.parseDouble(rgb[1]), Double.parseDouble(rgb[2]));
     }
 
-
     private double getMaxX() {
-        return ((NumberAxis)scatterChart.getXAxis()).getUpperBound();
+        return ((NumberAxis) scatterChart.getXAxis()).getUpperBound();
     }
 
     private double getMaxY() {
-        return ((NumberAxis)scatterChart.getYAxis()).getUpperBound();
+        return ((NumberAxis) scatterChart.getYAxis()).getUpperBound();
     }
 
     public boolean isActive() {
-        return  active;
+        return active;
     }
 }

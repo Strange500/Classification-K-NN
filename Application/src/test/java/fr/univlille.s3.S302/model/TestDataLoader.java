@@ -1,32 +1,29 @@
 package fr.univlille.s3.S302.model;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import fr.univlille.s3.S302.model.data.FakeData;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
+import java.io.StringReader;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TestDataLoader {
-//    @Test
-//    public void testCharger() {
-//        String fileName = "testfile.csv";
-//        try {
-//            List<FormatDonneeBrut> personnes = DataLoader.charger(fileName);
-//            assertEquals(20, personnes.size());
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Fichier non trouvé");
-//        }
-//    }
-//
-//    @Test
-//    public void createObject() {
-//        List<FormatDonneeBrut> iris = null;
-//        try {
-//            iris = DataLoader.charger("iris.csv");
-//            Iris i = DataLoader.createObject(iris.get(0));
-//            assertEquals(5.1, i.getSepalLength());
-//            assertEquals(3.5, i.getSepalWidth());
-//            assertEquals(1.4, i.getPetalLength());
-//            assertEquals(0.2, i.getPetalWidth());
-//            assertEquals("Setosa", i.getSpecies());
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Fichier non trouvé");
-//        }
-//    }
+    @Test
+    void testChargerNullFilename() {
+        assertThrows(FileNotFoundException.class, () -> DataLoader.charger(null));
+    }
+
+    @Test
+    void testChargerNonExistentFile() {
+        assertThrows(RuntimeException.class, () -> DataLoader.charger("src/main/resources/fr/univlille/s3/S302/view/iris.csv"));
+    }
+
+    @Test
+    void testRegisterHeader() {
+        DataLoader.registerHeader(FakeData.class, "\"sepal.length\",\"sepal.width\",\"petal.length\",\"petal.width\",\"variety\"");
+        Class<? extends Data> clazz = DataLoader.getClassFromHeader(new StringReader("\"sepal.length\",\"sepal.width\",\"petal.length\",\"petal.width\",\"variety\""));
+        assertEquals(FakeData.class, clazz);
+    }
 }

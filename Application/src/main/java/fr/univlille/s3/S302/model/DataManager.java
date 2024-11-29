@@ -12,9 +12,11 @@ import javafx.util.Pair;
 
 /**
  * Classe permettant de gérer les données et de les manipuler.
- * Elle permet de charger des données, de les ajouter, de les supprimer, de les catégoriser, de les afficher, de les sauvegarder, etc.
+ * Elle permet de charger des données, de les ajouter, de les supprimer, de les
+ * catégoriser, de les afficher, de les sauvegarder, etc.
  * Elle permet également de gérer les données utilisateurs.
  * Elle est un singleton.
+ * 
  * @param <E> le type de données à gérer
  */
 public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Observable {
@@ -34,6 +36,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Retourne l'instance de DataManager.
+     * 
      * @return l'instance de DataManager
      */
     public static DataManager<Data> getInstance() {
@@ -45,6 +48,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Constructeur de DataManager.
+     * 
      * @param dataList la liste de données à gérer
      */
     private DataManager(List<E> dataList) {
@@ -57,6 +61,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Constructeur de DataManager.
+     * 
      * @param path le chemin du fichier à charger
      */
     private DataManager(String path) {
@@ -70,12 +75,14 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     private DataManager() {
         this(PATH);
     }
+
     /**
      * @return la liste de données utilisateurs
      */
     public List<E> getUserDataList() {
         return userData;
     }
+
     /**
      * @return la liste de données
      */
@@ -137,6 +144,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Ajoute une donnée que l'utilisateur a rentrée.
+     * 
      * @param e La map correspondant aux attributs du point que l'on veut ajouter
      */
     public void addUserData(E e) {
@@ -146,6 +154,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Ajoute des données contenues dans une map.
+     * 
      * @param map La map correspondant aux attributs du point que l'on veut ajouter
      */
     @SuppressWarnings("unchecked")
@@ -157,8 +166,10 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     }
 
     /**
-     * @param data La data dont on veut determiner si elle est une data creé par l'utilisateur
-     * @return un boolean indiquant si la donnée en paramètre est une donnée ajoutée par l'utilisateur
+     * @param data La data dont on veut determiner si elle est une data creé par
+     *             l'utilisateur
+     * @return un boolean indiquant si la donnée en paramètre est une donnée ajoutée
+     *         par l'utilisateur
      */
     @SuppressWarnings("SuspiciousMethodCalls")
     public boolean isUserData(Data data) {
@@ -183,6 +194,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Charge les données du fichier spécifié dans DataManager
+     * 
      * @param path chemin vers le fichier à charger
      */
     @SuppressWarnings("unchecked")
@@ -210,6 +222,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Change le champ de catégorie des données.
+     * 
      * @param newCategoryField Le champ a utilisé commme catégorie
      */
     public void changeCategoryField(String newCategoryField) {
@@ -224,6 +237,7 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Categorise les données utilisateurs selon la distance souhaitée.
+     * 
      * @param distanceSouhaitee La méthode de calcul de la distance
      */
     public void categorizeData(Distance distanceSouhaitee) {
@@ -252,8 +266,11 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
     }
 
     /**
-     * Devine la catégorie d'une donnée selon les attributs donnés et la distance souhaitée.
-     * @param guessAttributes La map correspondant aux attributs du point duquel il faut determiner la catégorie
+     * Devine la catégorie d'une donnée selon les attributs donnés et la distance
+     * souhaitée.
+     * 
+     * @param guessAttributes   La map correspondant aux attributs du point duquel
+     *                          il faut determiner la catégorie
      * @param distanceSouhaitee La méthode de calcul de la distance
      * @return La catégorie devinée
      */
@@ -269,9 +286,10 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     /**
      * Cherche les données les n plus proche de la donnée en paramètre.
-     * @param data la donnée
+     * 
+     * @param data              la donnée
      * @param distanceSouhaitee la distance souhaitée
-     * @param nbVoisin le nombre de voisins a considerer
+     * @param nbVoisin          le nombre de voisins a considerer
      * @return une liste de données
      */
     public List<Data> getNearestDatas(Data data, Distance distanceSouhaitee, int nbVoisin) {
@@ -324,12 +342,12 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
     @SuppressWarnings("unchecked")
     public double getBestNbVoisin(Distance d, String path, String targetField) throws FileNotFoundException {
-        List<E> listetest= (List<E>) DataLoader.charger(path);
+        List<E> listetest = (List<E>) DataLoader.charger(path);
         for (Data da : listetest) {
             da.makeData();
             da.setCategoryField(targetField);
         }
-        Pair<Integer,Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest,d);
+        Pair<Integer, Double> p = ModelUtils.Robustesse((DataManager<Data>) this, (List<Data>) listetest, d);
         this.bestNbVoisin = p.getKey();
         return p.getValue();
     }
@@ -347,8 +365,6 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         System.out.println("Validation croisée en cours...");
         List<List<FakeDataValidation>> subsets = createSubsets(validationList, 10);
         System.out.println("Subsets created");
-
-
 
         double averageScore = performCrossValidation(d, subsets);
 
@@ -413,6 +429,5 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
 
         return trainingSet;
     }
-
 
 }

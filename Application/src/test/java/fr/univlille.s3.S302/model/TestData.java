@@ -22,7 +22,8 @@ public class TestData {
 
     @BeforeEach
     public void setUp() {
-        DataLoader.registerHeader(Iris.class, "\"sepal.length\",\"sepal.width\",\"petal.length\",\"petal.width\",\"variety\"");
+        DataLoader.registerHeader(Iris.class,
+                "\"sepal.length\",\"sepal.width\",\"petal.length\",\"petal.width\",\"variety\"");
         dm = DataManager.getInstance();
         dm.reset();
         try {
@@ -45,16 +46,16 @@ public class TestData {
 
     @Test
     void valueOf() {
-        //clé non valide et attribut non valide
+        // clé non valide et attribut non valide
         assertEquals(10, Data.valueOf("String", "10"));
 
-        //clé non valide mais attribut valide
+        // clé non valide mais attribut valide
         assertEquals(1, Data.valueOf("String", "1"));
 
-        //clé valide mais attribut non valide
+        // clé valide mais attribut non valide
         assertEquals(10, Data.valueOf(KEY, "10"));
 
-        //clé valide et attribut valide
+        // clé valide et attribut valide
         assertEquals(1.0, Data.valueOf(KEY, "1"));
     }
 
@@ -85,9 +86,9 @@ public class TestData {
 
     @Test
     void getValue() {
-        //attribut non valide
+        // attribut non valide
         assertThrows(NoSuchElementException.class, () -> data.getValue("String", 1));
-        //attribut valide
+        // attribut valide
         dm.changeCategoryField(KEY);
         data.setCategoryField(KEY);
         assertEquals("1", data.getValue(KEY, 1));

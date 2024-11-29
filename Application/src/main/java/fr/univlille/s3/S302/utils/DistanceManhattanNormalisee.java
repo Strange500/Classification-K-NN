@@ -13,7 +13,6 @@ public class DistanceManhattanNormalisee implements Distance {
 
         DataManager<Data> dataManager = DataManager.getInstance();
 
-
         for (String key : attributs1.keySet()) {
             double value1 = attributs1.get(key).doubleValue();
             double value2 = attributs2.get(key).doubleValue();

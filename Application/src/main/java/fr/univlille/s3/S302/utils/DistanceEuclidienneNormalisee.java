@@ -34,6 +34,6 @@ public class DistanceEuclidienneNormalisee implements Distance {
             somme += Math.pow(normalizedValue1 - normalizedValue2, 2);
         }
 
-        return Math.sqrt(somme) ;
+        return Math.sqrt(somme);
     }
 }

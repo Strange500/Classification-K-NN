@@ -16,11 +16,9 @@ public class Chart {
 
     public final Map<String, String> categorieColor = new HashMap<>();
 
-
     List<Pair<XYChart.Data<Number, Number>, Data>> data;
 
     DataManager dataManager = DataManager.getInstance();
-
 
     public Chart(ScatterChart<Number, Number> chart) {
         this.chart = chart;
@@ -28,7 +26,7 @@ public class Chart {
         chart.getXAxis().setAutoRanging(true);
         chart.getYAxis().setAutoRanging(true);
         chart.setAnimated(false);
-        //chart.legendVisibleProperty().setValue(false);
+        // chart.legendVisibleProperty().setValue(false);
     }
 
     public void recreateChart(List<Data> dataList, List<Data> userDataList, Pair<String, String> choosenAttributes) {
@@ -47,21 +45,20 @@ public class Chart {
         for (Data f : dataList) {
             if (f.getAttributes().containsKey(choosenAttributes.getKey())
                     && f.getAttributes().containsKey(choosenAttributes.getValue())) {
-                addPoint(f, series , choosenAttributes);
+                addPoint(f, series, choosenAttributes);
             }
 
         }
         for (Data f : userDataList) {
             if (f.getAttributes().containsKey(choosenAttributes.getKey())
                     && f.getAttributes().containsKey(choosenAttributes.getValue())) {
-                addPoint(f, series , choosenAttributes);
+                addPoint(f, series, choosenAttributes);
             }
 
         }
         chart.getData().add(series);
         setChartStyle();
     }
-
 
     private void addPoint(Data f, XYChart.Series<Number, Number> series, Pair<String, String> choosenAttributes) {
         Pair<Number, Number> valueChoosenAttr = getNodeXY(f, choosenAttributes);
@@ -112,7 +109,6 @@ public class Chart {
 
             }
 
-
         }
         tooltip.setText(text.toString());
         tooltip.setShowDuration(javafx.util.Duration.seconds(10));
@@ -137,7 +133,6 @@ public class Chart {
     private void createColor() {
         dataManager.createColor();
     }
-
 
     private Data getNode(XYChart.Data<Number, Number> data) {
         for (Pair<XYChart.Data<Number, Number>, Data> d : this.data) {

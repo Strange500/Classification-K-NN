@@ -1,4 +1,6 @@
-### Implémentation de l'algorithme K-NN
+# SAE Classification, rendu de développement effiface
+
+## Implémentation de l'algorithme K-NN
 Cette implémentation se trouve dans la fonction `getNearestDatas` de la classe `DataManager`.
 
 L’implémentation de K-NN (K-Nearest Neighbors) utilise une `PriorityQueue` pour identifier efficacement les `nbVoisin` (K) plus proches voisins d’une donnée cible. Voici les points clés de cette approche :
@@ -13,7 +15,7 @@ L’implémentation de K-NN (K-Nearest Neighbors) utilise une `PriorityQueue` po
 
 4. **Extraction des résultats** : Les données des K plus proches voisins sont extraites du `maxHeap` et retournées dans une liste.
 
-### Efficacité sur grands volumes de données
+## Efficacité sur grands volumes de données
 
 - **Complexité temporelle** : La complexité est O(N log K), optimisée pour le nombre de voisins à retrouver, plutôt qu'O(N log N).
 
@@ -25,7 +27,7 @@ L’implémentation de K-NN (K-Nearest Neighbors) utilise une `PriorityQueue` po
 
 La classe `Data` contient une méthode `distance` qui permet de calculer la distance entre deux objets `Data`. Cette méthode utilise la distance souhaitée pour effectuer le calcul.
 
-### Distances Disponibles
+## Distances Disponibles
 
 Les distances disponibles sont :
 
@@ -39,7 +41,7 @@ Les distances disponibles sont :
 
 Ces distances permettent de comparer les objets `Data` en fonction de leurs attributs, en prenant en compte les valeurs numériques et les attributs sans ordre spécifique.
 
-### Traitement des Attributs Sans Ordre Spécifique
+## Traitement des Attributs Sans Ordre Spécifique
 
 Lors du calcul de la distance entre deux objets `Data`, les attributs sans ordre spécifique sont traités différemment. Voici comment cela fonctionne :
 
@@ -52,14 +54,14 @@ L'ordre est déterminé par la présence de l'annotation `@HasNoOrder` sur l'att
 
 La normalisation est réalisée par les implémentations de `Distance` qui en ont besoin. Ces implémentations normalisent les valeurs des attributs avant de calculer la distance.
 
-### Méthode de Normalisation
+## Méthode de Normalisation
 
 La normalisation est effectuée en suivant les étapes suivantes :
 
 1. Soustraction de la valeur minimale de chaque attribut.
 2. Division par la plage de valeurs (max - min) de l'attribut.
 
-### Optimisation de la Normalisation
+## Optimisation de la Normalisation
 
 Pour accélérer le traitement, nous stockons le minimum et le maximum de chaque attribut dans la map `minMax` de la classe `DataManager`. Cela permet à la normalisation d'être exécutée en O(1) pour chaque attribut au lieu de recalculer les valeurs minimales et maximales à chaque fois O(N).
 
@@ -77,20 +79,20 @@ Nous stockons un compteur pour chaque classe possible, et la classe majoritaire 
 
 Pour évaluer la robustesse de l'algorithme, nous avons mis en œuvre deux approches :
 
-### 1. Robustesse Simple
+## 1. Robustesse Simple
 L'utilisateur transmet un fichier contenant des données de test. L'algorithme K-NN est appliqué sur ces données, et les classes prédites sont comparées aux classes réelles pour évaluer la précision de l'algorithme. Le pourcentage de précision est calculé en fonction du nombre de classes prédites correctement.
 
-### 2. Validation Croisée
+## 2. Validation Croisée
 L'utilisateur utilise la fonction de validation croisée, qui sépare les données actuelles en 10 sous-ensembles. 
 À chaque itération, une sous-partie est testée tandis que les neuf autres servent à prédire les classes.
 À la fin des 10 itérations, nous calculons la moyenne des pourcentages de réussite.
 
-### Conditions de Test
+## Conditions de Test
 Pour chaque approche, l'algorithme teste tous les N inférieurs à la moitié de la taille de la liste de données, car il n'est pas pertinent de tester pour un N trop grand. Le meilleur N est alors appliqué à toutes les futures classifications.
 
 Des fichiers de resulats de Robustesse et de Validation Croisée sont disponibles à la racine du projet. Vous pouvez en visualiser d'autre dans le terminal en lancant des tests de robustesse ou de validation croisée depuis l'inteface graphique.
 
-# Fonctionnement
+## Fonctionnement
 
 Je vous renvoie à la section [Fonctionnement](README.md#fonctionnement) de README.md pour plus de détails sur le fonctionnement de l'application.
 Vous y trouverez des informations notamment sur comment `Data` gere les types de données.
