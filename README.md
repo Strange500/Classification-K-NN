@@ -136,10 +136,13 @@ Mathys :
 - Ajout Points
 
 Adrien :
-- distance & normalisation
-- choix dans l'UI des distances
+- UI (fxml)
+- Distance & normalisation
+- Choix dans l'UI des distances
+- Choix de l'algo de classification
 - Sauvegarde du graphique
-- chargment CSV
+- Chargment CSV
+- Optimisation
 
 Benjamin :
 - choix de l'attribut de classification
