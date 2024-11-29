@@ -278,6 +278,9 @@ public abstract class Data {
      */
     public void setCategory(String category) {
         this.category = category;
+        System.out.println("categoryField = " + categoryField);
+        System.out.println("fieldsMap = " + fieldsMap);
+        System.out.println(fieldsMap.get(categoryField));
         this.attributes.put(categoryField, valueOf(fieldsMap.get(categoryField).getName(), category));
     }
 

@@ -153,12 +153,12 @@ public class TestDataManager {
     @Test
     void testGuessCategory()  {
         Data iri1 = new FakeData(new HashMap<>(){{
-            put("petalWidth", 1.0);
             put("sepalLength", 1.0);
             put("sepalWidth", 1.0);
-            put("species", 1.0);
-        }}, "petalLength");
-        assertEquals("5.0", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
+            put("petalLength", 1.0);
+        }}, "petalWidth");
+        dataManager.changeCategoryField("petalWidth");
+        assertEquals("0.1", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
     }
 
     @Test
