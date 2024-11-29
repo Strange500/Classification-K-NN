@@ -86,6 +86,13 @@ public class DataController extends Observer {
      * Initialisation de la fenêtre
      */
     public void initialize() {
+        setDefaultValues();
+        buildWidgets();
+        constructVBox();
+        setEvents();
+    }
+
+    private void setDefaultValues() {
         chartController = new Chart(this.chart);
         loading.setVisible(false);
         distanceComboBox.setValue("Euclidienne");
@@ -93,8 +100,9 @@ public class DataController extends Observer {
         cateCombo.getItems().addAll(dataManager.getAttributes());
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
         nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
-        buildWidgets();
-        constructVBox();
+    }
+
+    private void setEvents() {
         categoryBtn.setOnAction(event -> {
             try {
                 updateAxisCategory();

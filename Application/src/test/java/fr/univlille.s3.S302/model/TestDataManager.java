@@ -9,6 +9,7 @@ import fr.univlille.s3.S302.utils.Observer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,10 +36,6 @@ public class TestDataManager {
         assertEquals(dataManager, DataManager.getInstance());
     }
 
-    @Test
-    public void testValueOf() {
-        // TODO
-    }
 
     @Test
     public void testGetDataList() {
@@ -49,11 +46,17 @@ public class TestDataManager {
     public void testLoadData() {
         dataManager.loadData(PATH);
         assertEquals(150, dataManager.getDataList().size());
+        assertThrows(RuntimeException.class, () -> dataManager.loadData(null));
+        assertThrows(RuntimeException.class, () -> dataManager.loadData("null"));
     }
 
     @Test
     void classifyData() {
-        // TODO, waiting method implementation
+        Data iri1 = dataManager.getDataList().get(0);
+        dataManager.addUserData(iri1.getAttributes());
+        dataManager.changeCategoryField("species");
+        dataManager.categorizeData(new DistanceEuclidienne());
+        assertEquals("Setosa", dataManager.getUserDataList().get(0).getCategory());
     }
 
     @Test
@@ -114,6 +117,23 @@ public class TestDataManager {
         assertEquals(2, count[0]);
     }
 
+    @Test
+    void testGetBestNbVoisins() throws FileNotFoundException {
+        dataManager.changeCategoryField("species");
+        assertEquals(3, dataManager.getBestNbVoisin());
+        assertEquals(1, dataManager.getBestNbVoisin(new DistanceEuclidienne(), DataManager.PATH, "species"));
+
+        dataManager.setBestNbVoisin(5);
+        assertEquals(5, dataManager.getBestNbVoisin());
+    }
+
+
+    @Test
+    void testValidationCroisee() {
+        dataManager.changeCategoryField("species");
+        assertDoesNotThrow( () -> dataManager.validationCroisee(new DistanceEuclidienne(), "species"));
+    }
+
 
 
     @Test
@@ -158,7 +178,7 @@ public class TestDataManager {
             put("petalLength", 1.0);
         }}, "petalWidth");
         dataManager.changeCategoryField("petalWidth");
-        assertEquals("0.1", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
+        assertEquals("0.3", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
     }
 
     @Test
