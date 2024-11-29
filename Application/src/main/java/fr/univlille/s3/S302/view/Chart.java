@@ -103,7 +103,21 @@ public class Chart {
 
     private static void attachInfoTooltip(XYChart.Data<Number, Number> data, Data d) {
         Tooltip tooltip = new Tooltip();
-        tooltip.setText(d.getCategoryField() + ":" + d.getCategory() + "\n" + data.getXValue() + " : " + data.getYValue());
+        StringBuilder text = new StringBuilder();
+        text.append("Catégorie: \n");
+        text.append(d.getCategoryField()).append(":").append(d.getCategory());
+        text.append("\nAttributs: ");
+        for (Map.Entry<String, Number> entry : d.getAttributes().entrySet()) {
+            try {
+                String tmp = d.getValue(entry.getKey(), entry.getValue());
+                text.append("\n").append(entry.getKey()).append(":").append(tmp);
+            } catch (Exception e) {
+
+            }
+
+
+        }
+        tooltip.setText(text.toString());
         tooltip.setShowDuration(javafx.util.Duration.seconds(10));
         tooltip.setShowDelay(javafx.util.Duration.seconds(0));
         Tooltip.install(data.getNode(), tooltip);

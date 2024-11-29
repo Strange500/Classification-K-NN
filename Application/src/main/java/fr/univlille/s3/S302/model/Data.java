@@ -111,7 +111,7 @@ public abstract class Data {
      * @return la valeur originale de l'attribut
      */
     public String getValue(String attribute, Number value) {
-        if (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size()) {
+        if (!attributeIsClass(attribute, Number.class) && (attributesNumericalValueToAttributesOriginalMap.getOrDefault(attribute, null) == null || value.intValue() > attributesNumericalValueToAttributesOriginalMap.get(attribute).size())) {
             return null;
         }
         if (attributeIsClass(attribute, Number.class)) {
