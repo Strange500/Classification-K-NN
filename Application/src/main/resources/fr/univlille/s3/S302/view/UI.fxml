@@ -113,10 +113,15 @@
             <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
                <Button mnemonicParsing="false" onAction="#classify" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #bd93f9; -fx-text-fill: #f8f8f2; -fx-font-size: 14px;" text="Classifier les données" />
             </HBox>
-          <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
+          <HBox alignment="CENTER" spacing="20.0" style="-fx-padding-top: 20px;">
               <children>
-                  <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" visible="false" />
-                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Label" visible="false" />
+                  <VBox>
+                     <children>
+                        <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" />
+                         <TextField fx:id="nbVoisinField" onAction="#changeNbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" />
+                     </children>
+                  </VBox>
+                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Taux : Unknown" />
               </children>
           </HBox>
          </children>

@@ -82,9 +82,14 @@ Pour évaluer la robustesse de l'algorithme, nous avons mis en œuvre deux appro
 L'utilisateur transmet un fichier contenant des données de test. L'algorithme K-NN est appliqué sur ces données, et les classes prédites sont comparées aux classes réelles pour évaluer la précision de l'algorithme. Le pourcentage de précision est calculé en fonction du nombre de classes prédites correctement.
 
 ### 2. Validation Croisée
-L'utilisateur utilise la fonction de validation croisée, qui sépare les données actuelles en 10 sous-ensembles. À chaque itération, une sous-partie est testée tandis que les neuf autres servent à prédire les classes. À la fin des 10 itérations, nous calculons la moyenne des pourcentages de réussite.
+L'utilisateur utilise la fonction de validation croisée, qui sépare les données actuelles en 10 sous-ensembles. 
+À chaque itération, une sous-partie est testée tandis que les neuf autres servent à prédire les classes.
+À la fin des 10 itérations, nous calculons la moyenne des pourcentages de réussite.
 
 ### Conditions de Test
 Pour chaque approche, l'algorithme teste tous les N inférieurs à la moitié de la taille de la liste de données, car il n'est pas pertinent de tester pour un N trop grand. Le meilleur N est alors appliqué à toutes les futures classifications.
 
 Des fichiers de resulats de Robustesse et de Validation Croisée sont disponibles à la racine du projet. Vous pouvez en visualiser d'autre dans le terminal en lancant des tests de robustesse ou de validation croisée depuis l'inteface graphique.
+
+
+

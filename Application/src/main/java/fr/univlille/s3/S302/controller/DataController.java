@@ -73,6 +73,9 @@ public class DataController extends Observer {
     Label pRobustesse;
     @FXML
     Label nbVoisin;
+    @FXML
+    TextField nbVoisinField;
+
     private HeatView heatView;
     @FXML
     ComboBox<String> cateCombo;
@@ -89,7 +92,7 @@ public class DataController extends Observer {
         distanceComboBox.setItems(FXCollections.observableArrayList("Euclidienne", "Manhattan", "Euclidienne normalisée", "Manhattan normalisée"));
         cateCombo.getItems().addAll(dataManager.getAttributes());
         cateCombo.setValue(dataManager.getDataList().get(0).getCategoryField());
-        nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+        nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
         buildWidgets();
         constructVBox();
         categoryBtn.setOnAction(event -> {
@@ -445,10 +448,10 @@ public class DataController extends Observer {
             };
             service.setOnSucceeded(e -> {
                 percent.set(service.getValue());
-                pRobustesse.setVisible(true);
-                nbVoisin.setVisible(true);
-                pRobustesse.setText((percent.get() *100) + " %");
-                nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+                //pRobustesse.setVisible(true);
+                //nbVoisin.setVisible(true);
+                pRobustesse.setText("Taux : " + (percent.get() *100) + " %");
+                nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
                 loading.setVisible(false);
             });
             service.start();
@@ -475,12 +478,20 @@ public class DataController extends Observer {
         };
         service.setOnSucceeded(e -> {
             percent.set(service.getValue());
-            pRobustesse.setVisible(true);
-            nbVoisin.setVisible(true);
-            pRobustesse.setText((percent.get() *100) + " %");
-            nbVoisin.setText(dataManager.getBestNbVoisin() + " Voisins");
+            //pRobustesse.setVisible(true);
+            //nbVoisin.setVisible(true);
+            pRobustesse.setText("Taux : " + (percent.get() *100) + " %");
+            nbVoisinField.setText(dataManager.getBestNbVoisin() + "");
             loading.setVisible(false);
         });
         service.start();
+    }
+
+    public void changeNbVoisin() {
+        try {
+            dataManager.setBestNbVoisin(Integer.parseInt(nbVoisinField.getText()));
+        } catch (NumberFormatException e) {
+            genErrorPopup("Entrez un nombre valide").show(nbVoisinField.getScene().getWindow());
+        }
     }
 }

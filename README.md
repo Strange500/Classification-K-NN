@@ -12,6 +12,11 @@ Ce projet a pour objectif de visualiser des données en 2D. Il offre la possibil
 - Ajout de nouveaux points
 - Classification des points
 - Modèle MVC avec affichage en multiples fenêtres (Menu >- Affichage > Nouvelle fenêtre)
+- Chargement de données depuis un fichier CSV
+- Sauvegarde du graphique en image
+- Visualisation avec une carte de chaleur
+- Validation croisée pour évaluer la robustesse de l'algorithme de classification
+- Test simple de robustesse à partir d'un fichier de test
 
 ## Installation
 
@@ -20,6 +25,7 @@ Pour installer le projet, vous pouvez cloner le dépôt ou télécharger la dern
 ## Prérequis
 
 Assurez-vous que Maven est installé sur votre machine pour exécuter le projet.
+Il est recommandé d'utiliser openjdk 21 pour une meilleure compatibilité.
 
 ## Utilisation
 
@@ -52,6 +58,7 @@ Ainsi, la distance entre deux points sera calculée en fonction de l'égalité d
 
 Votre classe est maintenant prête à être utilisée dans le projet.
 
+Il n'y a pas besoin d'indiquer quels champs sont susceptibles d'être des champs de classification, notre implémentation permet que tous les champs puissent être utilisés pour la classification.
 
 # Fonctionnement
 

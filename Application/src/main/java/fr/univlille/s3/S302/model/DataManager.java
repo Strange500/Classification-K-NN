@@ -334,6 +334,11 @@ public class DataManager<E extends Data> extends fr.univlille.s3.S302.utils.Obse
         return p.getValue();
     }
 
+    public void setBestNbVoisin(int nb) {
+        this.bestNbVoisin = nb;
+        notifyAllObservers();
+    }
+
     public double validationCroisee(Distance d, String targetField) {
         List<Data> originalDataList = new ArrayList<>(dataList);
         List<FakeDataValidation> validationList = prepareValidationData(targetField);
