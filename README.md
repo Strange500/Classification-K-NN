@@ -145,12 +145,13 @@ Adrien :
 - Optimisation
 
 Benjamin :
-- choix de l'attribut de classification
-- choix du nombre de voisins
+- Choix de l'attribut de classification
+- Choix du nombre de voisins
 - Validation croisée
-- généricité de l'application*
+- Généricité de l'application*
 - HeatView
 - MultiThreading
-- implémentation Observer/Observable
-- choix des axes de projection
+- Implémentation Observer/Observable
+- Choix des axes de projection
 - Visualisation des points
+- Rapport de Dev Efficace
