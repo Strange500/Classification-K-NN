@@ -86,7 +86,7 @@ public class TestData {
     @Test
     void getValue() {
         //attribut non valide
-        assertNull(data.getValue("Test", 1));
+        assertThrows(NoSuchElementException.class, () -> data.getValue("String", 1));
         //attribut valide
         dm.changeCategoryField(KEY);
         data.setCategoryField(KEY);
