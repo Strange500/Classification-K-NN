@@ -117,3 +117,36 @@ Avant de charger les données avec OpenCSV, DataLoader doit être configuré pou
 Pour cela, DataLoader utilise la méthode statique `registerHeader` pour enregistrer les entêtes des colonnes des fichiers CSV.
 
 La fonction getClassFromHeader permet de récupérer la classe Data correspondant à un entête CSV. Il ne reste plus qu'à appeler la fonction `csvToList` pour charger les données.
+
+
+# Repartition des Taches
+
+La répartition des tâches s'est faite avec l'issue board de Gitlab [ici](https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/boards), nous avons d'abord décidé quelles issues créer, puis chacun a placé les issues qu'il voulait faire dans la colonne "À faire".
+Thomas :
+- Tests
+
+Vincent :
+- Implémentation K-NN
+- Classification des données
+- Forme et couleurs des points
+
+Mathys :
+- Robustesse
+- Ajout Points
+
+Adrien :
+- distance & normalisation
+- choix dans l'UI des distances
+- Sauvegarde du graphique
+- chargment CSV
+
+Benjamin :
+- choix de l'attribut de classification
+- choix du nombre de voisins
+- Validation croisée
+- généricité de l'application*
+- HeatView
+- MultiThreading
+- implémentation Observer/Observable
+- choix des axes de projection
+- Visualisation des points
