@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univlille.s3.S302.view.DataController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.univlille.s3.S302.controller.DataController">
 
    <top>
       <MenuBar style="-fx-background-color: #282a36;" BorderPane.alignment="CENTER">
@@ -13,7 +13,11 @@
           <Menu style="-fx-text-fill: #f8f8f2;" text="Fichier">
             <items>
               <MenuItem onAction="#loadNewCsv" style="-fx-text-fill: #f8f8f2;" text="Charger un CSV" />
-                  <MenuItem mnemonicParsing="false" onAction="#updateRobustesseLabels" text="Test robustesse" />
+                <MenuItem onAction="#saveChartAsImage" style="-fx-text-fill: #f8f8f2;" text="Sauvegarder le graphique" />
+
+                  <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" onAction="#updateRobustesseLabels" text="Test robustesse" />
+                <MenuItem mnemonicParsing="false" onAction="#triggerCrossValidation" text="Cross validation" />
             </items>
           </Menu>
           <Menu style="-fx-text-fill: #f8f8f2;" text="Affichage">
@@ -47,6 +51,7 @@
                 <NumberAxis side="LEFT" />
               </yAxis>
             </ScatterChart>
+            <ProgressIndicator fx:id="loading" minHeight="100.0" minWidth="100.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
    </center>
@@ -54,7 +59,18 @@
    <left>
       <VBox prefHeight="400.0" prefWidth="250.0" spacing="15" style="-fx-background-color: #1e1f29; -fx-padding: 20px;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2;" text="Choix des axes" />
+            <HBox alignment="CENTER" style="-fx-padding: 10px;">
+               <Label alignment="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2;" text="Colonne de classification" />
+            </HBox>
+             <HBox alignment="CENTER" layoutX="30.0" layoutY="381.0" style="-fx-padding-top: 20px;">
+                 <children>
+                     <ComboBox fx:id="cateCombo" prefHeight="30.0" prefWidth="160.0" />
+                 </children>
+             </HBox>
+             <Separator />
+            <HBox alignment="CENTER" style="-fx-padding: 10px;">
+               <Label alignment="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #f8f8f2;" text="Choix des axes" />
+            </HBox>
             
             <VBox prefHeight="150.0" style="-fx-padding: 10px;">
                 <children>
@@ -72,7 +88,7 @@
                </children>
                <Separator />
             </VBox>
-            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefHeight="500.0" prefWidth="210.0">
+            <ScrollPane fitToWidth="true" maxHeight="1.7976931348623157E308" prefWidth="210.0">
                <content>
 
                   <VBox fx:id="addPointVBox" alignment="CENTER" maxHeight="-Infinity" style="-fx-padding: 10px;">
@@ -84,6 +100,9 @@
             <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
                <Button fx:id="addDataBtn" onAction="#addUserPoint" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #bd93f9; -fx-text-fill: #f8f8f2; -fx-font-size: 14px;" text="Ajouter donnée" />
             </HBox>
+
+             <Separator />
+
              <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
                  <Label style="-fx-text-fill: #f8f8f2;" text="Distance à utiliser :" />
              </HBox>
@@ -94,20 +113,12 @@
             <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
                <Button mnemonicParsing="false" onAction="#classify" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #bd93f9; -fx-text-fill: #f8f8f2; -fx-font-size: 14px;" text="Classifier les données" />
             </HBox>
-            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-               <Button fx:id="saveChart" onAction="#saveChartAsImage" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: #bd93f9; -fx-text-fill: #f8f8f2; -fx-font-size: 14px;" text="Sauvegarder graphique" />
-            </HBox>
-          <HBox prefHeight="100.0" prefWidth="200.0">
+          <HBox alignment="CENTER" style="-fx-padding-top: 20px;">
               <children>
-                  <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" />
-                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Label" />
+                  <Label fx:id="nbVoisin" prefHeight="35.0" prefWidth="73.0" text="nbVoisin" visible="false" />
+                  <Label fx:id="pRobustesse" prefHeight="36.0" prefWidth="77.0" text="Label" visible="false" />
               </children>
           </HBox>
-            <HBox alignment="CENTER" layoutX="30.0" layoutY="381.0" style="-fx-padding-top: 20px;">
-               <children>
-                  <ComboBox fx:id="cateCombo" prefHeight="30.0" prefWidth="160.0" />
-               </children>
-            </HBox>
          </children>
       </VBox>
    </left>
