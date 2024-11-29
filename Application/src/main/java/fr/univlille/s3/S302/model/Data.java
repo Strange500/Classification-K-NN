@@ -3,6 +3,7 @@ package fr.univlille.s3.S302.model;
 import com.google.common.collect.Maps;
 import fr.univlille.s3.S302.utils.Distance;
 import fr.univlille.s3.S302.utils.HasNoOrder;
+import fr.univlille.s3.S302.model.data.FakeData;
 import javafx.util.Pair;
 
 import java.lang.reflect.Field;
@@ -67,15 +68,15 @@ public abstract class Data {
      * @return la valeur numérique de l'attribut
      */
     public static double valueOf(String attribute, String value) {
-        if (attributesMap.containsKey(attribute) && attributesMap.get(attribute).contains(value)) {
-            return attributesMap.get(attribute).indexOf(value);
-        } else {
-            try {
-                return Double.parseDouble(value);
-            } catch (NumberFormatException e) {
-                throw new NumberFormatException("La valeur de l'attribut n'est pas un nombre : " + value);
+        if (attributesMap.getOrDefault(attribute, null) == null) {
+            return Double.parseDouble(value);
+        }
+        for (int i = 0; i < attributesMap.get(attribute).size(); i++) {
+            if (attributesMap.get(attribute).get(i).toString().equals(value)) {
+                return i;
             }
         }
+        return Double.parseDouble(value);
     }
 
     /**
@@ -85,11 +86,11 @@ public abstract class Data {
      * @param clazz     la classe à vérifier
      * @return true si l'attribut est de la classe spécifiée, false sinon
      */
-    boolean attributeIsClass(String attribute, Class<?> clazz) {
-        if (dataTypes.getOrDefault(attribute, null) == null) {
-            throw new NoSuchElementException("Attribut non trouvé");
+    protected boolean attributeIsClass(String attribute, Class<?> clazz) {
+        if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
+            return isEqualOrSubclass(dataTypes.get(attribute), clazz);
         }
-        return isEqualOrSubclass(dataTypes.get(attribute), clazz);
+        throw new NoSuchElementException("Attribute not found");
     }
 
     /**
@@ -141,34 +142,39 @@ public abstract class Data {
     /**
      * Initialise les attributs du point de données.
      */
-    public void initializeAttributes() {
+    public void makeData() {
         Field[] fields = this.getClass().getDeclaredFields();
         Object[] values = new Object[fields.length];
-        Map<String, Number> map = new HashMap<>();
-        String category = fields[0].getName();
+        Map<String, Number> attrMap = new HashMap<>();
+        String category = fields[0].getName(); // default category can be changed later
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
             try {
                 values[i] = fields[i].get(this);
                 if (!(values[i] instanceof Number)) {
-                    Number tmp = convertToIntValue(fields[i], values[i]);
-                    attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>() {{
-                        add(0, "Inconnu");
-                    }});
-                    if (!attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).contains(values[i].toString())) {
-                        attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
-                    }
+                    Number tmp = registerValue(fields, i, values);
                     values[i] = tmp;
                 }
-                map.put(fields[i].getName(), (Number) values[i]);
-                fieldsMap.put(fields[i].getName(), fields[i]);
+                attrMap.put(fields[i].getName(), (Number)values[i]);
+                fieldsMap.put(fields[i].getName(), fields[i]); // on garde une référence vers les fields pour accelerer les accès
             } catch (IllegalAccessException e) {
                 System.err.println("Erreur lors de la récupération de la valeur de l'attribut : " + fields[i].getName());
             }
         }
         this.categoryField = category;
-        this.attributes = map;
-        this.category = map.get(category).toString();
+        this.attributes = attrMap;
+        this.category = attrMap.get(category).toString();
+    }
+
+    private static Number registerValue(Field[] fields, int i, Object[] values) {
+        Number tmp  = getIntValue(fields[i], values[i]);
+        attributesNumericalValueToAttributesOriginalMap.putIfAbsent(fields[i].getName(), new ArrayList<>(){{
+            add(0, "Unknown");
+        }});
+        if (!attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).contains(values[i].toString())) {
+            attributesNumericalValueToAttributesOriginalMap.get(fields[i].getName()).add(tmp.intValue(), values[i].toString());
+        }
+        return tmp;
     }
 
     /**
@@ -178,10 +184,10 @@ public abstract class Data {
      * @return true si l'attribut a un ordre, false sinon
      */
     public boolean hasOrder(String attribute) {
-        if (fieldsMap.getOrDefault(attribute, null) == null) {
-            throw new NoSuchElementException("Attribut non trouvé : " + attribute);
+        if (attributes.containsKey(attribute) && dataTypes.containsKey(attribute)) {
+            return !dataTypes.get(attribute).isAnnotationPresent(HasNoOrder.class);
         }
-        return !fieldsMap.get(attribute).isAnnotationPresent(HasNoOrder.class);
+        throw new NoSuchElementException("Attribut : " + attribute + " non trouvé");
     }
 
     /**
@@ -191,29 +197,43 @@ public abstract class Data {
      * @param value la valeur de l'attribut
      * @return la valeur numérique de l'attribut
      */
-    private static Number convertToIntValue(Field field, Object value) {
-        if (attributesMap.getOrDefault(field.getName(), null) == null) {
-            List<Object> map = new ArrayList<>();
-            map.add(0, "Inconnu");
-            attributesMap.put(field.getName(), map);
-        }
-
+    private static Number getIntValue(Field field, Object value) {
+        initField(field);
         List<Object> ls = attributesMap.get(field.getName());
         if (ls.contains(value)) {
             return ls.indexOf(value);
-        } else if (value instanceof Comparable) {
-            int cpt = 1;
-            while (cpt < ls.size() && ((Comparable) ls.get(cpt)).compareTo(value) < 0) {
-                cpt++;
-            }
-            ls.add(cpt, value);
-            updateAttributesIndexes(field.getName(), cpt);
-            return cpt;
+        } else if (value instanceof Comparable){
+            // skip the first as it is "Unknown"
+            return insertValue(field, value, ls);
+
         } else {
-            int max = ls.size();
-            ls.add(max, value.toString());
-            attributesMap.get(field.getName()).add(max, value.toString());
-            return max;
+            // not comparable so we append it
+            return appendValue(field, value, ls);
+        }
+    }
+
+    private static int appendValue(Field field, Object value, List<Object> ls) {
+        int max = ls.size();
+        ls.add( max, value.toString());
+        attributesMap.get(field.getName()).add( max , value.toString());
+        return max;
+    }
+
+    private static int insertValue(Field field, Object value, List<Object> ls) {
+        int cpt = 1;
+        while (cpt < ls.size() && ((Comparable) ls.get(cpt)).compareTo(value) < 0) {
+            cpt++;
+        }
+        ls.add(cpt, value);
+        updateAttributesIndexes(field.getName(), cpt);
+        return cpt;
+    }
+
+    private static void initField(Field field) {
+        if (attributesMap.getOrDefault(field.getName(), null) == null) {
+            List<Object> map = new ArrayList<>();
+            map.add( 0,"Unknown");
+            attributesMap.put(field.getName(), map);
         }
     }
 
@@ -258,7 +278,10 @@ public abstract class Data {
      */
     public void setCategory(String category) {
         this.category = category;
-        this.attributes.put(categoryField, convertToIntValue(fieldsMap.get(categoryField), category));
+        System.out.println("categoryField = " + categoryField);
+        System.out.println("fieldsMap = " + fieldsMap);
+        System.out.println(fieldsMap.get(categoryField));
+        this.attributes.put(categoryField, valueOf(fieldsMap.get(categoryField).getName(), category));
     }
 
     /**
@@ -285,7 +308,7 @@ public abstract class Data {
 
     @Override
     public String toString() {
-        initializeAttributes();
+        makeData();
         Map<String, Number> attributes = this.getAttributes();
         StringBuilder sb = new StringBuilder();
         sb.append("{");
@@ -309,3 +332,4 @@ public abstract class Data {
         return Objects.hash(categoryField, category, attributes);
     }
 }
+

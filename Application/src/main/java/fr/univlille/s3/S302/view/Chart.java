@@ -8,10 +8,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Tooltip;
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Chart {
 
@@ -83,7 +80,7 @@ public class Chart {
         for (final XYChart.Series<Number, Number> s : chart.getData()) {
             for (final XYChart.Data<Number, Number> data : s.getData()) {
                 Data d = getNode(data);
-                attachInfoTooltip(data, d);
+                attachInfoTooltip(data, Objects.requireNonNull(d));
                 data.getNode().setOnMouseEntered(event -> {
                     data.getNode().setScaleX(1.5);
                     data.getNode().setScaleY(1.5);
