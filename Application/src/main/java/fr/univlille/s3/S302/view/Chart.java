@@ -43,15 +43,15 @@ public class Chart {
             addPoint(f, series, choosenAttributes);
         }
         for (Data f : dataList) {
-            if (f.getAttributes().containsKey(choosenAttributes.getKey())
-                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
+            if (f.getAttributes().getOrDefault(choosenAttributes.getKey(),null) != null
+                    && f.getAttributes().getOrDefault(choosenAttributes.getValue(), null) != null) {
                 addPoint(f, series, choosenAttributes);
             }
 
         }
         for (Data f : userDataList) {
-            if (f.getAttributes().containsKey(choosenAttributes.getKey())
-                    && f.getAttributes().containsKey(choosenAttributes.getValue())) {
+            if (f.getAttributes().getOrDefault(choosenAttributes.getKey(),null) != null
+                    && f.getAttributes().getOrDefault(choosenAttributes.getValue(), null) != null) {
                 addPoint(f, series, choosenAttributes);
             }
 
