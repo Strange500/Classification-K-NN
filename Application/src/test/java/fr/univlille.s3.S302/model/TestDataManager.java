@@ -1,17 +1,16 @@
 package fr.univlille.s3.S302.model;
 
+import fr.univlille.s3.S302.model.data.FakeData;
+import fr.univlille.s3.S302.model.data.Iris;
 import fr.univlille.s3.S302.utils.DistanceEuclidienne;
 import fr.univlille.s3.S302.utils.Observable;
 import fr.univlille.s3.S302.utils.Observer;
-import fr.univlille.s3.S302.model.Data;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.reflections.Reflections;
 
 import java.util.*;
 
-import static fr.univlille.s3.S302.model.DataLoader.preLoadClasses;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TestDataManager {
@@ -154,12 +153,12 @@ public class TestDataManager {
     @Test
     void testGuessCategory()  {
         Data iri1 = new FakeData(new HashMap<>(){{
-            put("petalWidth", 1.0);
             put("sepalLength", 1.0);
             put("sepalWidth", 1.0);
-            put("species", 1.0);
-        }}, "petalLength");
-        assertEquals("5.0", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
+            put("petalLength", 1.0);
+        }}, "petalWidth");
+        dataManager.changeCategoryField("petalWidth");
+        assertEquals("0.1", dataManager.guessCategory(iri1.getAttributes(), new DistanceEuclidienne()));
     }
 
     @Test
@@ -177,9 +176,31 @@ public class TestDataManager {
     @Test
     void testIsUserData(){
 
-        Data findMe = new FakeData(new HashMap<>(), "Test");
-        assertFalse(dataManager.isUserData(findMe));
-        dataManager.addUserData(findMe);
-        assertTrue(dataManager.isUserData(findMe));
+        Data iri1 = new FakeData(new HashMap<>(){{
+            put("petalWidth", 1.0);
+            put("sepalLength", 1.0);
+            put("sepalWidth", 1.0);
+            put("species", 1.0);
+        }}, "petalLength");
+        Data iri2 = new FakeData(new HashMap<>(){{
+            put("petalWidth", 1.0);
+            put("sepalLength", 1.0);
+            put("sepalWidth", 1.0);
+            put("species", 2);
+        }}, "petalLength");
+
+        assertFalse(dataManager.isUserData(iri1));
+        assertFalse(dataManager.isUserData(iri2));
+
+        dataManager.addUserData(iri1.getAttributes());
+        dataManager.addData(iri2);
+
+        List<Data> dataList = dataManager.getDataList();
+        dataList.add(0, dataManager.getUserDataList().get(0));
+
+        assertTrue(dataManager.isUserData(dataList.get(0)));
+        assertFalse(dataManager.isUserData(dataList.get(1)));
+
+
     }
 }

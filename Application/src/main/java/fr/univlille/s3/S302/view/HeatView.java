@@ -2,19 +2,15 @@ package fr.univlille.s3.S302.view;
 
 import fr.univlille.s3.S302.model.DataManager;
 import fr.univlille.s3.S302.utils.Distance;
-import fr.univlille.s3.S302.utils.DistanceEuclidienne;
-import javafx.application.Platform;
+import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.ScatterChart;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +29,43 @@ public class HeatView {
     private final Map<String, List<Double>> colorMap;
     private boolean active = false;
     private Distance distance ;
+    private Service<Void> service = new Service<>() {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<>() {
+                @Override
+                protected Void call() {
+                    clear();
+                    Node chartArea = scatterChart.lookup(".chart-plot-background");
+                    Bounds boundsChartArea = chartArea.localToParent(chartArea.getBoundsInLocal());
+                    double xOffSet = boundsChartArea.getMinX();
+                    double yOffset = boundsChartArea.getMinY();
+                    double maxX = getMaxX();
+                    double stepX = (maxX / boundsChartArea.getWidth()) * quality;
+                    double stepY = (getMaxY() / boundsChartArea.getHeight()) * quality;
+                    Map<String, Number> data =new HashMap<>();
+                    for (double y = 0; y < getMaxY(); y += stepY) {
+                        for (double x = 0; x < maxX; x += stepX) {
+                            if (isCancelled()) {
+                                return null;
+                            }
+                            data.put(xAttribute, x);
+                            data.put(yAttribute, y);
+                            String cat = DataManager.getInstance().guessCategory(data, distance);
+                            List<Double> tmp = colorMap.get(cat);
+                            canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
+                            canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,
+                                    scatterChart.getYAxis().getDisplayPosition(y) + yOffset , 10,10);
+                            data.clear();
+                        }
+                    }
+                    return null;
+                }
+
+
+            };
+        }
+    };
 
     public HeatView(Canvas cv, ScatterChart<Number, Number> scatterChart, String xAttribute, String yAttribute, Map<String, String> colorMap, Distance distance) {
         canvas = cv;
@@ -47,7 +80,6 @@ public class HeatView {
         this.distance = distance;
 
     }
-
 
     public void toggle() {
         active = !active;
@@ -64,11 +96,39 @@ public class HeatView {
         canvas.getGraphicsContext2D().clearRect(-100, -100, canvas.getWidth()+200, canvas.getHeight()+200);
 
     }
-    void update() {
-            if (active) {
-                clear();
-                draw();
+    private void update() {
+        try {
+            if (service.isRunning()) {
+                service.cancel();
             }
+            service.reset();
+            service.restart();
+        } catch (Exception e) {
+            System.err.println("Error updating HeatView: " + e.getMessage());
+        }
+    }
+
+    public void destroy() {
+        if (service.isRunning()) {
+            service.cancel();
+        }
+        // Wait for the service to finish
+        service.setOnSucceeded(event -> {
+            System.out.println("Service was cancelled and finished successfully.");
+        });
+        service.setOnFailed(event -> {
+            System.out.println("Service was cancelled and finished with failure.");
+        });
+        service.setOnCancelled(event -> {
+            System.out.println("Service was cancelled.");
+        });
+        while (service.isRunning()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static List<Double> getCategorieRgb(String color) {
@@ -90,30 +150,6 @@ public class HeatView {
 
     private double getMaxY() {
         return ((NumberAxis)scatterChart.getYAxis()).getUpperBound();
-    }
-
-
-    private void draw() {
-        Node chartArea = scatterChart.lookup(".chart-plot-background");
-        Bounds boundsChartArea = chartArea.localToParent(chartArea.getBoundsInLocal());
-        double xOffSet = boundsChartArea.getMinX();
-        double yOffset = boundsChartArea.getMinY();
-        double maxX = getMaxX();
-        double stepX = (maxX / boundsChartArea.getWidth()) * quality;
-        double stepY = (getMaxY() / boundsChartArea.getHeight()) * quality;
-        Map<String, Number> data =new HashMap<>();
-        for (double y = 0; y < getMaxY(); y += stepY) {
-            for (double x = 0; x < maxX; x += stepX) {
-                data.put(xAttribute, x);
-                data.put(yAttribute, y);
-                String cat = DataManager.getInstance().guessCategory(data, distance);
-                List<Double> tmp = colorMap.get(cat);
-                canvas.getGraphicsContext2D().setFill(Color.rgb(tmp.get(0).intValue(), tmp.get(1).intValue(), tmp.get(2).intValue()));
-                canvas.getGraphicsContext2D().fillRect(scatterChart.getXAxis().getDisplayPosition(x) + xOffSet,
-                        scatterChart.getYAxis().getDisplayPosition(y) + yOffset , 10,10);
-                data.clear();
-            }
-        }
     }
 
     public boolean isActive() {

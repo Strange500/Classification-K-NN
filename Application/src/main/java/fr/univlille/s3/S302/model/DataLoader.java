@@ -24,10 +24,10 @@ public class DataLoader {
      */
     public static List<? extends Data> charger(String fileName) throws FileNotFoundException {
         if (fileName == null) {
-            throw new FileNotFoundException("check is null : Fichier non trouvé: " + fileName);
+            throw new FileNotFoundException("check is null : Fichier non trouvé");
         }
         InputStream input = DataLoader.class.getResourceAsStream(fileName);
-        Class<? extends Data> clazz = null;
+        Class<? extends Data> clazz;
         if (input == null) {
             if (new File(fileName).exists()) {
                 input = new FileInputStream(fileName);
@@ -36,7 +36,7 @@ public class DataLoader {
                 throw new FileNotFoundException("check filename exist : Fichier non trouvé: " + fileName);
             }
         } else{
-            clazz = getClassFromHeader(new InputStreamReader(DataLoader.class.getResourceAsStream(fileName)));
+            clazz = getClassFromHeader(new InputStreamReader(Objects.requireNonNull(DataLoader.class.getResourceAsStream(fileName))));
         }
         return csvToList(input, clazz);
     }
@@ -55,8 +55,7 @@ public class DataLoader {
             }
             CsvToBean<Data> csvToBean = new CsvToBeanBuilder<Data>(reader).withSeparator(SEPARATOR)
                     .withType(clazz).build();
-            List<? extends Data> records = csvToBean.parse();
-            return records;
+            return csvToBean.parse();
         } catch (IOException e) {
             System.err.println("Erreur lors de la lecture du fichier:" + e.getMessage());
         }
@@ -96,7 +95,7 @@ public class DataLoader {
      */
     static void preLoadClasses() {
         try {
-            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model").getSubTypesOf(Data.class);
+            Set<Class<? extends Data>> allClasses = new Reflections("fr.univlille.s3.S302.model.data").getSubTypesOf(Data.class);
             System.out.println("Liste des classe a charger : " + allClasses);
             for (Class<? extends Data> clazz : allClasses) {
                 Class.forName(clazz.getName());

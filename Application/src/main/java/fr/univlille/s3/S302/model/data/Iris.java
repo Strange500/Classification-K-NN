@@ -1,11 +1,9 @@
-package fr.univlille.s3.S302.model;
+package fr.univlille.s3.S302.model.data;
 
 import com.opencsv.bean.CsvBindByName;
+import fr.univlille.s3.S302.model.Data;
+import fr.univlille.s3.S302.model.DataLoader;
 import fr.univlille.s3.S302.utils.HasNoOrder;
-import javafx.util.Pair;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Iris extends Data {
 
@@ -14,16 +12,16 @@ public class Iris extends Data {
     }
 
     @CsvBindByName(column = "sepal.length")
-    protected Double sepalLength;
+    public Double sepalLength;
     @CsvBindByName(column = "sepal.width")
-    protected Double sepalWidth;
+    public Double sepalWidth;
     @CsvBindByName(column = "petal.length")
-    protected Double petalLength;
+    public Double petalLength;
     @CsvBindByName(column = "petal.width")
-    protected Double petalWidth;
+    public Double petalWidth;
 
     @CsvBindByName(column = "variety")
     @HasNoOrder
-    protected String species;
+    public String species;
 
 }
