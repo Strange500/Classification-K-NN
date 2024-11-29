@@ -122,6 +122,7 @@ La fonction getClassFromHeader permet de récupérer la classe Data correspondan
 # Repartition des Taches
 
 La répartition des tâches s'est faite avec l'issue board de Gitlab [ici](https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/boards), nous avons d'abord décidé quelles issues créer, puis chacun a placé les issues qu'il voulait faire dans la colonne "À faire".
+
 Thomas :
 - Tests
 
