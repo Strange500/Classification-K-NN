@@ -18,6 +18,10 @@ Ce projet a pour objectif de visualiser des données en 2D. Il offre la possibil
 - Validation croisée pour évaluer la robustesse de l'algorithme de classification
 - Test simple de robustesse à partir d'un fichier de test
 
+
+- à venir :
+- pondération des attributs
+
 ## Installation
 
 Pour installer le projet, vous pouvez cloner le dépôt ou télécharger la dernière version disponible.
@@ -32,7 +36,7 @@ Il est recommandé d'utiliser openjdk 21 pour une meilleure compatibilité.
 ### Pour exécuter le projet :
 
 #### Depuis un terminal :
-lancez le fichier `run.sh` situé dans le répertoire Application.
+Lancez le fichier `run.sh` situé dans le répertoire Application.
 
 #### Depuis IntelliJ :
 Créez une nouvelle configuration de lancement en sélectionnant Maven.
@@ -40,7 +44,8 @@ Créez une nouvelle configuration de lancement en sélectionnant Maven.
 Utilisez la commande suivante dans les options de lancement : `clean javafx:run`
 
 #### Exécution du fichier JAR :
-Le .jar est disponible ici : https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/jobs/131513/artifacts/download
+Les .jar des différentes versions sont disponibles dans la section Deploy > Releases. https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/releases
+Il vous suffit de cliquer pour la release souhaitée sur le lien app.jar en dessous de Assets. Vous trouverez le fichier artifacts.zip contenant le .jar dans le dossier Application/target.
 
 Utilisez la commande suivante dans un terminal en remplaçant /chemin/ par le chemin vers votre fichier dossier decompressé artifacts.zip :
 ````
@@ -64,7 +69,7 @@ Il n'y a pas besoin d'indiquer quels champs sont susceptibles d'être des champs
 
 ## Data
 
-La classe `Data` est une classe abstraite qui permet à toute classe en héritant d'être traitée par le modèle. Le cœur de cette classe réside dans la fonction `makeData`, qui parcourt les attributs de la classe implémentant `Data`. Cette fonction attribue une valeur numérique à chaque attribut en utilisant la fonction `getIntValue`. Grâce à cela, chaque attribut de la classe peut être représenté sous forme numérique.
+La classe `Data` est une classe abstraite qui permet à toute classe en héritant d'être traitée par le modèle. Le cœur de cette classe réside dans la fonction `makeData`, qui parcourt les attributs de la classe implémentant `Data`. Cette fonction attribue une valeur numérique à chaque valeur d'attribut en utilisant la fonction `getIntValue`. Grâce à cela, chaque attribut de la classe peut être représenté sous forme numérique.
 
 La fonction `getIntValue` complète la map `attributMap`, où chaque attribut est associé à une liste de valeurs (les valeurs originales). Les indices de cette liste jouent le rôle de valeurs numériques pour représenter la valeur originale de l'attribut.
 
@@ -77,7 +82,7 @@ La classe contient également plusieurs autres maps dont le principal objectif e
 - **dataTypesMap** : Permet de retrouver le type de donnée de l'attribut.
 - **fieldsMap** : Permet de retrouver l'objet de classe `Field` associé au nom de l'attribut.
 
-Avec tout cela, l'application intègre tous les attributs implémentant l'interface `Comparable`. Pour les attributs n'ayant pas d'ordre spécifique, un traitement supplémentaire est effectué pour les transformer en valeurs numériques.
+L'application intègre tous les attributs implémentant l'interface `Comparable`, ce qui permet de les ranger selon un ordre dans `attributMap`. Pour les attributs n'ayant pas d'ordre spécifique, un traitement supplémentaire est effectué pour les transformer en valeurs numériques.
 
 ### Gestion des Attributs Sans Ordre Spécifique
 
@@ -91,14 +96,14 @@ Lors du calcul de la distance entre deux points, un traitement supplémentaire e
 design pattern : Singleton
 
 La classe DataManager permet de gérer les données. 
-cette classe a comme attribut, principalement, une liste de Data `dataList` provenant d'une source de données (ici un csv).
-Et une autre liste de Data qui sont elles des données ajouté au model ultérieurement `UserData`.
+Cette classe a comme attribut, principalement, une liste de Data `dataList` provenant d'une source de données (ici un csv).
+Et une autre liste de Data qui sont elles des données ajoutées au model ultérieurement `UserData`.
 
 Cette classe est munie de tout un set de fonctions permettant de manipuler les données, les ajouter, les supprimer, les classifier, les charger, etc.
 
-Pour permmettre a toutes les classe de partager le meme DataManager, on a utilisé le design pattern Singleton.
+Pour permettre à toutes les classes de partager le meme DataManager, on a utilisé le design pattern Singleton.
 
-La classe delegue le chargment et la créationdes objets Data a la classe DataLoader.
+La classe delegue le chargement et la création des objets Data a la classe DataLoader.
 
 
 ## DataLoader

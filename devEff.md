@@ -91,5 +91,8 @@ Pour chaque approche, l'algorithme teste tous les N inférieurs à la moitié de
 
 Des fichiers de resulats de Robustesse et de Validation Croisée sont disponibles à la racine du projet. Vous pouvez en visualiser d'autre dans le terminal en lancant des tests de robustesse ou de validation croisée depuis l'inteface graphique.
 
+# Fonctionnement
 
+Je vous renvoie à la section [Fonctionnement](README.md#fonctionnement) de README.md pour plus de détails sur le fonctionnement de l'application.
+Vous y trouverez des informations notamment sur comment `Data` gere les types de données.
 
