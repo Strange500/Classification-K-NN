@@ -1,7 +1,7 @@
 ### Implémentation de l'algorithme K-NN
 Cette implémentation se trouve dans la fonction `getNearestDatas` de la classe `DataManager`.
 
-L’implémentation de K-NN (K-Nearest Neighbors) une `PriorityQueue` pour identifier efficacement les `nbVoisin` (K) plus proches voisins d’une donnée cible. Voici les points clés de cette approche :
+L’implémentation de K-NN (K-Nearest Neighbors) utilise une `PriorityQueue` pour identifier efficacement les `nbVoisin` (K) plus proches voisins d’une donnée cible. Voici les points clés de cette approche :
 
 1. **PriorityQueue et MaxHeap** : L'emploi d'un `maxHeap` permet de maintenir les distances des K plus proches voisins de manière optimisée, avec des opérations d'insertion et de recherche en O(log K), contrairement à un tri complet qui aurait une complexité en O(N log N).
 
@@ -21,7 +21,6 @@ L’implémentation de K-NN (K-Nearest Neighbors) une `PriorityQueue` pour ident
 
 - **Scalabilité** : Cette méthode est capable de traiter des ensembles de données croissants, car le temps de traitement dépend principalement du nombre de voisins et non de la taille totale des données.
 
-
 ## Calcul de la Distance
 
 La classe `Data` contient une méthode `distance` qui permet de calculer la distance entre deux objets `Data`. Cette méthode utilise la distance souhaitée pour effectuer le calcul.
@@ -34,9 +33,9 @@ Les distances disponibles sont :
 
 - **Distance Euclidienne** : La distance euclidienne est la racine carrée de la somme des carrés des différences entre les coordonnées des points.
 
-- **Distance de Manhattan Normalisée** : La distance de Manhattan normalisée est la somme des différences absolues entre les coordonnées des points moins le minimum, divisée par la plage de valeurs.
+- **Distance de Manhattan Normalisée** : La distance de Manhattan normalisée est la somme des différences absolues entre les coordonnées normalisées des points.
 
-- **Distance Euclidienne Normalisée** : La distance euclidienne normalisée est la racine carrée de la somme des carrés des différences entre les coordonnées des points moins le minimum, divisée par la plage de valeurs.
+- **Distance Euclidienne Normalisée** : La distance euclidienne normalisée est la racine carrée de la somme des carrés des différences entre les coordonnées normalisées des points.
 
 Ces distances permettent de comparer les objets `Data` en fonction de leurs attributs, en prenant en compte les valeurs numériques et les attributs sans ordre spécifique.
 
