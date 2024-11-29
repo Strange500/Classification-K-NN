@@ -122,6 +122,7 @@ La fonction getClassFromHeader permet de récupérer la classe Data correspondan
 # Repartition des Taches
 
 La répartition des tâches s'est faite avec l'issue board de Gitlab [ici](https://gitlab.univ-lille.fr/sae302/2024/H2_SAE3.3/-/boards), nous avons d'abord décidé quelles issues créer, puis chacun a placé les issues qu'il voulait faire dans la colonne "À faire".
+
 Thomas :
 - Tests
 
@@ -135,18 +136,22 @@ Mathys :
 - Ajout Points
 
 Adrien :
-- distance & normalisation
-- choix dans l'UI des distances
+- UI (fxml)
+- Distance & normalisation
+- Choix dans l'UI des distances
+- Choix de l'algo de classification
 - Sauvegarde du graphique
-- chargment CSV
+- Chargment CSV
+- Optimisation
 
 Benjamin :
-- choix de l'attribut de classification
-- choix du nombre de voisins
+- Choix de l'attribut de classification
+- Choix du nombre de voisins
 - Validation croisée
-- généricité de l'application*
+- Généricité de l'application*
 - HeatView
 - MultiThreading
-- implémentation Observer/Observable
-- choix des axes de projection
+- Implémentation Observer/Observable
+- Choix des axes de projection
 - Visualisation des points
+- Rapport de Dev Efficace
