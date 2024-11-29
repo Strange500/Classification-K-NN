@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DistanceManhattanTest {
+public class TestDistanceManhattan {
     @Test
     public void testDistanceManhattan() {
         DistanceManhattan distance = new DistanceManhattan();

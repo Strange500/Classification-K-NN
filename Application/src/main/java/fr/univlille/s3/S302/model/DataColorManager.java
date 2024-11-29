@@ -32,6 +32,8 @@ public class DataColorManager {
         return color;
     }
 
+    protected Map<String, String> getColorMap() {return colorMap;}
+
     /**
      * Méthode permettant de créer les couleurs
      * @param nbCategories le nombre de catégories

@@ -13,7 +13,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DataManagerTest {
+public class TestDataManager {
     private final static String PATH = "iris.csv";
     private DataManager<Data> dataManager;
 
