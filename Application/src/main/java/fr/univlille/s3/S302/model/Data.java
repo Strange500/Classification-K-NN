@@ -76,7 +76,7 @@ public abstract class Data {
                 return i;
             }
         }
-        return Double.parseDouble(value);
+        throw new NumberFormatException("Valeur non trouvée");
     }
 
     /**
